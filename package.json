@@ -1,0 +1,22 @@
+{
+	"name": "ld",
+	"version": "1.0.0",
+	"description": "",
+	"main": "app.js",
+	"scripts": {
+		"start": "electron .",
+		"package-linux": "electron-packager . deployment-client-electron --overwrite --prune=true --platform=linux --arch=x64 --out=dist/linux --ignore=\"./deployment-server\"",
+		"package-win": "electron-packager . deployment-client-electron --overwrite --prune=true --platform=win32 --arch=x64 --out=dist/windows --ignore=\"./deployment-server\"",
+		"package-pi": "electron-packager . deployment-client-electron --overwrite --prune=true --platform=linux --arch=armv7l --out=dist/raspi --ignore=\"./deployment-server\"",
+		"package-mac": "electron-packager . deployment-client-electron --overwrite --prune=true --platform=darwin --arch=x64 --out=dist/mac --ignore=\"./deployment-server\""
+	},
+	"author": "Nikola Tasic",
+	"license": "ISC",
+	"devDependencies": {
+		"electron": "^2.0.6"
+	},
+	"dependencies": {
+		"animate.css": "^3.7.0",
+		"bootstrap": "^4.1.3"
+	}
+}

@@ -1,0 +1,84 @@
+body {
+  overflow: hidden;
+}
+
+aside {
+  -webkit-transition: 100ms all;
+  transition: 100ms all;
+  position: absolute;
+  width: 400px;
+  left: -400px;
+  height: 100vh;
+  background-color: wheat;
+  z-index: 100;
+}
+
+aside select {
+  height: 90.5vh !important;
+}
+
+aside select option {
+  margin-bottom: 3px;
+}
+
+main {
+  display: block;
+  float: right;
+  -webkit-transition: 100ms width;
+  transition: 100ms width;
+  height: 60vh;
+  padding-right: 10px;
+}
+
+main input[name='tabs'] + label {
+  cursor: pointer;
+}
+
+main label {
+  padding: 5px;
+}
+
+main textarea {
+  resize: vertical;
+}
+
+main section {
+  height: 100%;
+  padding-right: 10px;
+  overflow-x: hidden;
+  overflow-y: scroll;
+}
+
+main section label {
+  white-space: nowrap;
+  overflow: hidden;
+}
+
+main::after {
+  content: ' ';
+  clear: both;
+}
+
+header {
+  display: block;
+  float: right;
+  -webkit-transition: 100ms width;
+  transition: 100ms width;
+  overflow-y: auto;
+  height: 35vh;
+  padding: 10px 20px;
+}
+
+header label {
+  padding: 5px;
+}
+
+footer {
+  display: block;
+  float: right;
+  -webkit-transition: 100ms width;
+  transition: 100ms width;
+  height: 5vh;
+  width: 100vw;
+}
+/*# sourceMappingURL=style.css.map */
