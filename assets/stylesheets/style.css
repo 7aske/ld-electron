@@ -9,16 +9,21 @@ aside {
   width: 400px;
   left: -400px;
   height: 100vh;
-  background-color: wheat;
+  background-color: #eee;
   z-index: 100;
 }
 
 aside select {
-  height: 90.5vh !important;
+  height: 91vh !important;
 }
 
 aside select option {
-  margin-bottom: 3px;
+  padding: 4px;
+}
+
+aside select option:checked {
+  background-color: white;
+  color: black;
 }
 
 main {
@@ -67,6 +72,10 @@ header {
   overflow-y: auto;
   height: 35vh;
   padding: 10px 20px;
+}
+
+header button {
+  width: 80px;
 }
 
 header label {

@@ -19,26 +19,26 @@ let child: BrowserWindow | null;
 let employeesFile: EmployeesFile = JSON.parse(
 	readFileSync(employeesFilePath, 'utf8').toString()
 );
-function handleSave(employee: Employee) {
-	const check: Array<Employee> = employeesFile.employees.filter(e => {
-		return e.jmbg == employee.jmbg || e.id == employee.id;
-	});
-	console.log(check.length);
-	if (check.length == 1) {
-		const replace: number = employeesFile.employees.findIndex(e => {
-			return e.jmbg == check[0].jmbg;
+function handleSave(employees: Array<Employee>) {
+	employees.forEach(employee => {
+		const check: Array<Employee> = employeesFile.employees.filter(e => {
+			return e.jmbg == employee.jmbg || e.id == employee.id;
 		});
-		employeesFile.employees.splice(replace, 1, employee);
-	} else if (check.length == 0) {
-		employeesFile.employees.push(employee);
-	} else {
-		if (window)
-			window.webContents.send(
-				'window:alert',
-				'Postoji radnik sa datom sifrom ili maticnim brojem'
-			);
-	}
-	employeesFile.employees.sort();
+		console.log(check.length);
+		if (check.length == 1) {
+			const replace: number = employeesFile.employees.findIndex(e => {
+				return e.jmbg == check[0].jmbg;
+			});
+			employeesFile.employees.splice(replace, 1, employee);
+		} else if (check.length == 0) {
+			employeesFile.employees.push(employee);
+		}
+	});
+	employeesFile.employees.sort((a, b) => {
+		if (a.id > b.id) return 1;
+		if (a.id < b.id) return -1;
+		else return 0;
+	});
 	writeFileSync(employeesFilePath, JSON.stringify(employeesFile), 'utf8');
 	if (window)
 		window.webContents.send('employee:search', employeesFile.employees);
@@ -58,9 +58,9 @@ app.on('ready', main);
 app.on('window-all-closed', () => {
 	app.quit();
 });
-ipcMain.on('employee:save', (event: any, employee: any) => {
-	console.log(employee);
-	handleSave(employee);
+ipcMain.on('employee:save', (event: any, employees: any) => {
+	console.log(employees);
+	handleSave(employees);
 });
 ipcMain.on('employee:get', (event: any, query: any) => {
 	console.log(query);
@@ -71,7 +71,11 @@ ipcMain.on('employee:get', (event: any, query: any) => {
 		});
 		if (window) window.webContents.send('employee:search', employees);
 	} else {
-		employeesFile.employees.sort();
+		employeesFile.employees.sort((a, b) => {
+			if (a.id > b.id) return 1;
+			if (a.id < b.id) return -1;
+			else return 0;
+		});
 		if (window)
 			window.webContents.send('employee:search', employeesFile.employees);
 	}

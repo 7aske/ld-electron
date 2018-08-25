@@ -9,3 +9,10 @@ const dateTemplate = date => {
 	return `${date.getDate() -
 		1} dana ${date.getMonth()} meseci ${date.getFullYear() - 1970} godina`;
 };
+const optionTemplate = e => {
+	return `<option onclick="changeCurrentEmployee(event.target.value)" value="${
+		e.properties.id
+	}">${e.properties.id} - ${e.properties.jmbg} - ${e.properties.lastName} ${
+		e.properties.firstName
+	}</option>`;
+};

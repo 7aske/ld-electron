@@ -7,12 +7,16 @@ aside {
 	width: 400px;
 	left: -400px;
 	height: 100vh;
-	background-color: wheat;
+	background-color: #eee;
 	z-index: 100;
 	select {
-		height: 90.5vh !important;
+		height: 91vh !important;
 		option {
-			margin-bottom: 3px;
+			&:checked {
+				background-color: white;
+				color: black;
+			}
+			padding: 4px;
 		}
 	}
 }
@@ -48,6 +52,9 @@ main::after {
 	clear: both;
 }
 header {
+	button {
+		width: 80px;
+	}
 	display: block;
 	float: right;
 	transition: 100ms width;

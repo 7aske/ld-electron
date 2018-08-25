@@ -7,25 +7,30 @@ const employeesFilePath = path_1.join(__dirname, 'assets/database/workers.json')
 let window;
 let child;
 let employeesFile = JSON.parse(fs_1.readFileSync(employeesFilePath, 'utf8').toString());
-function handleSave(employee) {
-    const check = employeesFile.employees.filter(e => {
-        return e.jmbg == employee.jmbg || e.id == employee.id;
-    });
-    console.log(check.length);
-    if (check.length == 1) {
-        const replace = employeesFile.employees.findIndex(e => {
-            return e.jmbg == check[0].jmbg;
+function handleSave(employees) {
+    employees.forEach(employee => {
+        const check = employeesFile.employees.filter(e => {
+            return e.jmbg == employee.jmbg || e.id == employee.id;
         });
-        employeesFile.employees.splice(replace, 1, employee);
-    }
-    else if (check.length == 0) {
-        employeesFile.employees.push(employee);
-    }
-    else {
-        if (window)
-            window.webContents.send('window:alert', 'Postoji radnik sa datom sifrom ili maticnim brojem');
-    }
-    employeesFile.employees.sort();
+        console.log(check.length);
+        if (check.length == 1) {
+            const replace = employeesFile.employees.findIndex(e => {
+                return e.jmbg == check[0].jmbg;
+            });
+            employeesFile.employees.splice(replace, 1, employee);
+        }
+        else if (check.length == 0) {
+            employeesFile.employees.push(employee);
+        }
+    });
+    employeesFile.employees.sort((a, b) => {
+        if (a.id > b.id)
+            return 1;
+        if (a.id < b.id)
+            return -1;
+        else
+            return 0;
+    });
     fs_1.writeFileSync(employeesFilePath, JSON.stringify(employeesFile), 'utf8');
     if (window)
         window.webContents.send('employee:search', employeesFile.employees);
@@ -45,9 +50,9 @@ electron_1.app.on('ready', main);
 electron_1.app.on('window-all-closed', () => {
     electron_1.app.quit();
 });
-electron_1.ipcMain.on('employee:save', (event, employee) => {
-    console.log(employee);
-    handleSave(employee);
+electron_1.ipcMain.on('employee:save', (event, employees) => {
+    console.log(employees);
+    handleSave(employees);
 });
 electron_1.ipcMain.on('employee:get', (event, query) => {
     console.log(query);
@@ -59,7 +64,14 @@ electron_1.ipcMain.on('employee:get', (event, query) => {
             window.webContents.send('employee:search', employees);
     }
     else {
-        employeesFile.employees.sort();
+        employeesFile.employees.sort((a, b) => {
+            if (a.id > b.id)
+                return 1;
+            if (a.id < b.id)
+                return -1;
+            else
+                return 0;
+        });
         if (window)
             window.webContents.send('employee:search', employeesFile.employees);
     }
