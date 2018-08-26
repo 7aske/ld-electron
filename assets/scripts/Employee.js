@@ -1,7 +1,9 @@
+const shortid = require('shortid');
 class Employee {
 	constructor(newEmployee) {
 		if (newEmployee) {
 			this.properties = {
+				_id: newEmployee._id || shortid.generate(),
 				id: newEmployee.id,
 				jmbg: newEmployee.jmbg,
 				firstName: newEmployee.firstName,
@@ -76,6 +78,7 @@ class Employee {
 			};
 		} else {
 			this.properties = {
+				_id: shortid.generate(),
 				id: '',
 				jmbg: '',
 				firstName: '',
@@ -153,65 +156,51 @@ class Employee {
 	populate() {
 		for (let key in this.properties) {
 			const element = document.querySelector(`#${key}`);
-			if (element) element.value = this.properties[key];
+			if (element) {
+				element.value = this.properties[key];
+				element.classList.remove('bg-warning');
+				// element.classList.remove('border');
+				// element.classList.remove('border-warning');
+			}
+		}
+		for (let key in this.changes) {
+			const element = document.querySelector(`#${key}`);
+			if (element) {
+				element.value = this.changes[key];
+				element.classList.add('bg-warning');
+				// element.classList.add('border');
+				// element.classList.add('border-warning');
+			}
 		}
 		this.populateDate();
 		return this;
 	}
-	populateChanges() {
-		for (let key in this.changes) {
-			const element = document.querySelector(`#${key}`);
-			if (element) element.value = this.changes[key];
-		}
-		return this;
-	}
 	populateDate() {
 		this.properties.totalYoS = 0;
-		containerInternal.innerHTML = '';
-		containerExternal.innerHTML = '';
-		if (this.changes.internalYoS_periods) {
-			this.changes.internalYoS_total = 0;
-			this.changes.internalYoS_periods.forEach(p => {
-				console.log(p);
-
-				this.changes.internalYoS_total += p.till - p.from;
-				containerInternal.innerHTML += dateListTemplate(p.from, p.till);
-			});
-		} else {
+		if (!this.changes.internalYoS_periods) {
+			containerInternal.innerHTML = '';
 			this.properties.internalYoS_total = 0;
 			this.properties.internalYoS_periods.forEach(p => {
 				this.properties.internalYoS_total += p.till - p.from;
 				containerInternal.innerHTML += dateListTemplate(p.from, p.till);
 			});
 		}
-		if (this.changes.externalYoS_periods) {
-			this.changes.externalYoS_total = 0;
-			this.changes.externalYoS_periods.forEach(p => {
-				console.log(p);
-
-				this.changes.externalYoS_total += p.till - p.from;
-				containerExternal.innerHTML += dateListTemplate(p.from, p.till);
-			});
-		} else {
+		if (!this.changes.externalYoS_periods) {
+			containerExternal.innerHTML = '';
 			this.properties.externalYoS_total = 0;
 			this.properties.externalYoS_periods.forEach(p => {
 				this.properties.externalYoS_total += p.till - p.from;
 				containerExternal.innerHTML += dateListTemplate(p.from, p.till);
 			});
 		}
-		if (this.changes.internalYoS_total || this.changes.externalYoS_total) {
-			this.changes.totalYoS = this.changes.externalYoS_total
-				? this.changes.externalYoS_total
-				: this.properties.externalYoS_total +
-				  this.changes.internalYoS_total
-					? this.changes.internalYoS_total
-					: this.properties.internalYoS_total;
-		} else {
+		if (
+			!this.changes.internalYoS_total &&
+			!this.changes.externalYoS_total
+		) {
 			this.properties.totalYoS =
 				this.properties.externalYoS_total +
 				this.properties.internalYoS_total;
 		}
-
 		const internal = new Date(
 			this.changes.internalYoS_total
 				? this.changes.internalYoS_total
@@ -230,8 +219,10 @@ class Employee {
 				: this.properties.totalYoS
 		);
 		totalYoS.value = dateTemplate(total);
+		return this;
 	}
 	addInternalYoS(from, till) {
+		containerInternal.innerHTML = '';
 		this.changes.internalYoS_periods = new Array(
 			...this.properties.internalYoS_periods
 		);
@@ -239,10 +230,23 @@ class Employee {
 			from: new Date(from).valueOf(),
 			till: new Date(till).valueOf()
 		});
+		this.changes.internalYoS_total = 0;
+		this.changes.internalYoS_periods.forEach(p => {
+			this.changes.internalYoS_total += p.till - p.from;
+			containerInternal.innerHTML += dateListTemplate(p.from, p.till);
+		});
+		this.changes.totalYoS =
+			(this.changes.externalYoS_total
+				? this.changes.externalYoS_total
+				: this.properties.externalYoS_total) +
+			(this.changes.internalYoS_total
+				? this.changes.internalYoS_total
+				: this.properties.internalYoS_total);
 		this.populateDate();
 		return this;
 	}
 	addExternalYoS(from, till) {
+		containerExternal.innerHTML = '';
 		this.changes.externalYoS_periods = new Array(
 			...this.properties.externalYoS_periods
 		);
@@ -250,6 +254,18 @@ class Employee {
 			from: new Date(from).valueOf(),
 			till: new Date(till).valueOf()
 		});
+		this.changes.externalYoS_total = 0;
+		this.changes.externalYoS_periods.forEach(p => {
+			this.changes.externalYoS_total += p.till - p.from;
+			containerExternal.innerHTML += dateListTemplate(p.from, p.till);
+		});
+		this.changes.totalYoS =
+			(this.changes.externalYoS_total
+				? this.changes.externalYoS_total
+				: this.properties.externalYoS_total) +
+			(this.changes.internalYoS_total
+				? this.changes.internalYoS_total
+				: this.properties.internalYoS_total);
 		this.populateDate();
 		return this;
 	}

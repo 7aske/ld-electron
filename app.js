@@ -9,20 +9,34 @@ let child;
 let employeesFile = JSON.parse(fs_1.readFileSync(employeesFilePath, 'utf8').toString());
 function handleSave(employees) {
     employees.forEach(employee => {
-        const check = employeesFile.employees.filter(e => {
-            return e.jmbg == employee.jmbg || e.id == employee.id;
+        const check = employeesFile.employees.find(e => {
+            return e._id == employee._id;
         });
-        console.log(check.length);
-        if (check.length == 1) {
+        if (check) {
+            console.log(check._id);
             const replace = employeesFile.employees.findIndex(e => {
-                return e.jmbg == check[0].jmbg;
+                return e._id == check._id;
             });
             employeesFile.employees.splice(replace, 1, employee);
         }
-        else if (check.length == 0) {
+        else if (check == undefined) {
             employeesFile.employees.push(employee);
         }
     });
+    employeesFile.employees.sort((a, b) => {
+        if (a.id > b.id)
+            return 1;
+        if (a.id < b.id)
+            return -1;
+        else
+            return 0;
+    });
+    fs_1.writeFileSync(employeesFilePath, JSON.stringify(employeesFile), 'utf8');
+    if (window)
+        window.webContents.send('employee:search', employeesFile.employees);
+}
+function handleDelete(employees) {
+    employeesFile.employees = employees;
     employeesFile.employees.sort((a, b) => {
         if (a.id > b.id)
             return 1;
@@ -54,11 +68,15 @@ electron_1.ipcMain.on('employee:save', (event, employees) => {
     console.log(employees);
     handleSave(employees);
 });
+electron_1.ipcMain.on('employee:delete', (event, employees) => {
+    console.log(employees);
+    handleDelete(employees);
+});
 electron_1.ipcMain.on('employee:get', (event, query) => {
     console.log(query);
     if (query) {
         const employees = employeesFile.employees.filter(e => {
-            return e.jmbg == query || e.id == query;
+            return e._id == query;
         });
         if (window)
             window.webContents.send('employee:search', employees);

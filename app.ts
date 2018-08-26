@@ -3,6 +3,7 @@ import { join } from 'path';
 import { readFileSync, writeFileSync } from 'fs';
 
 interface Employee {
+	_id: string;
 	id: string;
 	jmbg: string;
 }
@@ -21,19 +22,30 @@ let employeesFile: EmployeesFile = JSON.parse(
 );
 function handleSave(employees: Array<Employee>) {
 	employees.forEach(employee => {
-		const check: Array<Employee> = employeesFile.employees.filter(e => {
-			return e.jmbg == employee.jmbg || e.id == employee.id;
+		const check: Employee | undefined = employeesFile.employees.find(e => {
+			return e._id == employee._id;
 		});
-		console.log(check.length);
-		if (check.length == 1) {
+		if (check) {
+			console.log(check._id);
 			const replace: number = employeesFile.employees.findIndex(e => {
-				return e.jmbg == check[0].jmbg;
+				return e._id == check._id;
 			});
 			employeesFile.employees.splice(replace, 1, employee);
-		} else if (check.length == 0) {
+		} else if (check == undefined) {
 			employeesFile.employees.push(employee);
 		}
 	});
+	employeesFile.employees.sort((a, b) => {
+		if (a.id > b.id) return 1;
+		if (a.id < b.id) return -1;
+		else return 0;
+	});
+	writeFileSync(employeesFilePath, JSON.stringify(employeesFile), 'utf8');
+	if (window)
+		window.webContents.send('employee:search', employeesFile.employees);
+}
+function handleDelete(employees: Array<Employee>) {
+	employeesFile.employees = employees;
 	employeesFile.employees.sort((a, b) => {
 		if (a.id > b.id) return 1;
 		if (a.id < b.id) return -1;
@@ -62,12 +74,16 @@ ipcMain.on('employee:save', (event: any, employees: any) => {
 	console.log(employees);
 	handleSave(employees);
 });
+ipcMain.on('employee:delete', (event: any, employees: any) => {
+	console.log(employees);
+	handleDelete(employees);
+});
 ipcMain.on('employee:get', (event: any, query: any) => {
 	console.log(query);
 
 	if (query) {
 		const employees = employeesFile.employees.filter(e => {
-			return e.jmbg == query || e.id == query;
+			return e._id == query;
 		});
 		if (window) window.webContents.send('employee:search', employees);
 	} else {

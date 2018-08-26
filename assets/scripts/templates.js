@@ -10,9 +10,18 @@ const dateTemplate = date => {
 		1} dana ${date.getMonth()} meseci ${date.getFullYear() - 1970} godina`;
 };
 const optionTemplate = e => {
-	return `<option onclick="changeCurrentEmployee(event.target.value)" value="${
-		e.properties.id
+	return `<li class="list-group-item list-group-item-action d-flex justify-content-between align-items-center" onclick="changeCurrentEmployee(event.target,event.target.attributes['data-id'].value)" data-id="${
+		e.properties._id
 	}">${e.properties.id} - ${e.properties.jmbg} - ${e.properties.lastName} ${
 		e.properties.firstName
-	}</option>`;
+	}<span class="badge badge-warning badge-pill"></span></li>`;
+};
+const employeeSummaryTemplate = e => {
+	return `<div class="list-group-item d-flex justify-content-between align-items-center">${
+		e.properties.id
+	} - ${e.properties.jmbg} - ${e.properties.lastName} ${
+		e.properties.firstName
+	} <span class="badge badge-warning badge-pill">${
+		Object.keys(e.changes).length
+	}</span></div>`;
 };

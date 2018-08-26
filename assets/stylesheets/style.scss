@@ -1,6 +1,30 @@
 body {
 	overflow: hidden;
+	//position: relative;
 }
+#backdrop {
+	display: none;
+	position: absolute;
+	height: 100vh;
+	width: 100vw;
+	background-color: rgba($color: #000000, $alpha: 0.4);
+	z-index: 2000;
+	#modal {
+		width: 400px;
+		height: 300px;
+		margin: 35vh auto;
+		.card-body {
+			overflow-y: scroll;
+		}
+		.card-footer {
+			text-align: right;
+		}
+		#modalConfirm {
+			display: none;
+		}
+	}
+}
+
 aside {
 	transition: 100ms all;
 	position: absolute;
@@ -19,8 +43,38 @@ aside {
 			padding: 4px;
 		}
 	}
+	#employeeList {
+		padding: 0px;
+		overflow-y: scroll;
+		overflow-x: hidden;
+		height: 91vh !important;
+		.list-group-item {
+			//margin: 1px;
+
+			box-sizing: border-box;
+			cursor: pointer;
+			text-align: left;
+			width: 100%;
+			overflow-x: hidden;
+			padding: 5px 10px;
+			// &:hover {
+			// 	background-color: darkslategray;
+			// 	color: white;
+			// }
+		}
+		.selected {
+			border-bottom: 5px solid orange;
+		}
+		.edited {
+			background-color: peru;
+			color: white;
+		}
+	}
 }
 main {
+	.changed {
+		border: 2px solid peru;
+	}
 	display: block;
 	float: right;
 	transition: 100ms width;
@@ -52,6 +106,9 @@ main::after {
 	clear: both;
 }
 header {
+	.changed {
+		border: 2px solid peru;
+	}
 	button {
 		width: 80px;
 	}

@@ -2,6 +2,33 @@ body {
   overflow: hidden;
 }
 
+#backdrop {
+  display: none;
+  position: absolute;
+  height: 100vh;
+  width: 100vw;
+  background-color: rgba(0, 0, 0, 0.4);
+  z-index: 2000;
+}
+
+#backdrop #modal {
+  width: 400px;
+  height: 300px;
+  margin: 35vh auto;
+}
+
+#backdrop #modal .card-body {
+  overflow-y: scroll;
+}
+
+#backdrop #modal .card-footer {
+  text-align: right;
+}
+
+#backdrop #modal #modalConfirm {
+  display: none;
+}
+
 aside {
   -webkit-transition: 100ms all;
   transition: 100ms all;
@@ -26,6 +53,32 @@ aside select option:checked {
   color: black;
 }
 
+aside #employeeList {
+  padding: 0px;
+  overflow-y: scroll;
+  overflow-x: hidden;
+  height: 91vh !important;
+}
+
+aside #employeeList .list-group-item {
+  -webkit-box-sizing: border-box;
+          box-sizing: border-box;
+  cursor: pointer;
+  text-align: left;
+  width: 100%;
+  overflow-x: hidden;
+  padding: 5px 10px;
+}
+
+aside #employeeList .selected {
+  border-bottom: 5px solid orange;
+}
+
+aside #employeeList .edited {
+  background-color: peru;
+  color: white;
+}
+
 main {
   display: block;
   float: right;
@@ -33,6 +86,10 @@ main {
   transition: 100ms width;
   height: 60vh;
   padding-right: 10px;
+}
+
+main .changed {
+  border: 2px solid peru;
 }
 
 main input[name='tabs'] + label {
@@ -72,6 +129,10 @@ header {
   overflow-y: auto;
   height: 35vh;
   padding: 10px 20px;
+}
+
+header .changed {
+  border: 2px solid peru;
 }
 
 header button {
