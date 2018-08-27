@@ -23,22 +23,19 @@
     <header>
         <div class="row mb-2">
             <div class="col-4 d-flex">
-                <button id="asideTrigger" class="btn btn-info">
-                    Lista
-                </button>
+                <button id="asideTrigger" class="btn btn-info">Lista</button>
                 <button type="button" class="btn btn-success ml-2" id="saveBtn">Sacuvaj</button>
                 <button type="button" class="btn btn-info ml-2" id="addNewBtn">Novi</button>
                 <button type="button" class="btn btn-warning ml-2" id="rejectBtn">Odbaci</button>
                 <button type="button" class="btn btn-danger ml-2" id="deleteBtn">Obrisi</button>
-
             </div>
             <div class="col d-flex">
                 <label for="id">Sifra radnika:</label>
                 <input id="id" type="text" class="form-control" placeholder="Sifra radnika">
             </div>
             <div class="col-4 d-flex">
-                <label for="jmbg">Maticni broj:</label>
-                <input id="jmbg" type="text" class="form-control" placeholder="Maticni broj">
+                <label for="umcn">Maticni broj:</label>
+                <input id="umcn" type="text" class="form-control" placeholder="Maticni broj" maxlength="13">
             </div>
         </div>
         <div class="row mb-1">
@@ -112,12 +109,11 @@
                 </div>
             </div>
         </div>
-
     </header>
     <main>
-        <input id="tab1" type="radio" name="tabs" checked>
+        <input id="tab1" type="radio" name="tabs">
         <label for="tab1" class="p-3">Obracun</label>
-        <input id="tab2" type="radio" name="tabs">
+        <input id="tab2" type="radio" name="tabs" checked>
         <label for="tab2" class="p-3">Radna Knjizica</label>
         <input id="tab3" type="radio" name="tabs">
         <label for="tab3" class="p-3">Opste</label>
@@ -175,7 +171,6 @@
                     </div>
                 </div>
             </div>
-
             <div class="row mt-4">
                 <div class="col-4">
                     <div class="d-flex justify-content-between text-left">
@@ -188,16 +183,15 @@
                             <input id="muncipalityEmployment" type="text" class="form-control w-25" placeholder="Opstina rada">
                             <div id="muncipalityEmploymentOut" type="text" class="form-control w-75" placeholder="Opstina rada" readonly></div>
                         </div>
-
                     </div>
-
                     <div>
                         <label for="muncipalityResidency" class="d-block text-left">Opstina stana:</label>
                         <div class="d-flex">
                             <input id="muncipalityResidency" type="text" class="form-control w-25" placeholder="Opstina stana">
-                            <div id="muncipalityResidencyOut" type="text" class="form-control w-75" placeholder="Opstina stana" readonly></div>
-                        </div>
+                            <div id="muncipalityResidencyOut" type="text" class="form-control w-75" placeholder="Opstina stana" readonly>
 
+                            </div>
+                        </div>
                     </div>
                 </div>
                 <div class="col-8 mt-4">
@@ -209,9 +203,9 @@
                         <div class="col-9">
                             <label for="accountPayout1" class="pt-2 text-left">Racun isplate 1:</label>
                             <div class="row pl-4">
-
                                 <input id="accountPayout1" type="text" class="form-control col-5" placeholder="Racun isplate 2">
-                                <div id="accountPayout1Out" type="text" class="form-control col-5" placeholder="Racun isplate 2" readonly></div>
+                                <div id="accountPayout1Out" type="text" class="form-control col-5" placeholder="Racun isplate 2" readonly>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -224,12 +218,12 @@
                             <label for="accountPayout2" class="pt-2 text-left">Racun isplate 2:</label>
                             <div class="row pl-4">
                                 <input id="accountPayout2" type="text" class="form-control col-5" placeholder="Racun isplate 2">
-                                <div id="accountPayout2Out" type="text" class="form-control col-5" placeholder="Racun isplate 2" readonly></div>
+                                <div id="accountPayout2Out" type="text" class="form-control col-5" placeholder="Racun isplate 2" readonly>
+                                </div>
                             </div>
                         </div>
                     </div>
                 </div>
-
             </div>
         </section>
 
@@ -239,8 +233,7 @@
                     <h4 class="mb-4 mt-3">Podaci o radnoj knjizici</h4>
                     <label for="employmentBooklet_SerialNumber" class="text-left">Serijski broj:</label>
                     <input id="employmentBooklet_SerialNumber" type="text " class="form-control" placeholder="Serijski broj">
-                    <label for="employmentBooklet_RegistryNumber" class="text-left">Registarski broj:
-                    </label>
+                    <label for="employmentBooklet_RegistryNumber" class="text-left">Registarski broj:</label>
                     <input id="employmentBooklet_RegistryNumber" type="text" class="form-control" placeholder="Registarski broj">
                 </div>
                 <div class="col-6">
@@ -251,83 +244,77 @@
                         </div>
                         <div class="w-75">
                             <label for="employmentBooklet_EmploymentCodeOut" class="text-left">Naziv zanimanja:</label>
-                            <div id="employmentBooklet_EmploymentCodeOut" type="text" class="form-control" placeholder="Naziv zanimanja" readonly>
-                                <div></div>
-                            </div>
-                        </div>
-
-                        <label for="employmentBooklet_Muncipality" class="text-left">Mesto:</label>
-                        <input id="employmentBooklet_Muncipality" type="text " class="form-control" placeholder="Mesto">
-                        <label for="employmentBooklet_DateOfIssue" class="text-left">Datum izdavanja:</label>
-                        <input id="employmentBooklet_DateOfIssue" type="date" class="form-control">
-                    </div>
-                </div>
-                <div class="row mt-3">
-                    <div class="col-6">
-                        <h4 class="mb-4 mt-3">Podaci o radnom stazu</h4>
-                        <label for="datumobracunaradnogstaza" class="text-left">Datum obracuna radnog staza:</label>
-                        <input id="datumobracunaradnogstaza" type="date" class="form-control">
-                        <div class="d-flex">
-                            <div class="w-50">
-                                <label for="datumdolaska" class="text-left">Datum dolaska:</label>
-                                <input id="datumdolaska" type="date" class="form-control">
-                            </div>
-                            <div class="w-50">
-                                <label for="datumodlaska" class="text-left">Datum odlaska:</label>
-                                <input id="datumodlaska" type="date" class="form-control">
-                            </div>
+                            <div id="employmentBooklet_EmploymentCodeOut" type="text" class="form-control" placeholder="Naziv zanimanja" readonly></div>
                         </div>
                     </div>
-                    <div class="col-6">
-                        <label for="internalYoS_total" class="text-left">Radni staz u firmi:</label>
-                        <div id="internalYoS_total" type="text" class="form-control" readonly></div>
-                        <label for="externalYoS_total" class="text-left">Radni staz van firme:</label>
-                        <div id="externalYoS_total" type="text" class="form-control" readonly></div>
-                        <label for="totalYoS" class="text-left">Ukupni radni staz:</label>
-                        <div id="totalYoS" type="text" class="form-control" readonly></div>
-                    </div>
-
+                    <label for="employmentBooklet_Muncipality" class="text-left">Mesto:</label>
+                    <input id="employmentBooklet_Muncipality" type="text " class="form-control" placeholder="Mesto">
+                    <label for="employmentBooklet_DateOfIssue" class="text-left">Datum izdavanja:</label>
+                    <input id="employmentBooklet_DateOfIssue" type="date" class="form-control">
 
                 </div>
-
-                <div class="row mt-2">
-                    <div class="col">
-                        <h4>Prethodni staz u firmi</h4>
-                        <div class="d-flex">
-                            <div class="w-50">
-                                <label for="fromDateInternal" class="text-left">Od datuma:</label>
-                                <input id="fromDateInternal" type="date" class="form-control">
-                            </div>
-                            <div class="w-50">
-                                <label for="tillDateInternal" class="text-left">Do datuma:</label>
-                                <input id="tillDateInternal" type="date" class="form-control">
-                            </div>
+            </div>
+            <div class="row mt-3">
+                <div class="col-6">
+                    <h4 class="mb-4 mt-3">Podaci o radnom stazu</h4>
+                    <label for="datumobracunaradnogstaza" class="text-left">Datum obracuna radnog staza:</label>
+                    <input id="datumobracunaradnogstaza" type="date" class="form-control">
+                    <div class="d-flex">
+                        <div class="w-50">
+                            <label for="datumdolaska" class="text-left">Datum dolaska:</label>
+                            <input id="datumdolaska" type="date" class="form-control">
                         </div>
-                        <button id="addInternalYoSPeriod" class="btn btn-secondary">Dodaj</button>
-                        <div id="containerInternal" class="list-group">
-
-                        </div>
-                    </div>
-                    <div class="col">
-                        <h4>Radni staz van firme</h4>
-                        <div class="d-flex">
-                            <div class="w-50">
-                                <label for="fromDateExternal" class="text-left">Od datuma:</label>
-                                <input id="fromDateExternal" type="date" class="form-control">
-                            </div>
-                            <div class="w-50">
-                                <label for="tillDateExternal" class="text-left">Do datuma:</label>
-                                <input id="tillDateExternal" type="date" class="form-control">
-                            </div>
-                        </div>
-                        <button id="addExternalYoSPeriod" class="btn btn-secondary">Dodaj</button>
-                        <div id="containerExternal" class="list-group">
-
+                        <div class="w-50">
+                            <label for="datumodlaska" class="text-left">Datum odlaska:</label>
+                            <input id="datumodlaska" type="date" class="form-control">
                         </div>
                     </div>
                 </div>
+                <div class="col-6">
+                    <label for="internalYoS_total" class="text-left">Radni staz u firmi:</label>
+                    <div id="internalYoS_total" type="text" class="form-control" readonly></div>
+                    <label for="externalYoS_total" class="text-left">Radni staz van firme:</label>
+                    <div id="externalYoS_total" type="text" class="form-control" readonly></div>
+                    <label for="totalYoS" class="text-left">Ukupni radni staz:</label>
+                    <div id="totalYoS" type="text" class="form-control" readonly></div>
+                </div>
+            </div>
+            <div class="row mt-2">
+                <div class="col">
+                    <h4>Prethodni staz u firmi</h4>
+                    <div class="d-flex">
+                        <div class="w-50">
+                            <label for="fromDateInternal" class="text-left">Od datuma:</label>
+                            <input id="fromDateInternal" type="date" class="form-control">
+                        </div>
+                        <div class="w-50">
+                            <label for="tillDateInternal" class="text-left">Do datuma:</label>
+                            <input id="tillDateInternal" type="date" class="form-control">
+                        </div>
+                    </div>
+                    <button id="addInternalYoSPeriod" class="btn btn-secondary">Dodaj</button>
+                    <div id="containerInternal" class="list-group">
+                    </div>
+                </div>
+                <div class="col">
+                    <h4>Radni staz van firme</h4>
+                    <div class="d-flex">
+                        <div class="w-50">
+                            <label for="fromDateExternal" class="text-left">Od datuma:</label>
+                            <input id="fromDateExternal" type="date" class="form-control">
+                        </div>
+                        <div class="w-50">
+                            <label for="tillDateExternal" class="text-left">Do datuma:</label>
+                            <input id="tillDateExternal" type="date" class="form-control">
+                        </div>
+                    </div>
+                    <button id="addExternalYoSPeriod" class="btn btn-secondary">Dodaj</button>
+                    <div id="containerExternal" class="list-group">
+                    </div>
+                </div>
+            </div>
+
         </section>
-
         <section id="content3">
             <div class="row">
                 <div class="col-6">
@@ -402,12 +389,9 @@
     <div id="backdrop">
         <div id="modal" class="card">
             <div class="card-header">
-                <h5 class="card-title mb-0">Special title treatment</h5>
+                <h5 class="card-title mb-0"></h5>
             </div>
             <div class="card-body">
-
-                <p class="card-text">With supporting text below as a natural lead-in to additional content.</p>
-
             </div>
             <div class="card-footer">
                 <button class="btn btn-secondary" id="modalClose">Zatvori</button>
@@ -415,20 +399,15 @@
             </div>
         </div>
     </div>
-
-
-    <!-- Modal -->
-
-
     <footer class="row">
     </footer>
-
+    <script src="../scripts/employeeSelectors.js"></script>
     <script src="../scripts/misc.js"></script>
+    <script src="../scripts/Modal.js"></script>
     <script src="../scripts/Store.js"></script>
     <script src="../scripts/templates.js"></script>
-    <script src="../scripts/employeeSelectors.js"></script>
     <script src="../scripts/Employee.js"></script>
-    <script src="../scripts/main2.js"></script>
+    <script src="../scripts/main.js"></script>
 </body>
 
 </html>

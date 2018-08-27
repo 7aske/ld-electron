@@ -5,7 +5,7 @@ class Employee {
 			this.properties = {
 				_id: newEmployee._id || shortid.generate(),
 				id: newEmployee.id,
-				jmbg: newEmployee.jmbg,
+				umcn: newEmployee.umcn,
 				firstName: newEmployee.firstName,
 				lastName: newEmployee.lastName,
 				middleName: newEmployee.middleName,
@@ -80,7 +80,7 @@ class Employee {
 			this.properties = {
 				_id: shortid.generate(),
 				id: '',
-				jmbg: '',
+				umcn: '',
 				firstName: '',
 				lastName: '',
 				middleName: '',
@@ -271,7 +271,7 @@ class Employee {
 	}
 }
 // 	id,
-// 	jmbg,
+// 	umcn,
 // 	firstName,
 // 	lastName,
 // 	middleName,

@@ -13,12 +13,14 @@ class Store {
 		} else {
 			this._state[state].value = value;
 			this.state[state] = value;
-			if (this._state[state].actions instanceof Array) {
-				this._state[state].actions.forEach(action => {
-					action();
-				});
-			} else {
-				this._state[state].actions();
+			if (this._state[state].actions) {
+				if (this._state[state].actions instanceof Array) {
+					this._state[state].actions.forEach(action => {
+						action();
+					});
+				} else {
+					this._state[state].actions();
+				}
 			}
 		}
 		return this;

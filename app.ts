@@ -11,15 +11,10 @@ interface Employee {
 interface EmployeesFile {
 	employees: Array<Employee>;
 }
-const employeesFilePath: string = join(
-	__dirname,
-	'assets/database/workers.json'
-);
+const employeesFilePath: string = join(__dirname, 'assets/database/workers.json');
 let window: BrowserWindow | null;
 let child: BrowserWindow | null;
-let employeesFile: EmployeesFile = JSON.parse(
-	readFileSync(employeesFilePath, 'utf8').toString()
-);
+let employeesFile: EmployeesFile = JSON.parse(readFileSync(employeesFilePath, 'utf8').toString());
 function handleSave(employees: Array<Employee>) {
 	employees.forEach(employee => {
 		const check: Employee | undefined = employeesFile.employees.find(e => {
@@ -41,8 +36,7 @@ function handleSave(employees: Array<Employee>) {
 		else return 0;
 	});
 	writeFileSync(employeesFilePath, JSON.stringify(employeesFile), 'utf8');
-	if (window)
-		window.webContents.send('employee:search', employeesFile.employees);
+	if (window) window.webContents.send('employee:search', employeesFile.employees);
 }
 function handleDelete(employees: Array<Employee>) {
 	employeesFile.employees = employees;
@@ -52,8 +46,7 @@ function handleDelete(employees: Array<Employee>) {
 		else return 0;
 	});
 	writeFileSync(employeesFilePath, JSON.stringify(employeesFile), 'utf8');
-	if (window)
-		window.webContents.send('employee:search', employeesFile.employees);
+	if (window) window.webContents.send('employee:search', employeesFile.employees);
 }
 function main() {
 	window = new BrowserWindow({
@@ -71,16 +64,15 @@ app.on('window-all-closed', () => {
 	app.quit();
 });
 ipcMain.on('employee:save', (event: any, employees: any) => {
-	console.log(employees);
+	console.log(employees._id);
 	handleSave(employees);
 });
 ipcMain.on('employee:delete', (event: any, employees: any) => {
-	console.log(employees);
+	console.log(employees._id);
 	handleDelete(employees);
 });
 ipcMain.on('employee:get', (event: any, query: any) => {
 	console.log(query);
-
 	if (query) {
 		const employees = employeesFile.employees.filter(e => {
 			return e._id == query;
@@ -92,7 +84,6 @@ ipcMain.on('employee:get', (event: any, query: any) => {
 			if (a.id < b.id) return -1;
 			else return 0;
 		});
-		if (window)
-			window.webContents.send('employee:search', employeesFile.employees);
+		if (window) window.webContents.send('employee:search', employeesFile.employees);
 	}
 });

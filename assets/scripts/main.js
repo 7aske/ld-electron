@@ -1,13 +1,14 @@
 const { ipcRenderer } = require('electron');
-console.log(checkUMCN('2405995730054'));
-
-const state = {
+const initialState = {
 	employeeArray: [],
 	employeeList: [],
 	currentEmployee: null,
-	isAsideOut: false
+	isAsideOut: false,
+	isModalUp: false,
+	newEmployee: null,
+	currentIndex: 0
 };
-const store = new Store(state);
+const store = new Store(initialState);
 store.subscribe('isAsideOut', asideToggle);
 store.subscribe('currentEmployee', [populateFields, colorEmployeeList]);
 store.subscribe('employeeArray', populateEmployeeList);
@@ -15,38 +16,6 @@ store.subscribe('employeeList', [populateEmployeeList, colorEmployeeList]);
 const main = document.querySelector('main');
 const header = document.querySelector('header');
 const footer = document.querySelector('footer');
-class Modal {
-	constructor() {
-		this.backdrop = document.querySelector('#backdrop');
-		this.title = document.querySelector('#modal .card-title');
-		this.body = document.querySelector('#modal .card-body');
-		this.buttons = {
-			confirm: document.querySelector('#modalConfirm'),
-			close: document.querySelector('#modalClose')
-		};
-		this.buttons.close.addEventListener('click', () => {
-			this.close();
-		});
-		this.buttons.confirm.addEventListener('click', () => {
-			this.close();
-		});
-	}
-	open(title, body, cb) {
-		this.backdrop.style.display = 'block';
-		if (cb) {
-			this.buttons.confirm.addEventListener('click', cb);
-			this.buttons.confirm.style.display = 'inline-block';
-		}
-		this.title.innerHTML = title;
-		this.body.innerHTML = body;
-	}
-	close() {
-		this.backdrop.style.display = 'none';
-		this.buttons.confirm.style.display = 'none';
-		this.title.innerHTML = '';
-		this.body.innerHTML = '';
-	}
-}
 const modal = new Modal();
 const employeeList = document.querySelector('#employeeList');
 const searchInp = document.querySelector('#searchInp');
@@ -63,43 +32,27 @@ saveBtn.addEventListener('click', () => {
 	employeeSave();
 });
 const rejectBtn = document.querySelector('#rejectBtn');
-rejectBtn.addEventListener('click', event => {
-	const employee = store.getState('currentEmployee');
-	const keys = Object.keys(employee.changes);
-	if (keys.length > 0) {
-		keys.forEach(k => {
-			delete employee.changes[k];
-		});
-		store.setState('currentEmployee', employee);
-	}
-});
+rejectBtn.addEventListener('click', employeeReject);
 const deleteBtn = document.querySelector('#deleteBtn');
 deleteBtn.addEventListener('click', employeeDelete);
 const fromDateInternal = document.querySelector('#fromDateInternal');
 const tillDateInternal = document.querySelector('#tillDateInternal');
 const addInternalYoSPeriod = document.querySelector('#addInternalYoSPeriod');
 addInternalYoSPeriod.addEventListener('click', event => {
-	addYoSPeriod(
-		event.target.id,
-		fromDateInternal.value,
-		tillDateInternal.value
-	);
+	addYoSPeriod(event.target.id, fromDateInternal.value, tillDateInternal.value);
 });
 const fromDateExternal = document.querySelector('#fromDateExternal');
 const tillDateExternal = document.querySelector('#tillDateExternal');
 const addExternalYoSPeriod = document.querySelector('#addExternalYoSPeriod');
 addExternalYoSPeriod.addEventListener('click', event => {
-	addYoSPeriod(
-		event.target.id,
-		fromDateExternal.value,
-		tillDateExternal.value
-	);
+	addYoSPeriod(event.target.id, fromDateExternal.value, tillDateExternal.value);
 });
 const addNewBtn = document.querySelector('#addNewBtn');
 addNewBtn.addEventListener('click', addNewEmployee);
 const inputs = [
 	...document.querySelectorAll('header input'),
-	...document.querySelectorAll('main input')
+	...document.querySelectorAll('main input'),
+	document.querySelector('main textarea')
 ];
 inputs.forEach(i => {
 	i.addEventListener('keyup', event => {
@@ -113,9 +66,7 @@ inputs.forEach(i => {
 	});
 });
 function currentW() {
-	return store.getState('isAsideOut')
-		? window.innerWidth - 400
-		: window.innerWidth;
+	return store.getState('isAsideOut') ? window.innerWidth - 400 : window.innerWidth;
 }
 function asideToggle() {
 	if (store.getState('isAsideOut')) {
@@ -132,22 +83,48 @@ function asideToggle() {
 		footer.style.width = `${currentW()}px`;
 	}
 }
-
+function changeListIndex(num) {
+	let index = store.getState('currentIndex');
+	const employees = store.getState('employeeArray');
+	index += num;
+	if (index > employees.length || index < 0) index -= num;
+	store.setState('currentIndex', index);
+	const employee = employees[index];
+	if (employee) store.setState('currentEmployee', employee);
+}
+function changeInputIndex() {
+	const tabs = document.querySelectorAll('[name="tabs"]');
+	let index = inputs.indexOf(document.activeElement);
+	console.log(index);
+	if (index == 15) {
+		tabs.forEach(t => t.checked == false);
+		tabs[0].checked = true;
+		index = 18;
+	}
+	if (index == 38) {
+		tabs.forEach(t => t.checked == false);
+		tabs[1].checked = true;
+		index = 38;
+	}
+	if (index == 50) {
+		tabs.forEach(t => t.checked == false);
+		tabs[2].checked = true;
+		index = 50;
+	}
+	if (index < inputs.length - 1) {
+		inputs[index + 1].focus();
+	}
+}
 function handleInput(prop, value, target) {
-	if (prop == 'jmbg') {
+	if (prop == 'umcn') {
 		store.getState('employeeArray').forEach(e => {
-			if (
-				e.properties.jmbg == value &&
-				store.getState('currentEmployee').properties.jmbg != value
-			)
-				modal.open(
-					'Greska',
-					`Vec postoji radnik sa tim JMBG. ${employeeSummaryTemplate(
-						e
-					)}`
-				);
+			if (e.properties.umcn == value && store.getState('currentEmployee').properties.umcn != value) {
+				modal.open('Greska', `Vec postoji radnik sa tim JMBG. ${employeeSummaryTemplate(e)}`);
+				value = value.substring(0, target.value.length - 1);
+			}
 		});
 	}
+
 	const employee = store.getState('currentEmployee');
 	if (employee) {
 		if (value == employee.properties[prop]) {
@@ -189,11 +166,11 @@ function colorEmployeeList() {
 	const currentEmployee = store.getState('currentEmployee');
 	const buttons = document.querySelectorAll('#employeeList li');
 	store.getState('employeeArray').forEach(e => {
-		const btn = document.querySelector(`[value="${e.properties._id}"]`);
-		const badge = document.querySelector(
-			`[value="${e.properties._id}"] .badge`
-		);
-
+		const btn = document.querySelector(`[data-id="${e.properties._id}"]`);
+		// const badge = document.querySelector(
+		// 	`[data-id="${e.properties._id}"] .badge`
+		// );
+		const badge = btn.firstElementChild;
 		if (Object.keys(e.changes).length > 0) {
 			if (btn) btn.classList.add('list-group-item-warning');
 			if (badge) badge.innerHTML = Object.keys(e.changes).length;
@@ -203,8 +180,7 @@ function colorEmployeeList() {
 		}
 	});
 	buttons.forEach(b => {
-		if (b.attributes['data-id'].value == currentEmployee.properties._id)
-			b.classList.add('list-group-item-dark');
+		if (b.attributes['data-id'].value == currentEmployee.properties._id) b.classList.add('list-group-item-dark');
 		else b.classList.remove('list-group-item-dark');
 	});
 }
@@ -221,7 +197,7 @@ function searchEmployeeArray(query) {
 		? store.getState('employeeArray').filter(e => {
 				return (
 					parseInt(e.properties.id) == parseInt(query) ||
-					e.properties.jmbg.startsWith(query) ||
+					e.properties.umcn.startsWith(query) ||
 					e.properties.firstName.startsWith(query) ||
 					e.properties.lastName.startsWith(query)
 				);
@@ -236,31 +212,48 @@ function changeCurrentEmployee(btn, _id) {
 	if (employee) store.setState('currentEmployee', employee);
 }
 function addNewEmployee() {
-	const newEmployee = new Employee();
-	const newEmployeeArray = store.getState('employeeArray');
-	newEmployeeArray.push(newEmployee);
-	store.setState('employeeArray', newEmployeeArray);
-	store.setState('currentEmployee', newEmployee);
+	if (!store.getState('newEmployee')) {
+		const newEmployee = new Employee();
+		const newEmployeeArray = store.getState('employeeArray');
+		newEmployeeArray.push(newEmployee);
+		store.setState('newEmployee', newEmployee);
+		store.setState('employeeArray', newEmployeeArray);
+		store.setState('currentEmployee', newEmployee);
+	}
+}
+function employeeReject() {
+	const employee = store.getState('currentEmployee');
+	const keys = Object.keys(employee.changes);
+	if (keys.length > 0) {
+		modal.open('Obavestenje', 'Da li zelite da odbacite sve promene?', () => {
+			if (keys.length > 0) {
+				keys.forEach(k => {
+					delete employee.changes[k];
+				});
+				store.setState('currentEmployee', employee);
+			}
+		});
+	}
 }
 function employeeDelete() {
-	modal.open(
-		'Upozorenje',
-		'Da li ste sigurni da zelite da obrisete ovaj unos?',
-		() => {
-			const employees = store.getState('employeeArray');
-			const employee = store.getState('currentEmployee');
-			employees.splice(employees.indexOf(employee), 1);
-			store.setState('employeeArray', employees);
-			if (employees.length > 0) {
-				store.setState('currentEmployee', employees[0]);
-			}
-			let save = [];
-			employees.forEach(e => {
-				save.push(e.properties);
-			});
-			ipcRenderer.send('employee:delete', save);
+	modal.open('Upozorenje', 'Da li ste sigurni da zelite da obrisete ovaj unos?', () => {
+		const employees = store.getState('employeeArray');
+		const employee = store.getState('currentEmployee');
+		const newEmployee = store.getState('newEmployee');
+		employees.splice(employees.indexOf(employee), 1);
+		store.setState('employeeArray', employees);
+		if (employees.length > 0) {
+			store.setState('currentEmployee', employees[0]);
 		}
-	);
+		if (newEmployee) {
+			if (newEmployee.properties._id == employee.properties._id) store.setState('newEmployee', null);
+		}
+		let save = [];
+		employees.forEach(e => {
+			save.push(e.properties);
+		});
+		ipcRenderer.send('employee:delete', save);
+	});
 }
 function employeeSave() {
 	let commit = [];
@@ -285,6 +278,7 @@ function employeeSave() {
 				e.commitChanges();
 				save.push(e.properties);
 			});
+			store.setState('newEmployee', null);
 			ipcRenderer.send('employee:save', save);
 		});
 	} else {
@@ -314,9 +308,25 @@ window.addEventListener('resize', event => {
 	header.style.width = `${currentW()}px`;
 	footer.style.width = `${currentW()}px`;
 });
-// document.addEventListener('keydown', () => {
-// 	console.log(
-// 		state.currentEmployee.properties,
-// 		state.changedEmployee.properties
-// 	);
-// });
+document.addEventListener('keydown', event => {
+	switch (event.key) {
+		case 'Escape':
+			if (store.getState('isModalUp')) modal.buttons.close.click();
+			break;
+		case 'Enter':
+			if (store.getState('isModalUp')) modal.buttons.confirm.click();
+			else {
+				changeInputIndex();
+			}
+			break;
+		case 'PageUp':
+			changeListIndex(-1);
+			break;
+		case 'PageDown':
+			changeListIndex(1);
+			break;
+
+		default:
+		//console.log(event.key);
+	}
+});

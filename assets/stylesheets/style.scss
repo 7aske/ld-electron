@@ -1,18 +1,19 @@
 body {
 	overflow: hidden;
-	//position: relative;
 }
 #backdrop {
-	display: none;
+	visibility: hidden;
 	position: absolute;
 	height: 100vh;
 	width: 100vw;
-	background-color: rgba($color: #000000, $alpha: 0.4);
+	opacity: 1;
+	background-color: rgba(0, 0, 0, 0.4);
 	z-index: 2000;
 	#modal {
+		transition: 200ms transform;
 		width: 400px;
 		height: 300px;
-		margin: 35vh auto;
+		margin: 20vh auto;
 		.card-body {
 			overflow-y: scroll;
 		}

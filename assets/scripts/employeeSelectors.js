@@ -1,5 +1,5 @@
 const id = document.querySelector('#id');
-const jmbg = document.querySelector('#jmbg');
+const umcn = document.querySelector('#umcn');
 const firstName = document.querySelector('#firstName');
 const lastName = document.querySelector('#lastName');
 const middleName = document.querySelector('#middleName');
