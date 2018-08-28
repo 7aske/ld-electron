@@ -34,7 +34,14 @@ body {
   display: none;
 }
 
+#menu {
+  position: absolute;
+  z-index: 3000;
+  display: none;
+}
+
 aside {
+  border-right: 2px solid #bbb;
   -webkit-transition: 100ms all;
   transition: 100ms all;
   position: absolute;
@@ -45,24 +52,11 @@ aside {
   z-index: 100;
 }
 
-aside select {
-  height: 91vh !important;
-}
-
-aside select option {
-  padding: 4px;
-}
-
-aside select option:checked {
-  background-color: white;
-  color: black;
-}
-
 aside #employeeList {
   padding: 0px;
   overflow-y: scroll;
   overflow-x: hidden;
-  height: 91vh !important;
+  height: 90vh !important;
 }
 
 aside #employeeList .list-group-item {
@@ -73,6 +67,7 @@ aside #employeeList .list-group-item {
   width: 100%;
   overflow-x: hidden;
   padding: 5px 10px;
+  font-weight: 600;
 }
 
 aside #employeeList .selected {
@@ -84,73 +79,72 @@ aside #employeeList .edited {
   color: white;
 }
 
+input::-webkit-calendar-picker-indicator {
+  display: none;
+}
+
+.resize {
+  -webkit-user-select: none;
+     -moz-user-select: none;
+      -ms-user-select: none;
+          user-select: none;
+  position: absolute;
+  cursor: all-scroll;
+  z-index: 10;
+  width: 15px;
+  height: 100vh;
+  background-color: transparent;
+}
+
+.resize:hover, .resize:active {
+  background-color: orange;
+}
+
 main {
+  overflow-y: scroll;
   display: block;
   float: right;
-  -webkit-transition: 100ms width;
-  transition: 100ms width;
-  height: 60vh;
-  padding-right: 10px;
+  height: 95vh;
 }
 
-main .changed {
-  border: 2px solid peru;
+main .content:first-of-type {
+  border-right: 2px solid #bbb;
 }
 
-main input[name='tabs'] + label {
-  cursor: pointer;
+main .content {
+  -webkit-transition: 100ms all;
+  transition: 100ms all;
 }
 
-main label {
-  padding: 5px;
-}
-
-main textarea {
-  resize: vertical;
-}
-
-main section {
-  height: 100%;
-  padding-right: 10px;
-  overflow-x: hidden;
+main .content {
   overflow-y: scroll;
 }
 
-main section label {
-  white-space: nowrap;
-  overflow: hidden;
-}
-
-main::after {
+.main::after {
   content: ' ';
   clear: both;
 }
 
-header {
-  display: block;
-  float: right;
-  -webkit-transition: 100ms width;
-  transition: 100ms width;
-  overflow-y: auto;
-  height: 35vh;
-  padding: 10px 20px;
+.content {
+  padding-top: 10px;
 }
 
-header .changed {
-  border: 2px solid peru;
+.content .col-sm-4 {
+  padding: 0px 5px;
 }
 
-header button {
-  width: 80px;
-}
-
-header label {
-  padding: 5px;
+.content label {
+  margin-bottom: 0px;
+  font-weight: 600;
+  color: #bbb;
 }
 
 footer {
+  background-color: #bbb;
+  position: absolute;
+  bottom: 0px;
+  z-index: 101;
   display: block;
-  float: right;
   -webkit-transition: 100ms width;
   transition: 100ms width;
   height: 5vh;

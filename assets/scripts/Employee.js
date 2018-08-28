@@ -6,6 +6,7 @@ class Employee {
 				_id: newEmployee._id || shortid.generate(),
 				id: newEmployee.id,
 				umcn: newEmployee.umcn,
+				passport: newEmployee.passport,
 				firstName: newEmployee.firstName,
 				lastName: newEmployee.lastName,
 				middleName: newEmployee.middleName,
@@ -25,12 +26,9 @@ class Employee {
 				average3: newEmployee.average3,
 				allowanceMeal: newEmployee.allowanceMeal,
 				allowanceInsurance: newEmployee.allowanceInsurance,
-				transportAllowanceCategory1:
-					newEmployee.transportAllowanceCategory1,
-				transportAllowanceCategory2:
-					newEmployee.transportAllowanceCategory2,
-				transportAllowanceCategory3:
-					newEmployee.transportAllowanceCategory3,
+				transportAllowanceCategory1: newEmployee.transportAllowanceCategory1,
+				transportAllowanceCategory2: newEmployee.transportAllowanceCategory2,
+				transportAllowanceCategory3: newEmployee.transportAllowanceCategory3,
 				hours: newEmployee.hours,
 				amount: newEmployee.amount,
 				coefficient1: newEmployee.coefficient1,
@@ -43,16 +41,11 @@ class Employee {
 				muncipalityPayout2: newEmployee.muncipalityPayout2,
 				accountPayout1: newEmployee.accountPayout1,
 				accountPayout2: newEmployee.accountPayout2,
-				employmentBooklet_SerialNumber:
-					newEmployee.employmentBooklet_SerialNumber,
-				employmentBooklet_RegistryNumber:
-					newEmployee.employmentBooklet_RegistryNumber,
-				employmentBooklet_DateOfIssue:
-					newEmployee.employmentBooklet_DateOfIssue,
-				employmentBooklet_Muncipality:
-					newEmployee.employmentBooklet_Muncipality,
-				employmentBooklet_EmploymentCode:
-					newEmployee.employmentBooklet_EmploymentCode,
+				employmentBooklet_SerialNumber: newEmployee.employmentBooklet_SerialNumber,
+				employmentBooklet_RegistryNumber: newEmployee.employmentBooklet_RegistryNumber,
+				employmentBooklet_DateOfIssue: newEmployee.employmentBooklet_DateOfIssue,
+				employmentBooklet_Muncipality: newEmployee.employmentBooklet_Muncipality,
+				employmentBooklet_EmploymentCode: newEmployee.employmentBooklet_EmploymentCode,
 				externalYoS_periods: newEmployee.externalYoS_periods || [],
 				externalYoS_total: newEmployee.externalYoS_total || 0,
 				internalYoS_periods: newEmployee.internalYoS_periods || [],
@@ -81,6 +74,7 @@ class Employee {
 				_id: shortid.generate(),
 				id: '',
 				umcn: '',
+				passport: '',
 				firstName: '',
 				lastName: '',
 				middleName: '',
@@ -193,39 +187,20 @@ class Employee {
 				containerExternal.innerHTML += dateListTemplate(p.from, p.till);
 			});
 		}
-		if (
-			!this.changes.internalYoS_total &&
-			!this.changes.externalYoS_total
-		) {
-			this.properties.totalYoS =
-				this.properties.externalYoS_total +
-				this.properties.internalYoS_total;
+		if (!this.changes.internalYoS_total && !this.changes.externalYoS_total) {
+			this.properties.totalYoS = this.properties.externalYoS_total + this.properties.internalYoS_total;
 		}
-		const internal = new Date(
-			this.changes.internalYoS_total
-				? this.changes.internalYoS_total
-				: this.properties.internalYoS_total
-		);
+		const internal = new Date(this.changes.internalYoS_total ? this.changes.internalYoS_total : this.properties.internalYoS_total);
 		internalYoS_total.value = dateTemplate(internal);
-		const external = new Date(
-			this.changes.externalYoS_total
-				? this.changes.externalYoS_total
-				: this.properties.externalYoS_total
-		);
+		const external = new Date(this.changes.externalYoS_total ? this.changes.externalYoS_total : this.properties.externalYoS_total);
 		externalYoS_total.value = dateTemplate(external);
-		const total = new Date(
-			this.changes.totalYoS
-				? this.changes.totalYoS
-				: this.properties.totalYoS
-		);
+		const total = new Date(this.changes.totalYoS ? this.changes.totalYoS : this.properties.totalYoS);
 		totalYoS.value = dateTemplate(total);
 		return this;
 	}
 	addInternalYoS(from, till) {
 		containerInternal.innerHTML = '';
-		this.changes.internalYoS_periods = new Array(
-			...this.properties.internalYoS_periods
-		);
+		this.changes.internalYoS_periods = new Array(...this.properties.internalYoS_periods);
 		this.changes.internalYoS_periods.push({
 			from: new Date(from).valueOf(),
 			till: new Date(till).valueOf()
@@ -236,20 +211,14 @@ class Employee {
 			containerInternal.innerHTML += dateListTemplate(p.from, p.till);
 		});
 		this.changes.totalYoS =
-			(this.changes.externalYoS_total
-				? this.changes.externalYoS_total
-				: this.properties.externalYoS_total) +
-			(this.changes.internalYoS_total
-				? this.changes.internalYoS_total
-				: this.properties.internalYoS_total);
+			(this.changes.externalYoS_total ? this.changes.externalYoS_total : this.properties.externalYoS_total) +
+			(this.changes.internalYoS_total ? this.changes.internalYoS_total : this.properties.internalYoS_total);
 		this.populateDate();
 		return this;
 	}
 	addExternalYoS(from, till) {
 		containerExternal.innerHTML = '';
-		this.changes.externalYoS_periods = new Array(
-			...this.properties.externalYoS_periods
-		);
+		this.changes.externalYoS_periods = new Array(...this.properties.externalYoS_periods);
 		this.changes.externalYoS_periods.push({
 			from: new Date(from).valueOf(),
 			till: new Date(till).valueOf()
@@ -260,12 +229,8 @@ class Employee {
 			containerExternal.innerHTML += dateListTemplate(p.from, p.till);
 		});
 		this.changes.totalYoS =
-			(this.changes.externalYoS_total
-				? this.changes.externalYoS_total
-				: this.properties.externalYoS_total) +
-			(this.changes.internalYoS_total
-				? this.changes.internalYoS_total
-				: this.properties.internalYoS_total);
+			(this.changes.externalYoS_total ? this.changes.externalYoS_total : this.properties.externalYoS_total) +
+			(this.changes.internalYoS_total ? this.changes.internalYoS_total : this.properties.internalYoS_total);
 		this.populateDate();
 		return this;
 	}

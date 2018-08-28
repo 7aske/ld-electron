@@ -12,7 +12,16 @@
     <link rel="stylesheet" href="../stylesheets/style.css">
 </head>
 
-<body>
+<body class="">
+    <ul id="menu" class="list-group">
+        <li class="list-group-item">Cras justo odio</li>
+        <li class="list-group-item">Dapibus ac facilisis in</li>
+        <li class="list-group-item">Morbi leo risus</li>
+        <li class="list-group-item">Porta ac consectetur ac</li>
+        <li class="list-group-item">Vestibulum at eros</li>
+    </ul>
+    <div id="resize0" class="resize"></div>
+    <div id="resize1" class="resize"></div>
     <aside class="form-group">
         <input id="searchInp" class="form-control" type="text" placeholder="Pretraga">
         <div class="form-control list-group list-group-flush" id="employeeList">
@@ -20,371 +29,411 @@
         </div>
     </aside>
 
-    <header>
-        <div class="row mb-2">
-            <div class="col-4 d-flex">
-                <button id="asideTrigger" class="btn btn-info">Lista</button>
-                <button type="button" class="btn btn-success ml-2" id="saveBtn">Sacuvaj</button>
-                <button type="button" class="btn btn-info ml-2" id="addNewBtn">Novi</button>
-                <button type="button" class="btn btn-warning ml-2" id="rejectBtn">Odbaci</button>
-                <button type="button" class="btn btn-danger ml-2" id="deleteBtn">Obrisi</button>
-            </div>
-            <div class="col d-flex">
-                <label for="id">Sifra radnika:</label>
-                <input id="id" type="text" class="form-control" placeholder="Sifra radnika">
-            </div>
-            <div class="col-4 d-flex">
-                <label for="umcn">Maticni broj:</label>
-                <input id="umcn" type="text" class="form-control" placeholder="Maticni broj" maxlength="13">
-            </div>
-        </div>
-        <div class="row mb-1">
-            <div class="col">
-                <label for="lastName">Prezime:</label>
-                <input id="lastName" type="text" class="form-control" placeholder="Prezime">
-            </div>
-            <div class="col">
-                <label for="firstName">Ime:</label>
-                <input id="firstName" type="text" class="form-control" placeholder="Ime">
-            </div>
-            <div class="col">
-                <label for="middleName">Ime roditelja:</label>
-                <input id="middleName" type="text" class="form-control" placeholder="Ime roditelja">
-            </div>
-        </div>
-        <div class="row">
-            <div class="row col-4 pr-0">
-                <div class="col ">
-                    <label for="typeReceiver" class="text-left d-block" style="white-space: nowrap;">Vrsta primaoca:</label>
-                    <input id="typeReceiver" type="text" class="form-control" placeholder="Vrsta primaoca">
-                    <label for="typeEmployment" class="text-left d-block">Vrsta rada:</label>
-                    <input id="typeEmployment" type="text" class="form-control" placeholder="Vrsta rada">
-                    <label for="typeEmployee" class="text-left d-block" style="white-space: nowrap;">Vrsta radnika:</label>
-                    <input id="typeEmployee" type="text" class="form-control" placeholder="Vrsta radnika">
+    <main class="row">
+
+        <div class="content col-xl-6">
+            <div class="row">
+                <div class="col-sm-4">
+                    <label for="id">Sifra radnika:</label>
+                    <input id="id" type="text" class="form-control" placeholder="Sifra radnika">
                 </div>
-                <div class="col pr-0">
-                    <label for="employmentUnit" class="text-left d-block">Radna jedinica:</label>
+                <div class="col-sm-4">
+                    <label for="umcn">Maticni broj:</label>
+                    <input id="umcn" type="text" class="form-control" placeholder="Maticni broj" maxlength="13">
+                </div>
+                <div class="col-sm-4">
+                    <label for="passport">Broj pasosa:</label>
+                    <input id="passport" type="text" class="form-control" placeholder="Broj pasosa">
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-sm-4">
+                    <label for="lastName">Prezime:</label>
+                    <input id="lastName" type="text" class="form-control" placeholder="Prezime">
+                </div>
+                <div class="col-sm-4">
+                    <label for="firstName">Ime:</label>
+                    <input id="firstName" type="text" class="form-control" placeholder="Ime">
+                </div>
+                <div class="col-sm-4">
+                    <label for="middleName">Ime roditelja:</label>
+                    <input id="middleName" type="text" class="form-control" placeholder="Ime roditelja">
+                </div>
+            </div>
+
+            <div class="row text-left">
+                <div class="col-sm-2 pr-1 pl-1">
+                    <label for="typeReceiver">Vrsta<br>primaoca</label>
+                    <input id="typeReceiver" type="text" class="form-control" placeholder="Vrsta primaoca"></div>
+                <div class="col-sm-2 pr-1 pl-1">
+                    <label for="typeEmployment">Vrsta<br>rada</label>
+                    <input id="typeEmployment" type="text" class="form-control" placeholder="Vrsta rada"></div>
+                <div class="col-sm-2 pr-1 pl-1">
+                    <label for="typeEmployee">Vrsta<br>radnika</label>
+                    <input id="typeEmployee" type="text" class="form-control" placeholder="Vrsta radnika"></div>
+                <div class="col-sm-2 pr-1 pl-1">
+                    <label for="employmentUnit">Radna<br>jedinica</label>
                     <input id="employmentUnit" type="text" class="form-control" placeholder="Radna jedinica">
-                    <label for="employmentSection" class="text-left d-block" style="white-space: nowrap;">Radno odeljenje:</label>
+                </div>
+                <div class="col-sm-2 pr-1 pl-1">
+                    <label for="employmentSection">Radno<br>odeljenje</label>
                     <input id="employmentSection" type="text" class="form-control" placeholder="Radno odeljenje">
-                    <label for="employmentPosition" class="text-left d-block">Radno mesto:</label>
+                </div>
+                <div class="col-sm-2 pr-1 pl-1">
+                    <label for="employmentPosition">Radno<br>mesto:</label>
                     <input id="employmentPosition" type="text" class="form-control" placeholder="Radno mesto">
                 </div>
             </div>
-            <div class="col p-4 pl-5">
-
-
-            </div>
-            <div class="col-4">
-                <div class="row d-flex mb-2">
-                    <div class="col">
-                        <label for="rating">Ocena</label>
-                        <input id="rating" type="text" class="form-control" placeholder="Ocena">
-                    </div>
-                    <div class="col">
-                        <label for="group">Grupa</label>
-                        <input id="group" type="text" class="form-control" placeholder="Grupa">
-                    </div>
+            <div class="row">
+                <div class="col-sm-4">
+                    <label for="rating">Ocena:</label>
+                    <input id="rating" type="text" class="form-control" placeholder="Ocena">
                 </div>
-                <div class="row mb-2">
-                    <div class="col">
-                        <div class="d-flex">
-                            <label for="realQualification">Stvarna kvalifikacija:</label>
-                            <input id="realQualification" type="text" class="form-control" placeholder="Stvarna kvalifikacija">
-                        </div>
-                        <div class="d-flex">
-                            <label for="verifiedQualification">Priznata kvalifikacija:</label>
-                            <input id="verifiedQualification" type="text" class="form-control" placeholder="Stvarna kvalifikacija">
-                        </div>
-                    </div>
-                    <div class="col">
-                        <div id="stvarnakvalifikacijaout" type="text" class="form-control" placeholder="Stvarna kvalifikacija" readonly></div>
-                        <div id="priznatakvaliikacijaout" type="text" class="form-control" placeholder="Stvarna kvalifikacija" readonly></div>
-                    </div>
-
+                <div class="col-sm-4">
+                    <label for="group">Grupa:</label>
+                    <input id="group" type="text" class="form-control" placeholder="Grupa">
                 </div>
-                <div class="d-flex">
-                    <label for="points">Broj bodova/koeficijent:</label>
+                <div class="col-sm-4">
+                    <label for="points">Broj bodova:</label>
                     <input id="points" type="text" class="form-control" placeholder="Broj bodova">
                 </div>
             </div>
-        </div>
-    </header>
-    <main>
-        <input id="tab1" type="radio" name="tabs">
-        <label for="tab1" class="p-3">Obracun</label>
-        <input id="tab2" type="radio" name="tabs" checked>
-        <label for="tab2" class="p-3">Radna Knjizica</label>
-        <input id="tab3" type="radio" name="tabs">
-        <label for="tab3" class="p-3">Opste</label>
-        <section id="content1">
-            <div class="row">
-                <div class="col-3">
-                    <label for="average1">Prosek 1:</label>
-                    <input id="average1" type="text" class="form-control" placeholder="Prosek 1">
-                    <label for="average2">Prosek 2:</label>
-                    <input id="average2" type="text" class="form-control" placeholder="Prosek 2">
-                    <label for="average3">Prosek 3:</label>
-                    <input id="average3" type="text" class="form-control" placeholder="Prosek 3">
+            <div class="row pl-1 pr-1">
+                <div class="col-12 pl-0 pr-0">
+                    <label for="realQualification">Stvarna kvalifikacija:</label>
                 </div>
-                <div class="col-3">
-                    <label for="allowanceMeal">Topli obrok:</label>
-                    <input id="allowanceMeal" type="text" class="form-control" placeholder="Topli obrok">
-                    <label for="prevoznakategorija">Prevozna kategorija:</label>
-                    <div class="d-flex">
-                        <input id="transportAllowanceCategory1" type="text" class="form-control col-2" placeholder="">
-                        <input id="transportAllowanceCategory2" type="text" class="form-control col" placeholder="">
-                        <input id="transportAllowanceCategory3" type="text" class="form-control col-2" placeholder="">
-                    </div>
-                    <label for="allowanceInsurance">Osiguranje:</label>
-                    <input id="allowanceInsurance" type="text" class="form-control" placeholder="Osiguranje">
+                <div class="col-2 pl-0 pr-0">
+                    <input id="realQualification" type="text" class="form-control" placeholder="Stvarna kvalifikacija">
                 </div>
-                <div class="col-6">
-                    <h4 class="mb-1 d-block">Procenti za preracun</h4>
-                    <div class="row">
-                        <div class="col">
-                            <h6>Formiranje obracuna:</h6>
-                            <div class="row mb-2">
-                                <label for="hours" class="col-5 pt-2">Sati:</label>
-                                <input id="hours" type="text" class="form-control col-7" placeholder="Sati">
-                            </div>
-                            <div class="row mb-2">
-                                <label for="amount" class="col-5 pt-2">Iznos:</label>
-                                <input id="amount" type="text" class="form-control col-7" placeholder="Iznos">
-                            </div>
-                            <div class="row mb-2">
-                                <label for="coefficient1" class="col-5 pt-2">Koeficijent:</label>
-                                <input id="coefficient1" type="text" class="form-control col-7" placeholder="Koeficijent">
-                            </div>
-                        </div>
-                        <div class="col">
-                            <h6>Obracun:</h6>
-                            <div class="row mb-2">
-                                <label for="percentage" class="col-5 pt-2">Procenat:</label>
-                                <input id="percentage" type="text" class="form-control col-6" placeholder="Procenat">
-                            </div>
-                            <div class="row mb-2">
-                                <label for="coefficient2" class="col-5 pt-2">Koeficijent:</label>
-                                <input id="coefficient2" type="text" class="form-control col-6" placeholder="Koeficijent">
-                            </div>
-                        </div>
-                    </div>
+                <div class="col-10 pl-0 pr-0">
+                    <div id="stvarnakvalifikacijaout" type="text" class="form-control" placeholder="Stvarna kvalifikacija" readonly></div>
                 </div>
             </div>
-            <div class="row mt-4">
-                <div class="col-4">
-                    <div class="d-flex justify-content-between text-left">
-                        <label for="reducedYoS" class="pt-2">Doprinos za benificirani radni staz:</label>
-                        <input id="reducedYoS" type="text" class="form-control w-25" placeholder="Doprinos za benificirani radni staz">
+            <div class="row pl-1 pr-1">
+                <div class="col-12 pl-0 pr-0"> <label for="verifiedQualification">Priznata kvalifikacija:</label></div>
+                <div class="col-2 pl-0 pr-0">
+                    <input id="verifiedQualification" type="text" class="form-control" placeholder="Stvarna kvalifikacija">
+                </div>
+                <div class="col-10 pl-0 pr-0">
+                    <div id="priznatakvaliikacijaout" type="text" class="form-control" placeholder="Stvarna kvalifikacija" readonly></div>
+                </div>
+            </div>
+
+        </div>
+
+        <div class="content col-xl-6">
+            <input id="tab1" type="radio" name="tabs" checked>
+            <label for="tab1" class="p-3 tab-label">Obracun</label>
+            <input id="tab2" type="radio" name="tabs">
+            <label for="tab2" class="p-3 tab-label">Radna Knjizica</label>
+            <input id="tab3" type="radio" name="tabs">
+            <label for="tab3" class="p-3 tab-label">Opste</label>
+            <section id="content1" class="section-tab">
+                <div class="row">
+                    <div class="col-6">
+                        <label for="average1">Prosek 1:</label>
+                        <input id="average1" type="text" class="form-control" placeholder="Prosek 1">
+                        <label for="average2">Prosek 2:</label>
+                        <input id="average2" type="text" class="form-control" placeholder="Prosek 2">
+                        <label for="average3">Prosek 3:</label>
+                        <input id="average3" type="text" class="form-control" placeholder="Prosek 3">
                     </div>
-                    <div>
-                        <label for="muncipalityEmployment" class="d-block text-left">Opstina rada:</label>
+                    <div class="col-6">
+                        <label for="allowanceMeal">Topli obrok:</label>
+                        <input id="allowanceMeal" type="text" class="form-control" placeholder="Topli obrok">
+                        <label for="prevoznakategorija">Prevozna kategorija:</label>
+                        <div class="d-flex">
+                            <input id="transportAllowanceCategory1" type="text" class="form-control col-3" placeholder="">
+                            <input id="transportAllowanceCategory2" type="text" class="form-control col" placeholder="">
+                            <input id="transportAllowanceCategory3" type="text" class="form-control col-3" placeholder="">
+                        </div>
+                        <label for="allowanceInsurance">Osiguranje:</label>
+                        <input id="allowanceInsurance" type="text" class="form-control" placeholder="Osiguranje">
+                    </div>
+                </div>
+
+
+                <h4 class="mt-2 mb-1 d-block">Procenti za preracun</h4>
+                <div class="row">
+
+                    <div class="col-6">
+                        <h6>Formiranje obracuna:</h6>
+                        <div class="row">
+                            <div class="col-12">
+                                <label for="hours">Sati:</label>
+                            </div>
+                            <div class="col-12">
+                                <input id="hours" type="text" class="form-control" placeholder="Sati">
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-12">
+                                <label for="amount">Iznos:</label>
+                            </div>
+                            <div class="col-12">
+                                <input id="amount" type="text" class="form-control" placeholder="Iznos">
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-12">
+                                <label for="coefficient1">Koeficijent:</label>
+                            </div>
+                            <div class="col-12">
+                                <input id="coefficient1" type="text" class="form-control" placeholder="Koeficijent">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-6">
+                        <h6>Obracun:</h6>
+                        <div class="row">
+                            <div class="col-12">
+                                <label for="percentage">Procenat:</label>
+                            </div>
+                            <div class="col-12">
+                                <input id="percentage" type="text" class="form-control" placeholder="Procenat">
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-12">
+                                <label for="coefficient2">Koeficijent:</label>
+                            </div>
+                            <div class="col-12">
+                                <input id="coefficient2" type="text" class="form-control" placeholder="Koeficijent">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-12">
+                        <label for="reducedYoS">Doprinos za benificirani radni staz:</label>
+
+                    </div>
+                    <div class="col-12">
+                        <input id="reducedYoS" type="text" class="form-control" placeholder="Doprinos za benificirani radni staz">
+
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-12">
+                        <label for="muncipalityEmployment">Opstina rada:</label>
+
+                    </div>
+                    <div class="col-12">
                         <div class="d-flex">
                             <input id="muncipalityEmployment" type="text" class="form-control w-25" placeholder="Opstina rada">
                             <div id="muncipalityEmploymentOut" type="text" class="form-control w-75" placeholder="Opstina rada" readonly></div>
                         </div>
                     </div>
-                    <div>
-                        <label for="muncipalityResidency" class="d-block text-left">Opstina stana:</label>
+                </div>
+                <div class="row">
+                    <div class="col-12"> <label for="muncipalityResidency">Opstina stana:</label></div>
+                    <div class="col-12">
                         <div class="d-flex">
                             <input id="muncipalityResidency" type="text" class="form-control w-25" placeholder="Opstina stana">
-                            <div id="muncipalityResidencyOut" type="text" class="form-control w-75" placeholder="Opstina stana" readonly>
-
+                            <div id="muncipalityResidencyOut" type="text" class="form-control w-75" placeholder="Opstina stana" readonly></div>
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-12">
+                        <label for="muncipalityPayout1">Mesto i racun isplate 1:</label>
+                    </div>
+                    <div class="col-12 pr-0 pl-0">
+                        <div class="d-flex">
+                            <div class="col-4 pr-0">
+                                <input id="muncipalityPayout1" type="text" class="form-control" placeholder="Mesto 1">
+                            </div>
+                            <div class="col-8 pl-0">
+                                <input id="accountPayout1" type="text" class="form-control" placeholder="Racun 1">
+                            </div>
+                        </div>
+                        <div class="col-12">
+                            <div id="accountPayout1Out" type="text" class="form-control" readonly>
                             </div>
                         </div>
                     </div>
                 </div>
-                <div class="col-8 mt-4">
-                    <div class="row mt-2">
-                        <div class="col-3">
-                            <label for="muncipalityPayout1" class="pt-2 text-left">Mesto isplate 1:</label>
-                            <input id="muncipalityPayout1" type="text " class="form-control" placeholder="Mesto isplate 1">
-                        </div>
-                        <div class="col-9">
-                            <label for="accountPayout1" class="pt-2 text-left">Racun isplate 1:</label>
-                            <div class="row pl-4">
-                                <input id="accountPayout1" type="text" class="form-control col-5" placeholder="Racun isplate 2">
-                                <div id="accountPayout1Out" type="text" class="form-control col-5" placeholder="Racun isplate 2" readonly>
-                                </div>
+                <div class="row">
+                    <div class="col-12">
+                        <label for="muncipalityPayout2" class="pt-2 text-left">Mesto i racun isplate 2:</label>
+                    </div>
+                    <div class="col-12 pr-0 pl-0">
+                        <div class="d-flex">
+                            <div class="col-4 pr-0">
+                                <input id="muncipalityPayout2" type="text " class="form-control" placeholder="Mesto 2">
+                            </div>
+                            <div class="col-8 pl-0">
+                                <input id="accountPayout2" type="text" class="form-control" placeholder="Racun 2">
                             </div>
                         </div>
-                    </div>
-                    <div class="row">
-                        <div class="col-3">
-                            <label for="muncipalityPayout2" class="pt-2 text-left">Mesto isplate 2:</label>
-                            <input id="muncipalityPayout2" type="text " class="form-control" placeholder="Mesto isplate 2">
-                        </div>
-                        <div class="col-9">
-                            <label for="accountPayout2" class="pt-2 text-left">Racun isplate 2:</label>
-                            <div class="row pl-4">
-                                <input id="accountPayout2" type="text" class="form-control col-5" placeholder="Racun isplate 2">
-                                <div id="accountPayout2Out" type="text" class="form-control col-5" placeholder="Racun isplate 2" readonly>
-                                </div>
+                        <div class="col-12">
+                            <div id="accountPayout2Out" type="text" class="form-control" readonly>
                             </div>
                         </div>
                     </div>
                 </div>
-            </div>
-        </section>
+            </section>
 
-        <section id="content2">
-            <div class="row">
-                <div class="col-6">
-                    <h4 class="mb-4 mt-3">Podaci o radnoj knjizici</h4>
-                    <label for="employmentBooklet_SerialNumber" class="text-left">Serijski broj:</label>
-                    <input id="employmentBooklet_SerialNumber" type="text " class="form-control" placeholder="Serijski broj">
-                    <label for="employmentBooklet_RegistryNumber" class="text-left">Registarski broj:</label>
-                    <input id="employmentBooklet_RegistryNumber" type="text" class="form-control" placeholder="Registarski broj">
-                </div>
-                <div class="col-6">
-                    <div class="d-flex">
-                        <div class="w-25">
-                            <label for="employmentBooklet_EmploymentCode" class="text-left">Sifra zanimanja:</label>
-                            <input id="employmentBooklet_EmploymentCode" type="text" class="form-control" placeholder="Sifra zanimanja">
-                        </div>
-                        <div class="w-75">
-                            <label for="employmentBooklet_EmploymentCodeOut" class="text-left">Naziv zanimanja:</label>
-                            <div id="employmentBooklet_EmploymentCodeOut" type="text" class="form-control" placeholder="Naziv zanimanja" readonly></div>
-                        </div>
+            <section id="content2" class="section-tab">
+                <h4>Podaci o radnoj knjizici</h4>
+                <div class="row">
+                    <div class="col-12">
+                        <label for="employmentBooklet_EmploymentCode" class="text-left">Sifra zanimanja:</label>
                     </div>
-                    <label for="employmentBooklet_Muncipality" class="text-left">Mesto:</label>
-                    <input id="employmentBooklet_Muncipality" type="text " class="form-control" placeholder="Mesto">
-                    <label for="employmentBooklet_DateOfIssue" class="text-left">Datum izdavanja:</label>
-                    <input id="employmentBooklet_DateOfIssue" type="date" class="form-control">
+                    <div class="col-4 pr-0">
+                        <input id="employmentBooklet_EmploymentCode" type="text" class="form-control" placeholder="Sifra zanimanja">
+                    </div>
+                    <div class="col-8 pl-0">
+                        <div id="employmentBooklet_EmploymentCodeOut" type="text" class="form-control" placeholder="Naziv zanimanja" readonly></div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-6">
+                        <label for="employmentBooklet_SerialNumber" class="text-left">Serijski broj:</label>
+                        <input id="employmentBooklet_SerialNumber" type="text " class="form-control" placeholder="Serijski broj">
+                        <label for="employmentBooklet_RegistryNumber" class="text-left">Registarski broj:</label>
+                        <input id="employmentBooklet_RegistryNumber" type="text" class="form-control" placeholder="Registarski broj">
+                    </div>
+                    <div class="col-6">
+                        <label for="employmentBooklet_Muncipality" class="text-left">Mesto:</label>
+                        <input id="employmentBooklet_Muncipality" type="text " class="form-control" placeholder="Mesto">
+                        <label for="employmentBooklet_DateOfIssue" class="text-left">Datum izdavanja:</label>
+                        <input id="employmentBooklet_DateOfIssue" type="date" class="form-control">
 
+                    </div>
                 </div>
-            </div>
-            <div class="row mt-3">
-                <div class="col-6">
-                    <h4 class="mb-4 mt-3">Podaci o radnom stazu</h4>
-                    <label for="datumobracunaradnogstaza" class="text-left">Datum obracuna radnog staza:</label>
-                    <input id="datumobracunaradnogstaza" type="date" class="form-control">
-                    <div class="d-flex">
-                        <div class="w-50">
-                            <label for="datumdolaska" class="text-left">Datum dolaska:</label>
-                            <input id="datumdolaska" type="date" class="form-control">
+                <h4 class="mb-4 mt-3">Podaci o radnom stazu</h4>
+                <div class="row">
+                    <div class="col-6">
+                        <label for="datumobracunaradnogstaza" class="text-left">Datum obracuna:</label>
+                        <input id="datumobracunaradnogstaza" type="date" class="form-control">
+                        <label for="datumdolaska" class="text-left">Datum dolaska:</label>
+                        <input id="datumdolaska" type="date" class="form-control">
+                        <label for="datumodlaska" class="text-left">Datum odlaska:</label>
+                        <input id="datumodlaska" type="date" class="form-control">
+                    </div>
+                    <div class="col-6">
+                        <label for="internalYoS_total" class="text-left">Radni staz u firmi:</label>
+                        <div id="internalYoS_total" type="text" class="form-control" readonly></div>
+                        <label for="externalYoS_total" class="text-left">Radni staz van firme:</label>
+                        <div id="externalYoS_total" type="text" class="form-control" readonly></div>
+                        <label for="totalYoS" class="text-left">Ukupni radni staz:</label>
+                        <div id="totalYoS" type="text" class="form-control" readonly></div>
+                    </div>
+                </div>
+                <div class="row mt-3">
+                    <div class="col-6">
+                        <h4>Radni staz<br>u firmi</h4>
+                        <div class="row mb-2">
+                            <div class="col-sm-12">
+                                <label for="fromDateInternal" class="text-left">Od datuma:</label>
+                                <input id="fromDateInternal" type="date" class="form-control">
+                            </div>
+                            <div class="col-sm-12">
+                                <label for="tillDateInternal" class="text-left">Do datuma:</label>
+                                <input id="tillDateInternal" type="date" class="form-control">
+                            </div>
                         </div>
-                        <div class="w-50">
-                            <label for="datumodlaska" class="text-left">Datum odlaska:</label>
-                            <input id="datumodlaska" type="date" class="form-control">
+                        <button id="addInternalYoSPeriod" class="btn btn-secondary">Dodaj</button>
+                        <div id="containerInternal" class="list-group">
+                        </div>
+                    </div>
+                    <div class="col-6">
+                        <h4>Radni staz<br>van firme</h4>
+                        <div class="row mb-2">
+                            <div class="col-sm-12">
+                                <label for="fromDateExternal" class="text-left">Od datuma:</label>
+                                <input id="fromDateExternal" type="date" class="form-control">
+                            </div>
+                            <div class="col-sm-12">
+                                <label for="tillDateExternal" class="text-left">Do datuma:</label>
+                                <input id="tillDateExternal" type="date" class="form-control">
+                            </div>
+                        </div>
+                        <button id="addExternalYoSPeriod" class="btn btn-secondary">Dodaj</button>
+                        <div id="containerExternal" class="list-group">
                         </div>
                     </div>
                 </div>
-                <div class="col-6">
-                    <label for="internalYoS_total" class="text-left">Radni staz u firmi:</label>
-                    <div id="internalYoS_total" type="text" class="form-control" readonly></div>
-                    <label for="externalYoS_total" class="text-left">Radni staz van firme:</label>
-                    <div id="externalYoS_total" type="text" class="form-control" readonly></div>
-                    <label for="totalYoS" class="text-left">Ukupni radni staz:</label>
-                    <div id="totalYoS" type="text" class="form-control" readonly></div>
-                </div>
-            </div>
-            <div class="row mt-2">
-                <div class="col">
-                    <h4>Prethodni staz u firmi</h4>
-                    <div class="d-flex">
-                        <div class="w-50">
-                            <label for="fromDateInternal" class="text-left">Od datuma:</label>
-                            <input id="fromDateInternal" type="date" class="form-control">
-                        </div>
-                        <div class="w-50">
-                            <label for="tillDateInternal" class="text-left">Do datuma:</label>
-                            <input id="tillDateInternal" type="date" class="form-control">
+            </section>
+            <section id="content3" class="section-tab">
+                <div class="row">
+                    <div class="col-12">
+                        <label for="address" class="text-left">Ulica i broj:</label>
+                        <input id="address" type="text " class="form-control" placeholder="Ulica i broj">
+                        <label for="zip" class="text-left">Postanski broj i mesto:</label>
+                        <div class="d-flex">
+                            <div class="w-25">
+                                <input id="zip" type="text" class="form-control" placeholder="Postanski broj">
+                            </div>
+                            <div class="w-75">
+                                <input id="muncipality" type="text" class="form-control" placeholder="Mesto">
+                            </div>
                         </div>
                     </div>
-                    <button id="addInternalYoSPeriod" class="btn btn-secondary">Dodaj</button>
-                    <div id="containerInternal" class="list-group">
-                    </div>
-                </div>
-                <div class="col">
-                    <h4>Radni staz van firme</h4>
-                    <div class="d-flex">
-                        <div class="w-50">
-                            <label for="fromDateExternal" class="text-left">Od datuma:</label>
-                            <input id="fromDateExternal" type="date" class="form-control">
-                        </div>
-                        <div class="w-50">
-                            <label for="tillDateExternal" class="text-left">Do datuma:</label>
-                            <input id="tillDateExternal" type="date" class="form-control">
-                        </div>
-                    </div>
-                    <button id="addExternalYoSPeriod" class="btn btn-secondary">Dodaj</button>
-                    <div id="containerExternal" class="list-group">
-                    </div>
-                </div>
-            </div>
+                    <div class="col-6">
+                        <label for="sex" class="text-left">Pol:</label>
+                        <div id="sex" type="text" class="form-control" readonly></div>
 
-        </section>
-        <section id="content3">
-            <div class="row">
-                <div class="col-6">
-                    <label for="address" class="text-left">Ulica i broj:</label>
-                    <input id="address" type="text " class="form-control" placeholder="Ulica i broj">
-                    <div class="d-flex">
-                        <div class="w-25">
-                            <label for="zip" class="text-left">Postanski broj</label>
-                            <input id="zip" type="text" class="form-control" placeholder="Postanski broj">
-                        </div>
-                        <div class="w-75">
-                            <label for="muncipality" class="text-left">Mesto:</label>
-                            <input id="muncipality" type="text" class="form-control" placeholder="Mesto">
-                        </div>
+
                     </div>
-                </div>
-                <div class="col-6">
-                    <label for="sex" class="text-left">Pol:</label>
-                    <div id="sex" type="text" class="form-control" readonly></div>
-                    <label for="dateOfBirth" class="text-left">Datum rodjenja:</label>
-                    <div id="dateOfBirth" type="date" class="form-control" readonly></div>
-                    <div class="d-flex justify-content-between mt-2">
-                        <div class="w-50 d-flex">
+                    <div class="col-6">
+                        <label for="dateOfBirth" class="text-left">Datum rodjenja:</label>
+                        <div id="dateOfBirth" type="date" class="form-control" readonly></div>
+
+                    </div>
+                    <div class="row pl-3 pr-3">
+                        <div class="col-6">
                             <label for="familyMembers" class="text-left pt-2">Broj clanova porodice:</label>
-                            <input id="familyMembers" type="number" class="form-control w-25">
+                            <input id="familyMembers" type="number" class="form-control">
                         </div>
-                        <div class="w-50 d-flex">
+                        <div class="col-6">
                             <label for="numberOfKids" class="text-left pt-2">Broj dece:</label>
-                            <input id="numberOfKids" type="number" class="form-control w-25">
+                            <input id="numberOfKids" type="number" class="form-control">
                         </div>
+
+
                     </div>
                 </div>
-            </div>
-            <div class="row">
-                <div class="col-7">
-                    <div class="row">
-                        <div class="col">
-                            <h4>Licna karta</h4>
-                            <label for="ID_serialNumber" class="text-left d-block">Serijski broj:</label>
-                            <input id="ID_serialNumber" type="text" class="form-control" placeholder="Serijski broj">
-                            <label for="ID_registryNumber" class="text-left d-block">Registarski broj:</label>
-                            <input id="ID_registryNumber" type="text" class="form-control" placeholder="Registarski broj">
-                            <label for="ID_dateOfIssue" class="text-left d-block">Datum izdavanja:</label>
-                            <input id="ID_dateOfIssue" type="date" class="form-control">
-                            <label for="ID_muncipalityOfIssue" class="text-left d-block">Mesto izdavanja:</label>
-                            <input id="ID_muncipalityOfIssue" type="text" class="form-control" placeholder="Mesto izdavanja">
-                        </div>
-                        <div class="col">
-                            <h4>Zdrav. knjizica</h4>
-                            <label for="HI_serialNumber" class="text-left d-block">Serijski broj:</label>
-                            <input id="HI_serialNumber" type="text" class="form-control" placeholder="Serijski broj">
-                            <label for="HI_registryNumber" class="text-left d-block">Registarski broj:</label>
-                            <input id="HI_registryNumber" type="text" class="form-control" placeholder="Registarski broj">
-                            <label for="HI_dateOfIssue" class="text-left d-block">Datum izdavanja:</label>
-                            <input id="HI_dateOfIssue" type="date" class="form-control">
-                            <label for="HI_registryNumber" class="text-left d-block">Mesto izdavanja:</label>
-                            <input id="HI_registryNumber" type="text" class="form-control" placeholder="Mesto izdavanja">
-                        </div>
+                <div class="row mt-2">
+
+                    <div class="col">
+                        <h4>Licna karta</h4>
+                        <label for="ID_serialNumber" class="text-left d-block">Serijski broj:</label>
+                        <input id="ID_serialNumber" type="text" class="form-control" placeholder="Serijski broj">
+                        <label for="ID_registryNumber" class="text-left d-block">Registarski broj:</label>
+                        <input id="ID_registryNumber" type="text" class="form-control" placeholder="Registarski broj">
+                        <label for="ID_dateOfIssue" class="text-left d-block">Datum izdavanja:</label>
+                        <input id="ID_dateOfIssue" type="date" class="form-control">
+                        <label for="ID_muncipalityOfIssue" class="text-left d-block">Mesto izdavanja:</label>
+                        <input id="ID_muncipalityOfIssue" type="text" class="form-control" placeholder="Mesto izdavanja">
                     </div>
-                </div>
-                <div class="col-5">
-                    <label for="email" class="text-left d-block">E-mail:</label>
-                    <input id="email" type="email" class="form-control" placeholder="E-mail">
-                    <label for="comment" class="text-left d-block">Komentar:</label>
-                    <textarea id="comment" type="text" class="form-control" placeholder="Komentar" rows="7"></textarea>
-                </div>
+                    <div class="col">
+                        <h4>Zdrav. knjizica</h4>
+                        <label for="HI_serialNumber" class="text-left d-block">Serijski broj:</label>
+                        <input id="HI_serialNumber" type="text" class="form-control" placeholder="Serijski broj">
+                        <label for="HI_registryNumber" class="text-left d-block">Registarski broj:</label>
+                        <input id="HI_registryNumber" type="text" class="form-control" placeholder="Registarski broj">
+                        <label for="HI_dateOfIssue" class="text-left d-block">Datum izdavanja:</label>
+                        <input id="HI_dateOfIssue" type="date" class="form-control">
+                        <label for="HI_registryNumber" class="text-left d-block">Mesto izdavanja:</label>
+                        <input id="HI_registryNumber" type="text" class="form-control" placeholder="Mesto izdavanja">
+                    </div>
 
-            </div>
-        </section>
+                </div>
+                <div class="row">
+                    <div class="col-12">
+                        <label for="email" class="text-left d-block">E-mail:</label>
+                        <input id="email" type="email" class="form-control" placeholder="E-mail">
+                        <label for="comment" class="text-left d-block">Komentar:</label>
+                        <textarea id="comment" type="text" class="form-control" placeholder="Komentar" rows="7"></textarea>
+                    </div>
 
+                </div>
+            </section>
+
+        </div>
     </main>
     <div id="backdrop">
         <div id="modal" class="card">
@@ -399,7 +448,15 @@
             </div>
         </div>
     </div>
-    <footer class="row">
+    <footer class="d-flex">
+        <div class="btn-group">
+            <a role="button" class="btn btn-dark text-light" id="asideTrigger">Lista</a>
+            <a role="button" class="btn btn-dark text-light" id="saveBtn">Sacuvaj</a>
+            <a role="button" class="btn btn-dark text-light" id="addNewBtn">Novi</a>
+            <a role="button" class="btn btn-dark text-light" id="rejectBtn">Odbaci</a>
+            <a role="button" class="btn btn-dark text-light" id="deleteBtn">Obrisi</a>
+            <a role="button" class="btn btn-info" id="backBtn" href="mainMenu.html">Nazad</a>
+        </div>
     </footer>
     <script src="../scripts/employeeSelectors.js"></script>
     <script src="../scripts/misc.js"></script>

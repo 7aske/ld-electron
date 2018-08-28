@@ -54,7 +54,7 @@ function main() {
 		height: 1200,
 		center: true
 	});
-	window.loadFile(join(__dirname, 'assets/views/main.html'));
+	window.loadFile(join(__dirname, 'assets/views/mainMenu.html'));
 	window.on('closed', () => {
 		window = null;
 	});

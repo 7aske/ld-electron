@@ -5,15 +5,25 @@ const initialState = {
 	currentEmployee: null,
 	isAsideOut: false,
 	isModalUp: false,
+	asideWidth: 500,
+	contentWidth: document.querySelector('main').firstElementChild.offsetWidth,
+	isResizingList: false,
+	isResizingContent: false,
 	newEmployee: null,
 	currentIndex: 0
 };
 const store = new Store(initialState);
-store.subscribe('isAsideOut', asideToggle);
+store.subscribe('isAsideOut', [asideToggle, positionResizeBars]);
 store.subscribe('currentEmployee', [populateFields, colorEmployeeList]);
 store.subscribe('employeeArray', populateEmployeeList);
 store.subscribe('employeeList', [populateEmployeeList, colorEmployeeList]);
+store.subscribe('asideWidth', [handleResizeList, positionResizeBars]);
+store.subscribe('contentWidth', [handleResizeContent, positionResizeBars]);
 const main = document.querySelector('main');
+const resize0 = document.querySelector('#resize0');
+resize0.addEventListener('mousedown', () => store.setState('isResizingList', !store.getState('isResizingList')));
+const resize1 = document.querySelector('#resize1');
+resize1.addEventListener('mousedown', () => store.setState('isResizingContent', !store.getState('isResizingContent')));
 const header = document.querySelector('header');
 const footer = document.querySelector('footer');
 const modal = new Modal();
@@ -31,6 +41,8 @@ const saveBtn = document.querySelector('#saveBtn');
 saveBtn.addEventListener('click', () => {
 	employeeSave();
 });
+const backBtn = document.querySelector('#backBtn');
+backBtn.addEventListener('click', handleBack);
 const rejectBtn = document.querySelector('#rejectBtn');
 rejectBtn.addEventListener('click', employeeReject);
 const deleteBtn = document.querySelector('#deleteBtn');
@@ -65,23 +77,34 @@ inputs.forEach(i => {
 			handleInput(event.target.id, event.target.value, event.target);
 	});
 });
-function currentW() {
-	return store.getState('isAsideOut') ? window.innerWidth - 400 : window.innerWidth;
+function getWidth() {
+	return store.getState('isAsideOut') ? window.innerWidth - store.getState('asideWidth') : window.innerWidth;
+}
+function handleBack(event) {
+	event.preventDefault();
+	let commit = [];
+	let check = false;
+	const array = store.getState('employeeArray');
+	array.forEach(e => {
+		if (Object.keys(e.changes).length > 0) {
+			check = true;
+		}
+	});
+	if (check) {
+		modal.open('Obevestenje', 'Imate nesacuvane promene.');
+	} else {
+		window.location = 'mainMenu.html';
+	}
 }
 function asideToggle() {
 	if (store.getState('isAsideOut')) {
-		asideTrigger.style.backgroundColor = 'rgb(17,122,139)';
-		aside.style.transform = 'translateX(400px)';
-		main.style.width = `${currentW()}px`;
-		header.style.width = `${currentW()}px`;
-		footer.style.width = `${currentW()}px`;
+		aside.style.left = `0px`;
+		asideTrigger.classList.add('active');
 	} else {
-		asideTrigger.style.backgroundColor = '#18a2b8';
-		aside.style.transform = 'translateX(-400px)';
-		main.style.width = `${currentW()}px`;
-		header.style.width = `${currentW()}px`;
-		footer.style.width = `${currentW()}px`;
+		aside.style.left = `-${store.getState('asideWidth')}px`;
+		asideTrigger.classList.remove('active');
 	}
+	main.style.width = `${getWidth()}px`;
 }
 function changeListIndex(num) {
 	let index = store.getState('currentIndex');
@@ -95,7 +118,6 @@ function changeListIndex(num) {
 function changeInputIndex() {
 	const tabs = document.querySelectorAll('[name="tabs"]');
 	let index = inputs.indexOf(document.activeElement);
-	console.log(index);
 	if (index == 15) {
 		tabs.forEach(t => t.checked == false);
 		tabs[0].checked = true;
@@ -114,6 +136,43 @@ function changeInputIndex() {
 	if (index < inputs.length - 1) {
 		inputs[index + 1].focus();
 	}
+}
+
+function positionResizeBars() {
+	if (store.getState('isAsideOut')) {
+		resize0.style.display = 'block';
+		resize1.style.left = `${store.getState('asideWidth') + main.firstElementChild.offsetWidth + 5}px`;
+		resize0.style.left = `${store.getState('asideWidth')}px`;
+	} else {
+		resize0.style.display = 'none';
+		resize1.style.left = `${main.firstElementChild.offsetWidth + 5}px`;
+	}
+}
+function handleResizeList() {
+	main.style.width = `${getWidth()}px`;
+	aside.style.width = `${store.getState('asideWidth')}px`;
+}
+function handleResizeContent() {
+	const width = main.offsetWidth;
+	const c0 = main.children[0];
+	const c1 = main.children[1];
+	const mousePos = store.getState('contentWidth');
+	const x = mousePos < width / 2 ? Math.round(width / mousePos) : Math.round(width / (width - mousePos));
+	const col = mousePos < width / 2 ? Math.round(12 / x) : Math.round(12 / x);
+	if (col < 13 && col > -1) {
+		let col0 = col;
+		let col1 = 12 - col;
+		if (mousePos > width / 2) {
+			col0 = 12 - col;
+			col1 = col;
+		}
+		if (col == 12 || col == 0) {
+			col0 = col1 = 12;
+		}
+		c0.classList.replace(c0.classList.value.match(/col.+/gi)[0], `col-lg-${col0}`);
+		c1.classList.replace(c1.classList.value.match(/col.+/gi)[0], `col-lg-${col1}`);
+	}
+	resize1.style.left = `${store.getState('asideWidth') + main.firstElementChild.offsetWidth + 5}px`;
 }
 function handleInput(prop, value, target) {
 	if (prop == 'umcn') {
@@ -300,13 +359,14 @@ ipcRenderer.on('window:alert', (event, message) => {
 	alert(message);
 });
 window.onload = () => {
-	store.setState('isAsideOut', true);
+	store.setState('isAsideOut', false);
 	ipcRenderer.send('employee:get', null);
+	aside.style.width = `${store.getState('asideWidth')}px`;
+	positionResizeBars();
 };
 window.addEventListener('resize', event => {
-	main.style.width = `${currentW()}px`;
-	header.style.width = `${currentW()}px`;
-	footer.style.width = `${currentW()}px`;
+	main.style.width = `${getWidth()}px`;
+	positionResizeBars();
 });
 document.addEventListener('keydown', event => {
 	switch (event.key) {
@@ -325,8 +385,35 @@ document.addEventListener('keydown', event => {
 		case 'PageDown':
 			changeListIndex(1);
 			break;
-
 		default:
 		//console.log(event.key);
 	}
+});
+document.addEventListener('mousemove', event => {
+	if (store.getState('isResizingList')) {
+		store.setState('asideWidth', event.screenX);
+	}
+	if (store.getState('isResizingContent')) {
+		if (store.getState('isAsideOut')) {
+			store.setState('contentWidth', event.screenX - store.getState('asideWidth'));
+		} else {
+			store.setState('contentWidth', event.screenX);
+		}
+	}
+});
+document.addEventListener('mouseup', event => {
+	store.setState('isResizingList', false);
+	store.setState('isResizingContent', false);
+	if (event.button == 0) {
+		const menu = document.querySelector('#menu');
+		menu.style.display = 'none';
+	}
+});
+document.addEventListener('contextmenu', event => {
+	console.log(event.target);
+
+	const menu = document.querySelector('#menu');
+	menu.style.left = `${event.pageX}px`;
+	menu.style.top = `${event.pageY}px`;
+	menu.style.display = 'block';
 });

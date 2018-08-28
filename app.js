@@ -55,7 +55,7 @@ function main() {
         height: 1200,
         center: true
     });
-    window.loadFile(path_1.join(__dirname, 'assets/views/main.html'));
+    window.loadFile(path_1.join(__dirname, 'assets/views/mainMenu.html'));
     window.on('closed', () => {
         window = null;
     });
@@ -65,11 +65,11 @@ electron_1.app.on('window-all-closed', () => {
     electron_1.app.quit();
 });
 electron_1.ipcMain.on('employee:save', (event, employees) => {
-    console.log(employees);
+    console.log(employees._id);
     handleSave(employees);
 });
 electron_1.ipcMain.on('employee:delete', (event, employees) => {
-    console.log(employees);
+    console.log(employees._id);
     handleDelete(employees);
 });
 electron_1.ipcMain.on('employee:get', (event, query) => {

@@ -11,7 +11,7 @@ const optionTemplate = e => {
 	return `<li class="list-group-item list-group-item-action d-flex justify-content-between align-items-center"
 	onclick="changeCurrentEmployee(event.target,event.target.attributes['data-id'].value)"
 	data-id="${e.properties._id}">
-	${e.properties.id} - ${e.properties.umcn} - ${e.properties.lastName} ${e.properties.firstName}
+	${e.properties.id} - ${e.properties.umcn} ${e.properties.lastName} ${e.properties.firstName}
 	<span class="badge badge-warning badge-pill"></span></li>`;
 };
 const employeeSummaryTemplate = e => {
