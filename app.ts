@@ -11,6 +11,9 @@ interface Employee {
 interface EmployeesFile {
 	employees: Array<Employee>;
 }
+
+const configFilePath: string = join(__dirname, 'assets/config/config.json');
+let configFile = readFileSync(configFilePath, 'utf8');
 const employeesFilePath: string = join(__dirname, 'assets/database/workers.json');
 let window: BrowserWindow | null;
 let child: BrowserWindow | null;
@@ -63,12 +66,21 @@ app.on('ready', main);
 app.on('window-all-closed', () => {
 	app.quit();
 });
+ipcMain.on('window:settings-get', (event: any, data: any) => {
+	if (window) window.webContents.send('window:settings-set', configFile);
+});
+ipcMain.on('window:settings-update', (event: any, data: any) => {
+	console.log(data);
+
+	configFile = data;
+	writeFileSync(configFilePath, JSON.stringify(data), 'utf8');
+});
 ipcMain.on('employee:save', (event: any, employees: any) => {
-	console.log(employees._id);
+	console.log(employees.length);
 	handleSave(employees);
 });
 ipcMain.on('employee:delete', (event: any, employees: any) => {
-	console.log(employees._id);
+	console.log(employees.length);
 	handleDelete(employees);
 });
 ipcMain.on('employee:get', (event: any, query: any) => {

@@ -19,15 +19,9 @@ const average2 = document.querySelector('#average2');
 const average3 = document.querySelector('#average3');
 const allowanceMeal = document.querySelector('#allowanceMeal');
 const allowanceInsurance = document.querySelector('#allowanceInsurance');
-const transportAllowanceCategory1 = document.querySelector(
-	'#transportAllowanceCategory1'
-);
-const transportAllowanceCategory2 = document.querySelector(
-	'#transportAllowanceCategory2'
-);
-const transportAllowanceCategory3 = document.querySelector(
-	'#transportAllowanceCategory3'
-);
+const transportAllowanceCategory1 = document.querySelector('#transportAllowanceCategory1');
+const transportAllowanceCategory2 = document.querySelector('#transportAllowanceCategory2');
+const transportAllowanceCategory3 = document.querySelector('#transportAllowanceCategory3');
 const hours = document.querySelector('#hours');
 const amount = document.querySelector('#amount');
 const coefficient1 = document.querySelector('#coefficient1');
@@ -40,21 +34,11 @@ const muncipalityPayout1 = document.querySelector('#muncipalityPayout1');
 const muncipalityPayout2 = document.querySelector('#muncipalityPayout2');
 const accountPayout1 = document.querySelector('#accountPayout1');
 const accountPayout2 = document.querySelector('#accountPayout2');
-const employmentBooklet_SerialNumber = document.querySelector(
-	'#employmentBooklet_SerialNumber'
-);
-const employmentBooklet_RegistryNumber = document.querySelector(
-	'#employmentBooklet_RegistryNumber'
-);
-const employmentBooklet_DateOfIssue = document.querySelector(
-	'#employmentBooklet_DateOfIssue'
-);
-const employmentBooklet_Muncipality = document.querySelector(
-	'#employmentBooklet_Muncipality'
-);
-const employmentBooklet_EmploymentCode = document.querySelector(
-	'#employmentBooklet_EmploymentCode'
-);
+const employmentBooklet_SerialNumber = document.querySelector('#employmentBooklet_SerialNumber');
+const employmentBooklet_RegistryNumber = document.querySelector('#employmentBooklet_RegistryNumber');
+const employmentBooklet_DateOfIssue = document.querySelector('#employmentBooklet_DateOfIssue');
+const employmentBooklet_Muncipality = document.querySelector('#employmentBooklet_Muncipality');
+const employmentBooklet_EmploymentCode = document.querySelector('#employmentBooklet_EmploymentCode');
 const containerInternal = document.querySelector('#containerInternal');
 const containerExternal = document.querySelector('#containerExternal');
 // const datumobracunaradnogstaza = document.querySelector(

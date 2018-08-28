@@ -1,4 +1,4 @@
-class Store {
+module.exports = class Store {
 	constructor(initialState = {}) {
 		this._state = {};
 		Object.keys(initialState).forEach(key => {
@@ -42,4 +42,4 @@ class Store {
 			return this.state;
 		}
 	}
-}
+};

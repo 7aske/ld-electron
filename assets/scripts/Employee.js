@@ -1,5 +1,6 @@
 const shortid = require('shortid');
-class Employee {
+const { dateListTemplate, dateTemplate } = require('../scripts/templates');
+module.exports = class Employee {
 	constructor(newEmployee) {
 		if (newEmployee) {
 			this.properties = {
@@ -153,8 +154,6 @@ class Employee {
 			if (element) {
 				element.value = this.properties[key];
 				element.classList.remove('bg-warning');
-				// element.classList.remove('border');
-				// element.classList.remove('border-warning');
 			}
 		}
 		for (let key in this.changes) {
@@ -162,8 +161,6 @@ class Employee {
 			if (element) {
 				element.value = this.changes[key];
 				element.classList.add('bg-warning');
-				// element.classList.add('border');
-				// element.classList.add('border-warning');
 			}
 		}
 		this.populateDate();
@@ -191,11 +188,12 @@ class Employee {
 			this.properties.totalYoS = this.properties.externalYoS_total + this.properties.internalYoS_total;
 		}
 		const internal = new Date(this.changes.internalYoS_total ? this.changes.internalYoS_total : this.properties.internalYoS_total);
-		internalYoS_total.value = dateTemplate(internal);
+		internalYoS_total.innerHTML = dateTemplate(internal);
 		const external = new Date(this.changes.externalYoS_total ? this.changes.externalYoS_total : this.properties.externalYoS_total);
-		externalYoS_total.value = dateTemplate(external);
+		externalYoS_total.innerHTML = dateTemplate(external);
 		const total = new Date(this.changes.totalYoS ? this.changes.totalYoS : this.properties.totalYoS);
-		totalYoS.value = dateTemplate(total);
+
+		totalYoS.innerHTML = dateTemplate(total);
 		return this;
 	}
 	addInternalYoS(from, till) {
@@ -234,67 +232,4 @@ class Employee {
 		this.populateDate();
 		return this;
 	}
-}
-// 	id,
-// 	umcn,
-// 	firstName,
-// 	lastName,
-// 	middleName,
-// 	typeReceiver,
-// 	typeEmployment,
-// 	typeEmployee,
-// 	employmentUnit,
-// 	employmentSection,
-// 	employmentPosition,
-// 	rating,
-// 	group,
-// 	realQualification,
-// 	verifiedQualification,
-// 	points,
-// 	average1,
-// 	average2,
-// 	average3,
-// 	allowanceMeal,
-// 	allowanceInsurance,
-// 	transportAllowanceCategory1,
-// 	transportAllowanceCategory2,
-// 	transportAllowanceCategory3,
-// 	hours,
-// 	amount,
-// 	coefficient1,
-// 	percentage,
-// 	coefficient2,
-// 	reducedYoS,
-// 	muncipalityEmployment,
-// 	muncipalityResidency,
-// 	muncipalityPayout1,
-// 	muncipalityPayout2,
-// 	accountPayout1,
-// 	accountPayout2,
-// 	employmentBooklet_SerialNumber,
-// 	employmentBooklet_RegistryNumber,
-// 	employmentBooklet_DateOfIssue,
-// 	employmentBooklet_Muncipality,
-// 	employmentBooklet_EmploymentCode,
-// 	externalYoS_periods,
-// 	externalYoS_total,
-// 	internalYoS_periods,
-// 	internalYoS_total,
-// 	totalYoS,
-// 	address,
-// 	zip,
-// 	muncipality,
-// 	sex,
-// 	dateOfBirth,
-// 	ID_serialNumber,
-// 	ID_registryNumber,
-// 	ID_dateOfIssue,
-// 	ID_muncipalityOfIssue,
-// 	HI_serialNumber,
-// 	HI_registryNumber,
-// 	HI_dateOfIssue,
-// 	HI_muncipalityOfIssue,
-// 	familyMembers,
-// 	numberOfKids,
-// 	email,
-// 	comment
+};

@@ -3,6 +3,8 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const electron_1 = require("electron");
 const path_1 = require("path");
 const fs_1 = require("fs");
+const configFilePath = path_1.join(__dirname, 'assets/config/config.json');
+let configFile = fs_1.readFileSync(configFilePath, 'utf8');
 const employeesFilePath = path_1.join(__dirname, 'assets/database/workers.json');
 let window;
 let child;
@@ -64,12 +66,21 @@ electron_1.app.on('ready', main);
 electron_1.app.on('window-all-closed', () => {
     electron_1.app.quit();
 });
+electron_1.ipcMain.on('window:settings-get', (event, data) => {
+    if (window)
+        window.webContents.send('window:settings-set', configFile);
+});
+electron_1.ipcMain.on('window:settings-update', (event, data) => {
+    console.log(data);
+    configFile = data;
+    fs_1.writeFileSync(configFilePath, JSON.stringify(data), 'utf8');
+});
 electron_1.ipcMain.on('employee:save', (event, employees) => {
-    console.log(employees._id);
+    console.log(employees.length);
     handleSave(employees);
 });
 electron_1.ipcMain.on('employee:delete', (event, employees) => {
-    console.log(employees._id);
+    console.log(employees.length);
     handleDelete(employees);
 });
 electron_1.ipcMain.on('employee:get', (event, query) => {

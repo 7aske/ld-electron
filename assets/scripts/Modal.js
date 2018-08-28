@@ -1,4 +1,4 @@
-class Modal {
+module.exports = class Modal {
 	constructor() {
 		this.modal = document.querySelector('#modal');
 		this.backdrop = document.querySelector('#backdrop');
@@ -41,4 +41,4 @@ class Modal {
 		this.title.innerHTML = '';
 		this.body.innerHTML = '';
 	}
-}
+};

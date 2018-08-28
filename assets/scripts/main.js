@@ -1,17 +1,24 @@
 const { ipcRenderer } = require('electron');
+const Employee = require('../scripts/Employee.js');
+const Menu = require('../scripts/Menu');
+const Modal = require('../scripts/Modal');
+const Store = require('../scripts/Store');
+const { employeeSummaryTemplate, optionTemplate } = require('../scripts/templates');
+const main = document.querySelector('main');
 const initialState = {
 	employeeArray: [],
 	employeeList: [],
 	currentEmployee: null,
 	isAsideOut: false,
 	isModalUp: false,
-	asideWidth: 500,
-	contentWidth: document.querySelector('main').firstElementChild.offsetWidth,
+	asideWidth: 400,
+	contentWidth: 500,
 	isResizingList: false,
 	isResizingContent: false,
 	newEmployee: null,
 	currentIndex: 0
 };
+let menu = null;
 const store = new Store(initialState);
 store.subscribe('isAsideOut', [asideToggle, positionResizeBars]);
 store.subscribe('currentEmployee', [populateFields, colorEmployeeList]);
@@ -19,7 +26,6 @@ store.subscribe('employeeArray', populateEmployeeList);
 store.subscribe('employeeList', [populateEmployeeList, colorEmployeeList]);
 store.subscribe('asideWidth', [handleResizeList, positionResizeBars]);
 store.subscribe('contentWidth', [handleResizeContent, positionResizeBars]);
-const main = document.querySelector('main');
 const resize0 = document.querySelector('#resize0');
 resize0.addEventListener('mousedown', () => store.setState('isResizingList', !store.getState('isResizingList')));
 const resize1 = document.querySelector('#resize1');
@@ -97,6 +103,7 @@ function handleBack(event) {
 	}
 }
 function asideToggle() {
+	aside.style.width = `${store.getState('asideWidth')}px`;
 	if (store.getState('isAsideOut')) {
 		aside.style.left = `0px`;
 		asideTrigger.classList.add('active');
@@ -105,6 +112,11 @@ function asideToggle() {
 		asideTrigger.classList.remove('active');
 	}
 	main.style.width = `${getWidth()}px`;
+	ipcRenderer.send('window:settings-update', {
+		isAsideOut: store.getState('isAsideOut'),
+		contentWidth: store.getState('contentWidth'),
+		asideWidth: store.getState('asideWidth')
+	});
 }
 function changeListIndex(num) {
 	let index = store.getState('currentIndex');
@@ -172,7 +184,7 @@ function handleResizeContent() {
 		c0.classList.replace(c0.classList.value.match(/col.+/gi)[0], `col-lg-${col0}`);
 		c1.classList.replace(c1.classList.value.match(/col.+/gi)[0], `col-lg-${col1}`);
 	}
-	resize1.style.left = `${store.getState('asideWidth') + main.firstElementChild.offsetWidth + 5}px`;
+	//resize1.style.left = `${store.getState('asideWidth') + main.firstElementChild.offsetWidth + 5}px`;
 }
 function handleInput(prop, value, target) {
 	if (prop == 'umcn') {
@@ -306,18 +318,19 @@ function employeeDelete() {
 		}
 		if (newEmployee) {
 			if (newEmployee.properties._id == employee.properties._id) store.setState('newEmployee', null);
+		} else {
+			let save = [];
+			employees.forEach(e => {
+				save.push(e.properties);
+			});
+			ipcRenderer.send('employee:delete', save);
 		}
-		let save = [];
-		employees.forEach(e => {
-			save.push(e.properties);
-		});
-		ipcRenderer.send('employee:delete', save);
 	});
 }
-function employeeSave() {
+function employeeSave(employees) {
 	let commit = [];
 	let check = false;
-	const array = store.getState('employeeArray');
+	const array = employees ? employees : store.getState('employeeArray');
 	array.forEach(e => {
 		if (Object.keys(e.changes).length > 0) {
 			check = true;
@@ -358,11 +371,19 @@ ipcRenderer.on('employee:search', (event, data) => {
 ipcRenderer.on('window:alert', (event, message) => {
 	alert(message);
 });
+ipcRenderer.on('window:settings-set', (event, data) => {
+	for (let key in data) {
+		store.setState(key, data[key]);
+	}
+	setTimeout(() => {
+		positionResizeBars();
+	}, 100);
+});
 window.onload = () => {
-	store.setState('isAsideOut', false);
+	// store.setState('isAsideOut', true);
+	// store.setState('contentWidth', store.getState('contentWidth'));
 	ipcRenderer.send('employee:get', null);
-	aside.style.width = `${store.getState('asideWidth')}px`;
-	positionResizeBars();
+	ipcRenderer.send('window:settings-get');
 };
 window.addEventListener('resize', event => {
 	main.style.width = `${getWidth()}px`;
@@ -402,18 +423,22 @@ document.addEventListener('mousemove', event => {
 	}
 });
 document.addEventListener('mouseup', event => {
+	if (store.getState('isResizingList') || store.getState('isResizingContent')) {
+		ipcRenderer.send('window:settings-update', {
+			isAsideOut: store.getState('isAsideOut'),
+			contentWidth: store.getState('contentWidth'),
+			asideWidth: store.getState('asideWidth')
+		});
+	}
 	store.setState('isResizingList', false);
 	store.setState('isResizingContent', false);
 	if (event.button == 0) {
-		const menu = document.querySelector('#menu');
-		menu.style.display = 'none';
+		if (menu) {
+			menu.close();
+			menu = null;
+		}
 	}
 });
 document.addEventListener('contextmenu', event => {
-	console.log(event.target);
-
-	const menu = document.querySelector('#menu');
-	menu.style.left = `${event.pageX}px`;
-	menu.style.top = `${event.pageY}px`;
-	menu.style.display = 'block';
+	menu = new Menu(event);
 });
