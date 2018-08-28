@@ -55,8 +55,8 @@ module.exports = class Employee {
 				address: newEmployee.address,
 				zip: newEmployee.zip,
 				muncipality: newEmployee.muncipality,
-				sex: newEmployee.sex,
-				dateOfBirth: newEmployee.dateOfBirth,
+				sex: this.formatSexFromUMCN(newEmployee.umcn),
+				dateOfBirth: this.formatDoBfromUMCN(newEmployee.umcn),
 				ID_serialNumber: newEmployee.ID_serialNumber,
 				ID_registryNumber: newEmployee.ID_registryNumber,
 				ID_dateOfIssue: newEmployee.ID_dateOfIssue,
@@ -139,7 +139,20 @@ module.exports = class Employee {
 				comment: ''
 			};
 		}
+		this.properties.dateOfBirth;
 		this.changes = {};
+	}
+	formatSexFromUMCN(umcn) {
+		const number = parseInt(`${umcn[9]}${umcn[10]}${umcn[11]}`);
+		if (number < 500) return 'Muskarac';
+		else return 'Zena';
+	}
+	formatDoBfromUMCN(umcn) {
+		if (umcn[4] == '0') {
+			return `${umcn[0]}${umcn[1]}-${umcn[2]}${umcn[3]}-2${umcn[4]}${umcn[5]}${umcn[6]}`;
+		} else {
+			return `${umcn[0]}${umcn[1]}-${umcn[2]}${umcn[3]}-1${umcn[4]}${umcn[5]}${umcn[6]}`;
+		}
 	}
 	commitChanges() {
 		for (let key in this.changes) {
@@ -152,7 +165,12 @@ module.exports = class Employee {
 		for (let key in this.properties) {
 			const element = document.querySelector(`#${key}`);
 			if (element) {
-				element.value = this.properties[key];
+				if (element.nodeName == 'DIV') {
+					element.innerHTML = this.properties[key];
+				} else {
+					element.value = this.properties[key];
+				}
+
 				element.classList.remove('bg-warning');
 			}
 		}

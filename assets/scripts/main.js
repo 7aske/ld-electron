@@ -372,6 +372,8 @@ ipcRenderer.on('window:alert', (event, message) => {
 	alert(message);
 });
 ipcRenderer.on('window:settings-set', (event, data) => {
+	console.log(data);
+
 	for (let key in data) {
 		store.setState(key, data[key]);
 	}

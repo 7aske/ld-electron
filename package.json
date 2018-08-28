@@ -5,6 +5,7 @@
 	"main": "app.js",
 	"scripts": {
 		"start": "electron .",
+		"webpack": "webpack",
 		"package-linux": "electron-packager . deployment-client-electron --overwrite --prune=true --platform=linux --arch=x64 --out=dist/linux --ignore=\"./deployment-server\"",
 		"package-win": "electron-packager . deployment-client-electron --overwrite --prune=true --platform=win32 --arch=x64 --out=dist/windows --ignore=\"./deployment-server\"",
 		"package-pi": "electron-packager . deployment-client-electron --overwrite --prune=true --platform=linux --arch=armv7l --out=dist/raspi --ignore=\"./deployment-server\"",
