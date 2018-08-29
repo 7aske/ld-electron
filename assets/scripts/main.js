@@ -311,6 +311,7 @@ function employeeDelete() {
 		const employees = store.getState('employeeArray');
 		const employee = store.getState('currentEmployee');
 		const newEmployee = store.getState('newEmployee');
+		const id = employee._id;
 		employees.splice(employees.indexOf(employee), 1);
 		store.setState('employeeArray', employees);
 		if (employees.length > 0) {
@@ -323,6 +324,7 @@ function employeeDelete() {
 			employees.forEach(e => {
 				save.push(e.properties);
 			});
+
 			ipcRenderer.send('employee:delete', save);
 		}
 	});
@@ -357,7 +359,7 @@ function employeeSave(employees) {
 		modal.open('Obavestenje', 'Nema izmena');
 	}
 }
-ipcRenderer.on('employee:search', (event, data) => {
+ipcRenderer.on('employee:set', (event, data) => {
 	const array = [];
 	if (data instanceof Array) {
 		data.forEach(e => {
@@ -368,12 +370,7 @@ ipcRenderer.on('employee:search', (event, data) => {
 	store.setState('employeeArray', array);
 	searchEmployeeArray();
 });
-ipcRenderer.on('window:alert', (event, message) => {
-	alert(message);
-});
 ipcRenderer.on('window:settings-set', (event, data) => {
-	console.log(data);
-
 	for (let key in data) {
 		store.setState(key, data[key]);
 	}

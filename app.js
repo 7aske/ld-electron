@@ -35,7 +35,7 @@ function handleSave(employees) {
     });
     fs_1.writeFileSync(employeesFilePath, JSON.stringify(employeesFile), 'utf8');
     if (window)
-        window.webContents.send('employee:search', employeesFile.employees);
+        window.webContents.send('employee:set', employeesFile.employees);
 }
 function handleDelete(employees) {
     employeesFile.employees = employees;
@@ -49,7 +49,7 @@ function handleDelete(employees) {
     });
     fs_1.writeFileSync(employeesFilePath, JSON.stringify(employeesFile), 'utf8');
     if (window)
-        window.webContents.send('employee:search', employeesFile.employees);
+        window.webContents.send('employee:set', employeesFile.employees);
 }
 function main() {
     window = new electron_1.BrowserWindow({
@@ -90,7 +90,7 @@ electron_1.ipcMain.on('employee:get', (event, query) => {
             return e._id == query;
         });
         if (window)
-            window.webContents.send('employee:search', employees);
+            window.webContents.send('employee:set', employees);
     }
     else {
         employeesFile.employees.sort((a, b) => {
@@ -102,6 +102,6 @@ electron_1.ipcMain.on('employee:get', (event, query) => {
                 return 0;
         });
         if (window)
-            window.webContents.send('employee:search', employeesFile.employees);
+            window.webContents.send('employee:set', employeesFile.employees);
     }
 });

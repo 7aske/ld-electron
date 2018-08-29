@@ -39,7 +39,7 @@ function handleSave(employees: Array<Employee>) {
 		else return 0;
 	});
 	writeFileSync(employeesFilePath, JSON.stringify(employeesFile), 'utf8');
-	if (window) window.webContents.send('employee:search', employeesFile.employees);
+	if (window) window.webContents.send('employee:set', employeesFile.employees);
 }
 function handleDelete(employees: Array<Employee>) {
 	employeesFile.employees = employees;
@@ -49,7 +49,7 @@ function handleDelete(employees: Array<Employee>) {
 		else return 0;
 	});
 	writeFileSync(employeesFilePath, JSON.stringify(employeesFile), 'utf8');
-	if (window) window.webContents.send('employee:search', employeesFile.employees);
+	if (window) window.webContents.send('employee:set', employeesFile.employees);
 }
 function main() {
 	window = new BrowserWindow({
@@ -89,13 +89,13 @@ ipcMain.on('employee:get', (event: any, query: any) => {
 		const employees = employeesFile.employees.filter(e => {
 			return e._id == query;
 		});
-		if (window) window.webContents.send('employee:search', employees);
+		if (window) window.webContents.send('employee:set', employees);
 	} else {
 		employeesFile.employees.sort((a, b) => {
 			if (a.id > b.id) return 1;
 			if (a.id < b.id) return -1;
 			else return 0;
 		});
-		if (window) window.webContents.send('employee:search', employeesFile.employees);
+		if (window) window.webContents.send('employee:set', employeesFile.employees);
 	}
 });
