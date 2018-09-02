@@ -2,6 +2,9 @@ body {
 	overflow: hidden;
 	user-select: none;
 }
+label {
+	overflow: hidden;
+}
 #backdrop {
 	visibility: hidden;
 	position: absolute;

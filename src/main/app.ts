@@ -1,4 +1,4 @@
-import { app, BrowserWindow, ipcMain, ipcRenderer } from 'electron';
+import { app, BrowserWindow, ipcMain } from 'electron';
 import { join } from 'path';
 import { readFileSync, writeFileSync } from 'fs';
 
@@ -12,12 +12,29 @@ interface EmployeesFile {
 	employees: Array<Employee>;
 }
 
-const configFilePath: string = join(__dirname, 'assets/config/config.json');
+const configFilePath: string = join(__dirname, 'config/config.json');
 let configFile = readFileSync(configFilePath, 'utf8');
-const employeesFilePath: string = join(__dirname, 'assets/database/workers.json');
+const employeesFilePath: string = join(__dirname, 'database/employees.json');
 let window: BrowserWindow | null;
 let child: BrowserWindow | null;
 let employeesFile: EmployeesFile = JSON.parse(readFileSync(employeesFilePath, 'utf8').toString());
+function main() {
+	window = new BrowserWindow({
+		width: 1600,
+		height: 1200,
+		center: true
+	});
+
+	window.loadFile(join(__dirname, '../renderer/views/mainMenu.html'));
+
+	window.on('closed', () => {
+		window = null;
+	});
+}
+app.on('ready', main);
+app.on('window-all-closed', () => {
+	app.quit();
+});
 function handleSave(employees: Array<Employee>) {
 	employees.forEach(employee => {
 		const check: Employee | undefined = employeesFile.employees.find(e => {
@@ -39,7 +56,7 @@ function handleSave(employees: Array<Employee>) {
 		else return 0;
 	});
 	writeFileSync(employeesFilePath, JSON.stringify(employeesFile), 'utf8');
-	if (window) window.webContents.send('employee:set', employeesFile.employees);
+	return employeesFile.employees;
 }
 function handleDelete(employees: Array<Employee>) {
 	employeesFile.employees = employees;
@@ -49,39 +66,25 @@ function handleDelete(employees: Array<Employee>) {
 		else return 0;
 	});
 	writeFileSync(employeesFilePath, JSON.stringify(employeesFile), 'utf8');
-	if (window) window.webContents.send('employee:set', employeesFile.employees);
+	return employeesFile.employees;
 }
-function main() {
-	window = new BrowserWindow({
-		width: 1600,
-		height: 1200,
-		center: true
-	});
-	window.loadFile(join(__dirname, 'assets/views/mainMenu.html'));
-	window.on('closed', () => {
-		window = null;
-	});
-}
-app.on('ready', main);
-app.on('window-all-closed', () => {
-	app.quit();
-});
+
 ipcMain.on('window:settings-get', (event: any, data: any) => {
-	if (window) window.webContents.send('window:settings-set', configFile);
+	event.returnValue = configFile;
 });
 ipcMain.on('window:settings-update', (event: any, data: any) => {
 	console.log(data);
-
 	configFile = data;
 	writeFileSync(configFilePath, JSON.stringify(data), 'utf8');
+	event.returnValue = data;
 });
 ipcMain.on('employee:save', (event: any, employees: any) => {
 	console.log(employees.length);
-	handleSave(employees);
+	event.returnValue = handleSave(employees);
 });
 ipcMain.on('employee:delete', (event: any, employees: any) => {
 	console.log(employees.length);
-	handleDelete(employees);
+	event.returnValue = handleDelete(employees);
 });
 ipcMain.on('employee:get', (event: any, query: any) => {
 	console.log(query);
@@ -89,13 +92,13 @@ ipcMain.on('employee:get', (event: any, query: any) => {
 		const employees = employeesFile.employees.filter(e => {
 			return e._id == query;
 		});
-		if (window) window.webContents.send('employee:set', employees);
+		event.returnValue = employees;
 	} else {
 		employeesFile.employees.sort((a, b) => {
 			if (a.id > b.id) return 1;
 			if (a.id < b.id) return -1;
 			else return 0;
 		});
-		if (window) window.webContents.send('employee:set', employeesFile.employees);
+		event.returnValue = employeesFile.employees;
 	}
 });

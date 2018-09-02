@@ -1,10 +1,13 @@
 const { ipcRenderer } = require('electron');
+// const ipcRenderer = {
+// 	sendSync: () => null,
+// 	send: () => null
+// };
+const ENV = 'electron';
+// const ENV = 'web';
 const Employee = require('../scripts/Employee.js');
-const Menu = require('../scripts/Menu');
-const Modal = require('../scripts/Modal');
-const Store = require('../scripts/Store');
-const { employeeSummaryTemplate, optionTemplate } = require('../scripts/templates');
-const main = document.querySelector('main');
+const Store = require('../scripts/Store.js');
+
 const initialState = {
 	employeeArray: [],
 	employeeList: [],
@@ -18,13 +21,20 @@ const initialState = {
 	newEmployee: null,
 	currentIndex: 0
 };
-let menu = null;
 const store = new Store(initialState);
+const Menu = require('../scripts/Menu.js');
+const Modal = require('../scripts/Modal.js');
+const { employeeSummaryTemplate, optionTemplate } = require('../scripts/templates.js');
+const main = document.querySelector('main');
+
+let menu = null;
+
+const url = ENV == 'electron' ? null : 'http://localhost:3000';
 store.subscribe('isAsideOut', [asideToggle, positionResizeBars]);
 store.subscribe('currentEmployee', [populateFields, colorEmployeeList]);
 store.subscribe('employeeArray', populateEmployeeList);
 store.subscribe('employeeList', [populateEmployeeList, colorEmployeeList]);
-store.subscribe('asideWidth', [handleResizeList, positionResizeBars]);
+store.subscribe('asideWidth', positionResizeBars);
 store.subscribe('contentWidth', [handleResizeContent, positionResizeBars]);
 const resize0 = document.querySelector('#resize0');
 resize0.addEventListener('mousedown', () => store.setState('isResizingList', !store.getState('isResizingList')));
@@ -112,11 +122,12 @@ function asideToggle() {
 		asideTrigger.classList.remove('active');
 	}
 	main.style.width = `${getWidth()}px`;
-	ipcRenderer.send('window:settings-update', {
+	const config = {
 		isAsideOut: store.getState('isAsideOut'),
 		contentWidth: store.getState('contentWidth'),
 		asideWidth: store.getState('asideWidth')
-	});
+	};
+	settingsUpdateHandler(config);
 }
 function changeListIndex(num) {
 	let index = store.getState('currentIndex');
@@ -151,6 +162,8 @@ function changeInputIndex() {
 }
 
 function positionResizeBars() {
+	main.style.width = `${getWidth()}px`;
+	aside.style.width = `${store.getState('asideWidth')}px`;
 	if (store.getState('isAsideOut')) {
 		resize0.style.display = 'block';
 		resize1.style.left = `${store.getState('asideWidth') + main.firstElementChild.offsetWidth + 5}px`;
@@ -160,10 +173,7 @@ function positionResizeBars() {
 		resize1.style.left = `${main.firstElementChild.offsetWidth + 5}px`;
 	}
 }
-function handleResizeList() {
-	main.style.width = `${getWidth()}px`;
-	aside.style.width = `${store.getState('asideWidth')}px`;
-}
+
 function handleResizeContent() {
 	const width = main.offsetWidth;
 	const c0 = main.children[0];
@@ -235,24 +245,21 @@ function populateFields() {
 }
 function colorEmployeeList() {
 	const currentEmployee = store.getState('currentEmployee');
-	const buttons = document.querySelectorAll('#employeeList li');
-	store.getState('employeeArray').forEach(e => {
-		const btn = document.querySelector(`[data-id="${e.properties._id}"]`);
-		// const badge = document.querySelector(
-		// 	`[data-id="${e.properties._id}"] .badge`
-		// );
-		const badge = btn.firstElementChild;
+	const listItems = document.querySelectorAll('#employeeList li');
+	store.getState('employeeList').forEach(e => {
+		const item = document.querySelector(`[data-id="${e.properties._id}"]`);
+		const badge = item.firstElementChild;
 		if (Object.keys(e.changes).length > 0) {
-			if (btn) btn.classList.add('list-group-item-warning');
+			if (item) item.classList.add('list-group-item-warning');
 			if (badge) badge.innerHTML = Object.keys(e.changes).length;
 		} else {
-			if (btn) btn.classList.remove('list-group-item-warning');
+			if (item) item.classList.remove('list-group-item-warning');
 			if (badge) badge.innerHTML = '';
 		}
 	});
-	buttons.forEach(b => {
-		if (b.attributes['data-id'].value == currentEmployee.properties._id) b.classList.add('list-group-item-dark');
-		else b.classList.remove('list-group-item-dark');
+	listItems.forEach(item => {
+		if (item.attributes['data-id'].value == currentEmployee.properties._id) item.classList.add('list-group-item-dark');
+		else item.classList.remove('list-group-item-dark');
 	});
 }
 function populateEmployeeList() {
@@ -324,8 +331,7 @@ function employeeDelete() {
 			employees.forEach(e => {
 				save.push(e.properties);
 			});
-
-			ipcRenderer.send('employee:delete', save);
+			employeeDeleteHandler(save, id);
 		}
 	});
 }
@@ -353,39 +359,37 @@ function employeeSave(employees) {
 				save.push(e.properties);
 			});
 			store.setState('newEmployee', null);
-			ipcRenderer.send('employee:save', save);
+			employeeSaveHandler(save);
 		});
 	} else {
 		modal.open('Obavestenje', 'Nema izmena');
 	}
 }
-ipcRenderer.on('employee:set', (event, data) => {
+function setEmployees(data) {
 	const array = [];
 	if (data instanceof Array) {
 		data.forEach(e => {
 			array.push(new Employee(e));
 		});
+		store.setState('currentEmployee', array[0]);
+		store.setState('employeeArray', array);
+		store.setState('employeeList', array);
 	}
-	store.setState('currentEmployee', array[0]);
-	store.setState('employeeArray', array);
-	searchEmployeeArray();
-});
-ipcRenderer.on('window:settings-set', (event, data) => {
+}
+function setSettings(data) {
 	for (let key in data) {
 		store.setState(key, data[key]);
 	}
 	setTimeout(() => {
 		positionResizeBars();
 	}, 100);
-});
+}
 window.onload = () => {
-	// store.setState('isAsideOut', true);
-	// store.setState('contentWidth', store.getState('contentWidth'));
-	ipcRenderer.send('employee:get', null);
-	ipcRenderer.send('window:settings-get');
+	// setEmployees(ipcRenderer.sendSync('employee:get', null));
+	employeeGetHandler();
+	settingsGetHandler();
 };
 window.addEventListener('resize', event => {
-	main.style.width = `${getWidth()}px`;
 	positionResizeBars();
 });
 document.addEventListener('keydown', event => {
@@ -423,11 +427,12 @@ document.addEventListener('mousemove', event => {
 });
 document.addEventListener('mouseup', event => {
 	if (store.getState('isResizingList') || store.getState('isResizingContent')) {
-		ipcRenderer.send('window:settings-update', {
+		const config = {
 			isAsideOut: store.getState('isAsideOut'),
 			contentWidth: store.getState('contentWidth'),
 			asideWidth: store.getState('asideWidth')
-		});
+		};
+		settingsUpdateHandler(config);
 	}
 	store.setState('isResizingList', false);
 	store.setState('isResizingContent', false);
@@ -441,3 +446,71 @@ document.addEventListener('mouseup', event => {
 document.addEventListener('contextmenu', event => {
 	menu = new Menu(event);
 });
+
+function settingsGetHandler() {
+	if (ENV == 'electron') {
+		setSettings(ipcRenderer.sendSync('window:settings-get'));
+	} else {
+		axios
+			.get(`${url}/config`)
+			.then(response => {
+				console.log(response.data);
+				setSettings(response.data);
+			})
+			.catch(err => console.log(err));
+	}
+}
+function settingsUpdateHandler(config) {
+	if (ENV == 'electron') {
+		ipcRenderer.sendSync('window:settings-update', config);
+	} else {
+		axios
+			.post(`${url}/config/update`, { config: config })
+			.then(response => {
+				console.log(response.data);
+				return response.data;
+			})
+			.catch(err => console.log(err));
+	}
+}
+
+function employeeGetHandler() {
+	console.log(ENV == 'electron');
+	if (ENV == 'electron') {
+		setEmployees(ipcRenderer.sendSync('employee:get', null));
+	} else {
+		axios
+			.get(`${url}/employees`)
+			.then(response => {
+				console.log(response.data);
+				setEmployees(response.data);
+			})
+			.catch(err => console.log(err));
+	}
+}
+function employeeDeleteHandler(save, id) {
+	if (ENV == 'electron') {
+		setEmployees(ipcRenderer.sendSync('employee:delete', save));
+	} else {
+		axios
+			.post(`${url}/employees/delete`, { id: id })
+			.then(response => {
+				console.log(response.data);
+				setEmployees(response.data);
+			})
+			.catch(err => console.log(err));
+	}
+}
+function employeeSaveHandler(save) {
+	if (ENV == 'electron') {
+		setEmployee(ipcRenderer.sendSync('employee:save', save));
+	} else {
+		axios
+			.post(`${url}/employees/save`, { save: save })
+			.then(response => {
+				console.log(response.data);
+				setEmployees(response.data);
+			})
+			.catch(err => console.log(err));
+	}
+}

@@ -6,6 +6,10 @@ body {
           user-select: none;
 }
 
+label {
+  overflow: hidden;
+}
+
 #backdrop {
   visibility: hidden;
   position: absolute;
