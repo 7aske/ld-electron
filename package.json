@@ -14,13 +14,9 @@
 	"author": "Nikola Tasic",
 	"license": "ISC",
 	"devDependencies": {
-		"electron": "^2.0.6",
-		"ts-loader": "^4.5.0",
-		"webpack": "^4.17.1",
-		"webpack-cli": "^3.1.0"
+		"electron": "^2.0.6"
 	},
 	"dependencies": {
-		"@babel/core": "^7.0.0",
 		"@types/axios": "^0.14.0",
 		"@types/shortid": "0.0.29",
 		"axios": "^0.18.0",
