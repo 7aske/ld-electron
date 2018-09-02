@@ -25,7 +25,7 @@ label {
   transition: 200ms -webkit-transform;
   transition: 200ms transform;
   transition: 200ms transform, 200ms -webkit-transform;
-  width: 400px;
+  width: 600px;
   height: 300px;
   margin: 20vh auto;
 }
@@ -42,10 +42,22 @@ label {
   display: none;
 }
 
-#menu {
+.contextmenu {
+  -webkit-box-shadow: 0px 5px 10px rgba(0, 0, 0, 0.3);
+          box-shadow: 0px 5px 10px rgba(0, 0, 0, 0.3);
   position: absolute;
   z-index: 3000;
   display: none;
+}
+
+.contextmenu .disabled {
+  cursor: not-allowed;
+}
+
+.contextmenu li {
+  padding: 5px 5px;
+  padding-right: 15px;
+  cursor: pointer;
 }
 
 aside {

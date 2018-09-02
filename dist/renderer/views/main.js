@@ -54,9 +54,13 @@ saveBtn.addEventListener('click', () => {
 const backBtn = document.querySelector('#backBtn');
 backBtn.addEventListener('click', handleBack);
 const rejectBtn = document.querySelector('#rejectBtn');
-rejectBtn.addEventListener('click', employeeReject);
+rejectBtn.addEventListener('click', () => {
+    employeeReject(store.getState('employeeArray'));
+});
 const deleteBtn = document.querySelector('#deleteBtn');
-deleteBtn.addEventListener('click', employeeDelete);
+deleteBtn.addEventListener('click', () => {
+    employeeDelete([store.getState('currentEmployee')]);
+});
 const fromDateInternal = document.querySelector('#fromDateInternal');
 const tillDateInternal = document.querySelector('#tillDateInternal');
 const addInternalYoSPeriod = document.querySelector('#addInternalYoSPeriod');
@@ -264,9 +268,8 @@ function colorEmployeeList() {
         }
     });
     listItems.forEach(item => {
-        const index = Object.keys(item.attributes).indexOf('data-id');
-        if (item.attributes[index])
-            if (item.attributes[index].value == currentEmployee.properties._id)
+        if (item.attributes.getNamedItem('data-id'))
+            if (item.attributes.getNamedItem('data-id').value == currentEmployee.properties._id)
                 item.classList.add('list-group-item-dark');
             else
                 item.classList.remove('list-group-item-dark');
@@ -280,6 +283,33 @@ function populateEmployeeList() {
         result += templates_1.optionTemplate(e);
     });
     employeeList.innerHTML = result;
+    const listItems = Array.prototype.slice.call(document.querySelectorAll('aside li'));
+    listItems.forEach(item => {
+        const employees = store.getState('employeeArray');
+        const employee = employees.find(e => {
+            return e.properties._id == item.attributes.getNamedItem('data-id').value;
+        });
+        item.addEventListener('contextmenu', function (event) {
+            menu = new Menu_1.Menu(event, [
+                {
+                    name: 'Sacuvaj',
+                    action: () => employeeSave([employee]),
+                    disabled: Object.keys(employee.changes).length == 0
+                },
+                {
+                    name: 'Odbaci',
+                    action: () => employeeReject([employee]),
+                    disabled: Object.keys(employee.changes).length == 0
+                },
+                {
+                    name: 'Obrisi',
+                    type: 'danger',
+                    action: () => employeeDelete([employee]),
+                    disabled: false
+                }
+            ]);
+        });
+    });
 }
 function searchEmployeeArray(query) {
     const employees = store.getState('employeeArray');
@@ -311,44 +341,65 @@ function addNewEmployee() {
         store.setState('currentEmployee', newEmployee);
     }
 }
-function employeeReject() {
-    const employee = store.getState('currentEmployee');
-    const keys = Object.keys(employee.changes);
-    if (keys.length > 0) {
-        modal.open('Obavestenje', 'Da li zelite da odbacite sve promene?', () => {
-            if (keys.length > 0) {
-                keys.forEach(k => {
-                    const index = Object.keys(employee.changes).indexOf(k);
-                    delete employee.changes[index];
-                });
-                store.setState('currentEmployee', employee);
-            }
-        });
-    }
-}
-function employeeDelete() {
-    modal.open('Upozorenje', 'Da li ste sigurni da zelite da obrisete ovaj unos?', () => {
-        const employees = store.getState('employeeArray');
-        const employee = store.getState('currentEmployee');
-        const newEmployee = store.getState('newEmployee');
-        const id = employee.properties._id;
-        employees.splice(employees.indexOf(employee), 1);
-        store.setState('employeeArray', employees);
-        if (employees.length > 0) {
-            store.setState('currentEmployee', employees[0]);
-        }
-        if (newEmployee) {
-            if (newEmployee.properties._id == employee.properties._id)
-                store.setState('newEmployee', null);
-        }
-        else {
-            let save = [];
-            employees.forEach(e => {
-                save.push(e.properties);
-            });
-            employeeDeleteHandler(save, id);
+function employeeReject(array) {
+    const employees = array ? array : store.getState('employeeArray');
+    let text = 'Da li zelite da odbacite sve promene?<br>';
+    let employeesToReject = [];
+    employees.forEach(employee => {
+        if (Object.keys(employee.changes).length > 0) {
+            employeesToReject.push(employee);
+            text += templates_1.employeeSummaryTemplate(employee);
         }
     });
+    if (employeesToReject.length > 0) {
+        modal.open('Upozorenje', text, () => {
+            employeesToReject.forEach((employee, i) => {
+                const keys = Object.keys(employee.changes);
+                if (keys.length > 0) {
+                    keys.forEach(k => {
+                        delete employee.changes[k];
+                    });
+                }
+                store.setState('currentEmployee', employeesToReject[i]);
+            });
+            store.setState('employeeArray', store.getState('employeeArray'));
+            store.setState('currentEmployee', store.getState('employeeArray')[0]);
+        });
+    }
+    else {
+        modal.open('Obavestenje', 'Nema trenutnih promena.');
+    }
+}
+function employeeDelete(employeesToDelete) {
+    if (employeesToDelete.length > 0) {
+        let text = 'Da li ste sigurni da zelite da obrisete ove unose?';
+        employeesToDelete.forEach(e => {
+            text += templates_1.employeeSummaryTemplate(e);
+        });
+        modal.open('Upozorenje', text, () => {
+            employeesToDelete.forEach(employee => {
+                const employees = store.getState('employeeArray');
+                const newEmployee = store.getState('newEmployee');
+                const id = employee.properties._id;
+                employees.splice(employees.indexOf(employee), 1);
+                store.setState('employeeArray', employees);
+                if (employees.length > 0) {
+                    store.setState('currentEmployee', employees[0]);
+                }
+                if (newEmployee) {
+                    if (newEmployee.properties._id == employee.properties._id)
+                        store.setState('newEmployee', null);
+                }
+                else {
+                    let save = [];
+                    employees.forEach(e => {
+                        save.push(e.properties);
+                    });
+                    employeeDeleteHandler(save, id);
+                }
+            });
+        });
+    }
 }
 function employeeSave(array) {
     let commit = [];
@@ -455,16 +506,8 @@ document.addEventListener('mouseup', event => {
     }
     store.setState('isResizingList', false);
     store.setState('isResizingContent', false);
-    if (event.button == 0) {
-        if (menu) {
-            menu.close();
-            menu = null;
-        }
-    }
 });
-document.addEventListener('contextmenu', event => {
-    menu = new Menu_1.Menu(event);
-});
+document.addEventListener('contextmenu', event => { });
 function settingsGetHandler() {
     if (ENV == 'electron') {
         setSettings(electron_1.ipcRenderer.sendSync('window:settings-get'));

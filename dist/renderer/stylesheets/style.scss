@@ -15,7 +15,7 @@ label {
 	z-index: 2000;
 	#modal {
 		transition: 200ms transform;
-		width: 400px;
+		width: 600px;
 		height: 300px;
 		margin: 20vh auto;
 		.card-body {
@@ -29,10 +29,19 @@ label {
 		}
 	}
 }
-#menu {
+.contextmenu {
+	box-shadow: 0px 5px 10px rgba(0, 0, 0, 0.3);
 	position: absolute;
 	z-index: 3000;
 	display: none;
+	.disabled {
+		cursor: not-allowed;
+	}
+	li {
+		padding: 5px 5px;
+		padding-right: 15px;
+		cursor: pointer;
+	}
 }
 aside {
 	border-right: 2px solid #bbb;
