@@ -4,3 +4,16 @@ html {
 	overflow-y: auto;
 	background-color: #ddd;
 }
+main {
+	.list-group {
+		margin: auto;
+		width: 600px;
+		height: 100vh;
+		.list-group-item {
+			&:hover {
+				background-color: #444;
+				color: #ddd;
+			}
+		}
+	}
+}
