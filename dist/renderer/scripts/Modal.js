@@ -1,7 +1,8 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 class Modal {
-    constructor() {
+    constructor(store) {
+        this.store = store;
         this.modal = document.querySelector('#modal');
         this.backdrop = document.querySelector('#backdrop');
         this.title = document.querySelector('#modal .card-title');
@@ -31,6 +32,7 @@ class Modal {
         }
         this.title.innerHTML = title;
         this.body.innerHTML = body;
+        this.store.setState('isModalUp', true);
         return true;
     }
     close() {
@@ -43,6 +45,7 @@ class Modal {
         this.buttons.confirm.style.display = 'none';
         this.title.innerHTML = '';
         this.body.innerHTML = '';
+        this.store.setState('isModalUp', false);
         return false;
     }
 }

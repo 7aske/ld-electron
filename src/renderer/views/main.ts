@@ -1,4 +1,5 @@
 import { ipcRenderer, MenuItem } from 'electron';
+
 declare global {
 	interface Window {
 		process: any;
@@ -36,7 +37,7 @@ const store = new Store(initialState);
 const main: HTMLElement = document.querySelector('main');
 
 let menu: Menu | null = null;
-
+console.log(localStorage.getItem('data'));
 const url: string | null = ENV == 'electron' ? null : 'http://localhost:3000';
 store.subscribe('isAsideOut', [asideToggle, positionResizeBars]);
 store.subscribe('currentEmployee', [populateFields, colorEmployeeList]);
@@ -48,7 +49,7 @@ const resize0: HTMLElement = document.querySelector('#resize0');
 resize0.addEventListener('mousedown', () => store.setState('isResizingList', !store.getState('isResizingList')));
 const resize1: HTMLElement = document.querySelector('#resize1');
 resize1.addEventListener('mousedown', () => store.setState('isResizingContent', !store.getState('isResizingContent')));
-const modal = new Modal();
+const modal = new Modal(store);
 const employeeList: HTMLElement = document.querySelector('#employeeList');
 const searchInp: HTMLInputElement = document.querySelector('#searchInp');
 searchInp.addEventListener('input', function() {
@@ -117,7 +118,7 @@ function handleBack(event: Event): void {
 	if (check) {
 		modal.open('Obevestenje', 'Imate nesacuvane promene.');
 	} else {
-		window.location.pathname = 'mainMenu.html';
+		window.location.href = window.location.href.substring(0, window.location.href.lastIndexOf('/') + 1) + 'mainMenu.html';
 	}
 }
 function asideToggle(): void {
@@ -169,7 +170,6 @@ function changeInputIndex(): void {
 		inputs[index + 1].focus();
 	}
 }
-
 function positionResizeBars(): void {
 	main.style.width = `${getWidth()}px`;
 	aside.style.width = `${store.getState('asideWidth')}px`;
@@ -179,7 +179,7 @@ function positionResizeBars(): void {
 		resize0.style.left = `${store.getState('asideWidth')}px`;
 	} else {
 		resize0.style.display = 'none';
-		resize1.style.left = `${main.firstElementChild.clientWidth + 5}px`;
+		resize1.style.left = `${main.firstElementChild.clientWidth + 10}px`;
 	}
 }
 
@@ -206,7 +206,7 @@ function handleResizeContent(): void {
 	}
 	//resize1.style.left = `${store.getState('asideWidth') + main.firstElementChild.offsetWidth + 5}px`;
 }
-function handleInput(prop: string, value: string, target: HTMLInputElement) {
+function handleInput(prop: string, value: string, target: HTMLInputElement): void {
 	if (prop == 'umcn') {
 		const employees: Array<Employee> = store.getState('employeeArray');
 		employees.forEach(e => {
@@ -376,10 +376,10 @@ function employeeDelete(employeesToDelete: Array<Employee>): void {
 			text += employeeSummaryTemplate(e);
 		});
 		modal.open('Upozorenje', text, () => {
+			let toDelete: Array<EmployeeProperties> = [];
 			employeesToDelete.forEach(employee => {
 				const employees: Array<Employee> = store.getState('employeeArray');
 				const newEmployee: Employee = store.getState('newEmployee');
-				const id: string = employee.properties._id;
 				employees.splice(employees.indexOf(employee), 1);
 				store.setState('employeeArray', employees);
 				if (employees.length > 0) {
@@ -388,13 +388,10 @@ function employeeDelete(employeesToDelete: Array<Employee>): void {
 				if (newEmployee) {
 					if (newEmployee.properties._id == employee.properties._id) store.setState('newEmployee', null);
 				} else {
-					let save: Array<EmployeeProperties> = [];
-					employees.forEach(e => {
-						save.push(e.properties);
-					});
-					employeeDeleteHandler(save, id);
+					toDelete.push(employee.properties);
 				}
 			});
+			employeeDeleteHandler(toDelete);
 		});
 	}
 }
@@ -415,6 +412,7 @@ function employeeSave(array: Array<Employee>): void {
 				commit.push(e);
 			}
 		});
+
 		modal.open('Da li zelite da sacuvate sve promene?', text, () => {
 			let save: Array<EmployeeProperties> = [];
 			commit.forEach(e => {
@@ -428,7 +426,7 @@ function employeeSave(array: Array<Employee>): void {
 		modal.open('Obavestenje', 'Nema izmena');
 	}
 }
-function setEmployees(data: EmployeeProperties): void {
+function setEmployees(data: Array<EmployeeProperties> | EmployeeProperties): void {
 	const array: Array<Employee> = [];
 	if (data instanceof Array) {
 		data.forEach(e => {
@@ -448,7 +446,6 @@ function setSettings(data: Config) {
 	}, 100);
 }
 window.onload = () => {
-	// setEmployees(ipcRenderer.sendSync('employee:get', null));
 	employeeGetHandler();
 	settingsGetHandler();
 };
@@ -505,30 +502,42 @@ document.addEventListener('mouseup', event => {
 document.addEventListener('contextmenu', event => {});
 
 function settingsGetHandler() {
-	if (ENV == 'electron') {
-		setSettings(ipcRenderer.sendSync('window:settings-get'));
-	} else {
-		axios
-			.get(`${url}/config`)
-			.then(response => {
-				console.log(response.data);
-				setSettings(response.data);
-			})
-			.catch(err => console.log(err));
-	}
+	// if (ENV == 'electron') {
+	// 	setSettings(ipcRenderer.sendSync('window:settings-get'));
+	// } else {
+	// 	axios
+	// 		.get(`${url}/config`)
+	// 		.then(response => {
+	// 			console.log(response.data);
+	// 			setSettings(response.data);
+	// 		})
+	// 		.catch(err => console.log(err));
+	//}
+	const isAsideOut = localStorage.getItem('isAsideOut') === 'true';
+	const contentWidth = parseInt(localStorage.getItem('contentWidth')) || initialState.contentWidth;
+	const asideWidth = parseInt(localStorage.getItem('asideWidth')) || initialState.asideWidth;
+	const config: Config = {
+		isAsideOut: isAsideOut,
+		contentWidth: contentWidth,
+		asideWidth: asideWidth
+	};
+	setSettings(config);
 }
 function settingsUpdateHandler(config: Config) {
-	if (ENV == 'electron') {
-		ipcRenderer.sendSync('window:settings-update', config);
-	} else {
-		axios
-			.post(`${url}/config/update`, { config: config })
-			.then(response => {
-				console.log(response.data);
-				return response.data;
-			})
-			.catch(err => console.log(err));
-	}
+	// if (ENV == 'electron') {
+	// 	ipcRenderer.sendSync('window:settings-update', config);
+	// } else {
+	// 	axios
+	// 		.post(`${url}/config/update`, { config: config })
+	// 		.then(response => {
+	// 			console.log(response.data);
+	// 			return response.data;
+	// 		})
+	// 		.catch(err => console.log(err));
+	// }
+	localStorage.setItem('isAsideOut', config.isAsideOut ? 'true' : 'false');
+	localStorage.setItem('contentWidth', config.contentWidth.toString());
+	localStorage.setItem('asideWidth', config.asideWidth.toString());
 }
 
 function employeeGetHandler() {
@@ -545,12 +554,13 @@ function employeeGetHandler() {
 			.catch(err => console.log(err));
 	}
 }
-function employeeDeleteHandler(save: Array<EmployeeProperties>, id: string) {
+function employeeDeleteHandler(employees: Array<EmployeeProperties>) {
 	if (ENV == 'electron') {
-		setEmployees(ipcRenderer.sendSync('employee:delete', save));
+		const result: Array<EmployeeProperties> = ipcRenderer.sendSync('employee:delete', employees);
+		setEmployees(result);
 	} else {
 		axios
-			.post(`${url}/employees/delete`, { id: id })
+			.post(`${url}/employees/delete`, { employees: employees })
 			.then(response => {
 				console.log(response.data);
 				setEmployees(response.data);

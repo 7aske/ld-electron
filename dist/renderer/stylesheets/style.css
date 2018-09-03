@@ -6,6 +6,11 @@ body {
           user-select: none;
 }
 
+html,
+body {
+  background-color: #eee;
+}
+
 label {
   overflow: hidden;
 }

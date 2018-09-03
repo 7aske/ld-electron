@@ -25,6 +25,7 @@ const initialState = {
 const store = new Store_1.Store(initialState);
 const main = document.querySelector('main');
 let menu = null;
+console.log(localStorage.getItem('data'));
 const url = ENV == 'electron' ? null : 'http://localhost:3000';
 store.subscribe('isAsideOut', [asideToggle, positionResizeBars]);
 store.subscribe('currentEmployee', [populateFields, colorEmployeeList]);
@@ -36,7 +37,7 @@ const resize0 = document.querySelector('#resize0');
 resize0.addEventListener('mousedown', () => store.setState('isResizingList', !store.getState('isResizingList')));
 const resize1 = document.querySelector('#resize1');
 resize1.addEventListener('mousedown', () => store.setState('isResizingContent', !store.getState('isResizingContent')));
-const modal = new Modal_1.Modal();
+const modal = new Modal_1.Modal(store);
 const employeeList = document.querySelector('#employeeList');
 const searchInp = document.querySelector('#searchInp');
 searchInp.addEventListener('input', function () {
@@ -104,7 +105,7 @@ function handleBack(event) {
         modal.open('Obevestenje', 'Imate nesacuvane promene.');
     }
     else {
-        window.location.pathname = 'mainMenu.html';
+        window.location.href = window.location.href.substring(0, window.location.href.lastIndexOf('/') + 1) + 'mainMenu.html';
     }
 }
 function asideToggle() {
@@ -169,7 +170,7 @@ function positionResizeBars() {
     }
     else {
         resize0.style.display = 'none';
-        resize1.style.left = `${main.firstElementChild.clientWidth + 5}px`;
+        resize1.style.left = `${main.firstElementChild.clientWidth + 10}px`;
     }
 }
 function handleResizeContent() {
@@ -377,10 +378,10 @@ function employeeDelete(employeesToDelete) {
             text += templates_1.employeeSummaryTemplate(e);
         });
         modal.open('Upozorenje', text, () => {
+            let toDelete = [];
             employeesToDelete.forEach(employee => {
                 const employees = store.getState('employeeArray');
                 const newEmployee = store.getState('newEmployee');
-                const id = employee.properties._id;
                 employees.splice(employees.indexOf(employee), 1);
                 store.setState('employeeArray', employees);
                 if (employees.length > 0) {
@@ -391,13 +392,10 @@ function employeeDelete(employeesToDelete) {
                         store.setState('newEmployee', null);
                 }
                 else {
-                    let save = [];
-                    employees.forEach(e => {
-                        save.push(e.properties);
-                    });
-                    employeeDeleteHandler(save, id);
+                    toDelete.push(employee.properties);
                 }
             });
+            employeeDeleteHandler(toDelete);
         });
     }
 }
@@ -452,7 +450,6 @@ function setSettings(data) {
     }, 100);
 }
 window.onload = () => {
-    // setEmployees(ipcRenderer.sendSync('employee:get', null));
     employeeGetHandler();
     settingsGetHandler();
 };
@@ -509,32 +506,42 @@ document.addEventListener('mouseup', event => {
 });
 document.addEventListener('contextmenu', event => { });
 function settingsGetHandler() {
-    if (ENV == 'electron') {
-        setSettings(electron_1.ipcRenderer.sendSync('window:settings-get'));
-    }
-    else {
-        axios_1.default
-            .get(`${url}/config`)
-            .then(response => {
-            console.log(response.data);
-            setSettings(response.data);
-        })
-            .catch(err => console.log(err));
-    }
+    // if (ENV == 'electron') {
+    // 	setSettings(ipcRenderer.sendSync('window:settings-get'));
+    // } else {
+    // 	axios
+    // 		.get(`${url}/config`)
+    // 		.then(response => {
+    // 			console.log(response.data);
+    // 			setSettings(response.data);
+    // 		})
+    // 		.catch(err => console.log(err));
+    //}
+    const isAsideOut = localStorage.getItem('isAsideOut') === 'true';
+    const contentWidth = parseInt(localStorage.getItem('contentWidth')) || initialState.contentWidth;
+    const asideWidth = parseInt(localStorage.getItem('asideWidth')) || initialState.asideWidth;
+    const config = {
+        isAsideOut: isAsideOut,
+        contentWidth: contentWidth,
+        asideWidth: asideWidth
+    };
+    setSettings(config);
 }
 function settingsUpdateHandler(config) {
-    if (ENV == 'electron') {
-        electron_1.ipcRenderer.sendSync('window:settings-update', config);
-    }
-    else {
-        axios_1.default
-            .post(`${url}/config/update`, { config: config })
-            .then(response => {
-            console.log(response.data);
-            return response.data;
-        })
-            .catch(err => console.log(err));
-    }
+    // if (ENV == 'electron') {
+    // 	ipcRenderer.sendSync('window:settings-update', config);
+    // } else {
+    // 	axios
+    // 		.post(`${url}/config/update`, { config: config })
+    // 		.then(response => {
+    // 			console.log(response.data);
+    // 			return response.data;
+    // 		})
+    // 		.catch(err => console.log(err));
+    // }
+    localStorage.setItem('isAsideOut', config.isAsideOut ? 'true' : 'false');
+    localStorage.setItem('contentWidth', config.contentWidth.toString());
+    localStorage.setItem('asideWidth', config.asideWidth.toString());
 }
 function employeeGetHandler() {
     console.log(ENV == 'electron');
@@ -551,13 +558,14 @@ function employeeGetHandler() {
             .catch(err => console.log(err));
     }
 }
-function employeeDeleteHandler(save, id) {
+function employeeDeleteHandler(employees) {
     if (ENV == 'electron') {
-        setEmployees(electron_1.ipcRenderer.sendSync('employee:delete', save));
+        const result = electron_1.ipcRenderer.sendSync('employee:delete', employees);
+        setEmployees(result);
     }
     else {
         axios_1.default
-            .post(`${url}/employees/delete`, { id: id })
+            .post(`${url}/employees/delete`, { employees: employees })
             .then(response => {
             console.log(response.data);
             setEmployees(response.data);

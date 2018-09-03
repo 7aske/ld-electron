@@ -1,3 +1,4 @@
+import { Store } from '../scripts/Store';
 interface ModalButtons {
 	confirm: HTMLElement | null;
 	close: HTMLElement | null;
@@ -8,8 +9,9 @@ export class Modal {
 	private modal: HTMLElement | null;
 	private backdrop: HTMLElement | null;
 	private title: HTMLElement | null;
-
-	constructor() {
+	private store: Store;
+	constructor(store: Store) {
+		this.store = store;
 		this.modal = document.querySelector('#modal');
 		this.backdrop = document.querySelector('#backdrop');
 		this.title = document.querySelector('#modal .card-title');
@@ -42,6 +44,7 @@ export class Modal {
 		}
 		this.title.innerHTML = title;
 		this.body.innerHTML = body;
+		this.store.setState('isModalUp', true);
 		return true;
 	}
 	public close() {
@@ -53,6 +56,7 @@ export class Modal {
 		this.buttons.confirm.style.display = 'none';
 		this.title.innerHTML = '';
 		this.body.innerHTML = '';
+		this.store.setState('isModalUp', false);
 		return false;
 	}
 }

@@ -1,32 +1,26 @@
 import { app, BrowserWindow, ipcMain } from 'electron';
 import { join } from 'path';
 import { readFileSync, writeFileSync } from 'fs';
-
-interface Employee {
-	_id: string;
-	id: string;
-	jmbg: string;
-}
-
+import { EmployeeProperties } from '../renderer/scripts/Employee';
 interface EmployeesFile {
-	employees: Array<Employee>;
+	employees: Array<EmployeeProperties>;
 }
-
-const configFilePath: string = join(__dirname, 'config/config.json');
-let configFile = readFileSync(configFilePath, 'utf8');
 const employeesFilePath: string = join(__dirname, 'database/employees.json');
 let window: BrowserWindow | null;
-let child: BrowserWindow | null;
 let employeesFile: EmployeesFile = JSON.parse(readFileSync(employeesFilePath, 'utf8').toString());
 function main() {
 	window = new BrowserWindow({
-		width: 1600,
-		height: 1200,
-		center: true
+		width: 1920,
+		height: 1080,
+		center: true,
+		show: false,
+		maximizable: true,
+		icon: join(__dirname, 'icons/default.png')
 	});
-
 	window.loadFile(join(__dirname, '../renderer/views/mainMenu.html'));
-
+	window.on('ready-to-show', () => {
+		window.show();
+	});
 	window.on('closed', () => {
 		window = null;
 	});
@@ -35,9 +29,9 @@ app.on('ready', main);
 app.on('window-all-closed', () => {
 	app.quit();
 });
-function handleSave(employees: Array<Employee>) {
+function handleSave(employees: Array<EmployeeProperties>) {
 	employees.forEach(employee => {
-		const check: Employee | undefined = employeesFile.employees.find(e => {
+		const check: EmployeeProperties | undefined = employeesFile.employees.find(e => {
 			return e._id == employee._id;
 		});
 		if (check) {
@@ -58,26 +52,13 @@ function handleSave(employees: Array<Employee>) {
 	writeFileSync(employeesFilePath, JSON.stringify(employeesFile), 'utf8');
 	return employeesFile.employees;
 }
-function handleDelete(employees: Array<Employee>) {
-	employeesFile.employees = employees;
-	employeesFile.employees.sort((a, b) => {
-		if (a.id > b.id) return 1;
-		if (a.id < b.id) return -1;
-		else return 0;
+function handleDelete(toDelete: Array<EmployeeProperties>) {
+	toDelete.forEach(employee => {
+		employeesFile.employees.splice(employeesFile.employees.indexOf(employee), 1);
 	});
 	writeFileSync(employeesFilePath, JSON.stringify(employeesFile), 'utf8');
 	return employeesFile.employees;
 }
-
-ipcMain.on('window:settings-get', (event: any, data: any) => {
-	event.returnValue = configFile;
-});
-ipcMain.on('window:settings-update', (event: any, data: any) => {
-	console.log(data);
-	configFile = data;
-	writeFileSync(configFilePath, JSON.stringify(data), 'utf8');
-	event.returnValue = data;
-});
 ipcMain.on('employee:save', (event: any, employees: any) => {
 	console.log(employees.length);
 	event.returnValue = handleSave(employees);
@@ -86,7 +67,7 @@ ipcMain.on('employee:delete', (event: any, employees: any) => {
 	console.log(employees.length);
 	event.returnValue = handleDelete(employees);
 });
-ipcMain.on('employee:get', (event: any, query: any) => {
+ipcMain.on('employee:get', (event: any, query: string | null) => {
 	console.log(query);
 	if (query) {
 		const employees = employeesFile.employees.filter(e => {
