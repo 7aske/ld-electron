@@ -22,6 +22,9 @@ function main() {
     window.on('closed', () => {
         window = null;
     });
+    window.webContents.on('new-window', event => {
+        event.preventDefault();
+    });
 }
 electron_1.app.on('ready', main);
 electron_1.app.on('window-all-closed', () => {

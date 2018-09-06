@@ -24,6 +24,9 @@ function main() {
 	window.on('closed', () => {
 		window = null;
 	});
+	window.webContents.on('new-window', event => {
+		event.preventDefault();
+	});
 }
 app.on('ready', main);
 app.on('window-all-closed', () => {

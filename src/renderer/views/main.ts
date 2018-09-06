@@ -37,7 +37,6 @@ const store = new Store(initialState);
 const main: HTMLElement = document.querySelector('main');
 
 let menu: Menu | null = null;
-console.log(localStorage.getItem('data'));
 const url: string | null = ENV == 'electron' ? null : 'http://localhost:3000';
 store.subscribe('isAsideOut', [asideToggle, positionResizeBars]);
 store.subscribe('currentEmployee', [populateFields, colorEmployeeList]);
@@ -108,15 +107,23 @@ function getWidth(): number {
 function handleBack(event: Event): void {
 	event.preventDefault();
 	let commit: Array<Employee> = [];
+	let text = 'Imate nesacuvane promene.<br>';
 	let check: boolean = false;
 	const array: Array<Employee> = store.getState('employeeArray');
 	array.forEach(e => {
 		if (Object.keys(e.changes).length > 0) {
 			check = true;
+			commit.push(e);
 		}
 	});
+	commit.forEach(e => {
+		text += employeeSummaryTemplate(e);
+	});
 	if (check) {
-		modal.open('Obevestenje', 'Imate nesacuvane promene.');
+		modal.open('Obevestenje', text, () => {
+			employeeSave(commit, true);
+			window.location.href = window.location.href.substring(0, window.location.href.lastIndexOf('/') + 1) + 'mainMenu.html';
+		});
 	} else {
 		window.location.href = window.location.href.substring(0, window.location.href.lastIndexOf('/') + 1) + 'mainMenu.html';
 	}
@@ -395,35 +402,45 @@ function employeeDelete(employeesToDelete: Array<Employee>): void {
 		});
 	}
 }
-function employeeSave(array: Array<Employee>): void {
-	let commit: Array<Employee> = [];
-	let check: boolean = false;
-	const employees: Array<Employee> = array ? array : store.getState('employeeArray');
-	employees.forEach(e => {
-		if (Object.keys(e.changes).length > 0) {
-			check = true;
-		}
-	});
-	if (check) {
-		let text: string = '';
+function employeeSave(array: Array<Employee>, skipModal?: boolean): void {
+	if (skipModal) {
+		let save: Array<EmployeeProperties> = [];
+		array.forEach(e => {
+			e.commitChanges();
+			save.push(e.properties);
+		});
+		store.setState('newEmployee', null);
+		employeeSaveHandler(save);
+	} else {
+		let commit: Array<Employee> = [];
+		let check: boolean = false;
+		const employees: Array<Employee> = array ? array : store.getState('employeeArray');
 		employees.forEach(e => {
 			if (Object.keys(e.changes).length > 0) {
-				text += employeeSummaryTemplate(e);
-				commit.push(e);
+				check = true;
 			}
 		});
-
-		modal.open('Da li zelite da sacuvate sve promene?', text, () => {
-			let save: Array<EmployeeProperties> = [];
-			commit.forEach(e => {
-				e.commitChanges();
-				save.push(e.properties);
+		if (check) {
+			let text: string = '';
+			employees.forEach(e => {
+				if (Object.keys(e.changes).length > 0) {
+					text += employeeSummaryTemplate(e);
+					commit.push(e);
+				}
 			});
-			store.setState('newEmployee', null);
-			employeeSaveHandler(save);
-		});
-	} else {
-		modal.open('Obavestenje', 'Nema izmena');
+
+			modal.open('Da li zelite da sacuvate sve promene?', text, () => {
+				let save: Array<EmployeeProperties> = [];
+				commit.forEach(e => {
+					e.commitChanges();
+					save.push(e.properties);
+				});
+				store.setState('newEmployee', null);
+				employeeSaveHandler(save);
+			});
+		} else {
+			modal.open('Obavestenje', 'Nema izmena');
+		}
 	}
 }
 function setEmployees(data: Array<EmployeeProperties> | EmployeeProperties): void {
@@ -492,7 +509,6 @@ document.addEventListener('mouseup', event => {
 			contentWidth: store.getState('contentWidth'),
 			asideWidth: store.getState('asideWidth')
 		};
-
 		settingsUpdateHandler(config);
 	}
 	store.setState('isResizingList', false);
@@ -514,13 +530,15 @@ function settingsGetHandler() {
 	// 		.catch(err => console.log(err));
 	//}
 	const isAsideOut = localStorage.getItem('isAsideOut') === 'true';
-	const contentWidth = parseInt(localStorage.getItem('contentWidth')) || initialState.contentWidth;
-	const asideWidth = parseInt(localStorage.getItem('asideWidth')) || initialState.asideWidth;
+	const contentWidth = parseInt(localStorage.getItem('contentWidth'));
+	const asideWidth = parseInt(localStorage.getItem('asideWidth'));
 	const config: Config = {
 		isAsideOut: isAsideOut,
 		contentWidth: contentWidth,
 		asideWidth: asideWidth
 	};
+	console.log(config);
+
 	setSettings(config);
 }
 function settingsUpdateHandler(config: Config) {

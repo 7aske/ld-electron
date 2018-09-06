@@ -25,7 +25,6 @@ const initialState = {
 const store = new Store_1.Store(initialState);
 const main = document.querySelector('main');
 let menu = null;
-console.log(localStorage.getItem('data'));
 const url = ENV == 'electron' ? null : 'http://localhost:3000';
 store.subscribe('isAsideOut', [asideToggle, positionResizeBars]);
 store.subscribe('currentEmployee', [populateFields, colorEmployeeList]);
@@ -94,15 +93,23 @@ function getWidth() {
 function handleBack(event) {
     event.preventDefault();
     let commit = [];
+    let text = 'Imate nesacuvane promene.<br>';
     let check = false;
     const array = store.getState('employeeArray');
     array.forEach(e => {
         if (Object.keys(e.changes).length > 0) {
             check = true;
+            commit.push(e);
         }
     });
+    commit.forEach(e => {
+        text += templates_1.employeeSummaryTemplate(e);
+    });
     if (check) {
-        modal.open('Obevestenje', 'Imate nesacuvane promene.');
+        modal.open('Obevestenje', text, () => {
+            employeeSave(commit, true);
+            window.location.href = window.location.href.substring(0, window.location.href.lastIndexOf('/') + 1) + 'mainMenu.html';
+        });
     }
     else {
         window.location.href = window.location.href.substring(0, window.location.href.lastIndexOf('/') + 1) + 'mainMenu.html';
@@ -399,35 +406,46 @@ function employeeDelete(employeesToDelete) {
         });
     }
 }
-function employeeSave(array) {
-    let commit = [];
-    let check = false;
-    const employees = array ? array : store.getState('employeeArray');
-    employees.forEach(e => {
-        if (Object.keys(e.changes).length > 0) {
-            check = true;
-        }
-    });
-    if (check) {
-        let text = '';
-        employees.forEach(e => {
-            if (Object.keys(e.changes).length > 0) {
-                text += templates_1.employeeSummaryTemplate(e);
-                commit.push(e);
-            }
+function employeeSave(array, skipModal) {
+    if (skipModal) {
+        let save = [];
+        array.forEach(e => {
+            e.commitChanges();
+            save.push(e.properties);
         });
-        modal.open('Da li zelite da sacuvate sve promene?', text, () => {
-            let save = [];
-            commit.forEach(e => {
-                e.commitChanges();
-                save.push(e.properties);
-            });
-            store.setState('newEmployee', null);
-            employeeSaveHandler(save);
-        });
+        store.setState('newEmployee', null);
+        employeeSaveHandler(save);
     }
     else {
-        modal.open('Obavestenje', 'Nema izmena');
+        let commit = [];
+        let check = false;
+        const employees = array ? array : store.getState('employeeArray');
+        employees.forEach(e => {
+            if (Object.keys(e.changes).length > 0) {
+                check = true;
+            }
+        });
+        if (check) {
+            let text = '';
+            employees.forEach(e => {
+                if (Object.keys(e.changes).length > 0) {
+                    text += templates_1.employeeSummaryTemplate(e);
+                    commit.push(e);
+                }
+            });
+            modal.open('Da li zelite da sacuvate sve promene?', text, () => {
+                let save = [];
+                commit.forEach(e => {
+                    e.commitChanges();
+                    save.push(e.properties);
+                });
+                store.setState('newEmployee', null);
+                employeeSaveHandler(save);
+            });
+        }
+        else {
+            modal.open('Obavestenje', 'Nema izmena');
+        }
     }
 }
 function setEmployees(data) {
@@ -518,13 +536,14 @@ function settingsGetHandler() {
     // 		.catch(err => console.log(err));
     //}
     const isAsideOut = localStorage.getItem('isAsideOut') === 'true';
-    const contentWidth = parseInt(localStorage.getItem('contentWidth')) || initialState.contentWidth;
-    const asideWidth = parseInt(localStorage.getItem('asideWidth')) || initialState.asideWidth;
+    const contentWidth = parseInt(localStorage.getItem('contentWidth'));
+    const asideWidth = parseInt(localStorage.getItem('asideWidth'));
     const config = {
         isAsideOut: isAsideOut,
         contentWidth: contentWidth,
         asideWidth: asideWidth
     };
+    console.log(config);
     setSettings(config);
 }
 function settingsUpdateHandler(config) {

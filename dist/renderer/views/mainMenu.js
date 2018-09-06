@@ -7,3 +7,8 @@ document.addEventListener('keydown', event => {
             break;
     }
 });
+document.addEventListener('mouseup', event => {
+    console.log(event.button);
+    if (event.button == 1)
+        event.preventDefault();
+});
