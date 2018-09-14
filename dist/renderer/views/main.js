@@ -297,6 +297,7 @@ function colorEmployeeList() {
 }
 function highlight(text, query) {
     text = text.trim();
+    //const p: RegExp = new RegExp(`<span class="bg-warning">${query}<\/span>`, 'gi');
     const r = new RegExp(query, 'gi');
     const matches = text.match(r);
     let arr = text.split(r);
@@ -309,6 +310,28 @@ function highlight(text, query) {
     }
     return text;
 }
+// function highlight2(text: string, query: string) {
+// 	const q: Array<string> = query.split(' ');
+// 	console.log(q);
+// 	let result: Array<string> = [];
+// 	text = highlight(text, q[0]);
+// 	if (q.length > 0) {
+// 		for (let i = 1; i < q.length; i++) {
+// 			const p: RegExp = new RegExp(`<span class="bg-warning">${q[i - 1]}<\/span>`, 'gi');
+// 			if (text.match(p)) {
+// 				const old: string = text.match(p)[0];
+// 				let arr: Array<string> = text.split(p);
+// 				console.log(old);
+// 				for (let j = 0; j < arr.length; j++) {
+// 					result.push(highlight(arr[j], q[i]));
+// 				}
+// 				result.splice(1, 0, old);
+// 				text = result.join('');
+// 			}
+// 		}
+// 	}
+// 	return text;
+// }
 function populateEmployeeList() {
     let result = '';
     employeeList.innerHTML = '';
@@ -346,16 +369,26 @@ function populateEmployeeList() {
     });
 }
 function searchEmployeeArray(query) {
-    const employees = store.getState('employeeArray');
-    const array = query
-        ? employees.filter(e => {
-            const c = e.properties;
-            const r = new RegExp(query, 'gi');
-            //return parseInt(e.properties.id) == parseInt(query) || e.properties.umcn.startsWith(query) || e.properties.firstName.startsWith(query) || e.properties.lastName.startsWith(query);
-            return r.test(c.id) || r.test(c.umcn) || r.test(c.firstName) || r.test(c.lastName);
-        })
-        : employees;
-    store.setState('employeeList', array);
+    let uniqEs6 = (arrArg) => {
+        return arrArg.filter((elem, pos, arr) => {
+            return arr.indexOf(elem) == pos;
+        });
+    };
+    const q = query.split(' ');
+    let result = [];
+    q.forEach(query => {
+        const employees = store.getState('employeeArray');
+        const array = query
+            ? employees.filter(e => {
+                const c = e.properties;
+                const r = new RegExp(query, 'gi');
+                return r.test(c.id) || r.test(c.umcn) || r.test(c.firstName) || r.test(c.lastName);
+            })
+            : employees;
+        result.push(...array);
+    });
+    result = uniqEs6(result);
+    store.setState('employeeList', result);
 }
 function changeCurrentEmployee() {
     let btn = event.target;

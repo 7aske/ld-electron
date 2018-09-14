@@ -292,6 +292,7 @@ function colorEmployeeList(): void {
 }
 function highlight(text: string, query: string) {
 	text = text.trim();
+	//const p: RegExp = new RegExp(`<span class="bg-warning">${query}<\/span>`, 'gi');
 	const r: RegExp = new RegExp(query, 'gi');
 	const matches: Array<string> = text.match(r);
 	let arr = text.split(r);
@@ -302,9 +303,30 @@ function highlight(text: string, query: string) {
 		});
 		text = arr.join('');
 	}
-
 	return text;
 }
+// function highlight2(text: string, query: string) {
+// 	const q: Array<string> = query.split(' ');
+// 	console.log(q);
+// 	let result: Array<string> = [];
+// 	text = highlight(text, q[0]);
+// 	if (q.length > 0) {
+// 		for (let i = 1; i < q.length; i++) {
+// 			const p: RegExp = new RegExp(`<span class="bg-warning">${q[i - 1]}<\/span>`, 'gi');
+// 			if (text.match(p)) {
+// 				const old: string = text.match(p)[0];
+// 				let arr: Array<string> = text.split(p);
+// 				console.log(old);
+// 				for (let j = 0; j < arr.length; j++) {
+// 					result.push(highlight(arr[j], q[i]));
+// 				}
+// 				result.splice(1, 0, old);
+// 				text = result.join('');
+// 			}
+// 		}
+// 	}
+// 	return text;
+// }
 function populateEmployeeList(): void {
 	let result: string = '';
 	employeeList.innerHTML = '';
@@ -344,16 +366,26 @@ function populateEmployeeList(): void {
 	});
 }
 function searchEmployeeArray(query: string | null): void {
-	const employees: Array<Employee> = store.getState('employeeArray');
-	const array: Array<Employee> = query
-		? employees.filter(e => {
-				const c: EmployeeProperties = e.properties;
-				const r: RegExp = new RegExp(query, 'gi');
-				//return parseInt(e.properties.id) == parseInt(query) || e.properties.umcn.startsWith(query) || e.properties.firstName.startsWith(query) || e.properties.lastName.startsWith(query);
-				return r.test(c.id) || r.test(c.umcn) || r.test(c.firstName) || r.test(c.lastName);
-		  })
-		: employees;
-	store.setState('employeeList', array);
+	let uniqEs6 = (arrArg: Array<Employee>) => {
+		return arrArg.filter((elem, pos, arr) => {
+			return arr.indexOf(elem) == pos;
+		});
+	};
+	const q: Array<string> = query.split(' ');
+	let result: Array<Employee> = [];
+	q.forEach(query => {
+		const employees: Array<Employee> = store.getState('employeeArray');
+		const array: Array<Employee> = query
+			? employees.filter(e => {
+					const c: EmployeeProperties = e.properties;
+					const r: RegExp = new RegExp(query, 'gi');
+					return r.test(c.id) || r.test(c.umcn) || r.test(c.firstName) || r.test(c.lastName);
+			  })
+			: employees;
+		result.push(...array);
+	});
+	result = uniqEs6(result);
+	store.setState('employeeList', result);
 }
 function changeCurrentEmployee(): void {
 	let btn: HTMLButtonElement = <HTMLButtonElement>event.target;

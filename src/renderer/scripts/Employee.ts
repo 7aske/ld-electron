@@ -296,6 +296,8 @@ export class Employee {
 		}
 	}
 	public commitChanges() {
+		this.properties.sex = this.formatSexFromUMCN(this.properties.umcn);
+		this.properties.dateOfBirth = this.formatDoBfromUMCN(this.properties.umcn);
 		for (let key in this.changes) {
 			this.properties[key] = this.changes[key];
 		}
@@ -376,8 +378,7 @@ export class Employee {
 			containerInternal.innerHTML += dateListTemplate(p.from, p.till);
 		});
 		this.changes.totalYoS =
-			(this.changes.externalYoS_total ? this.changes.externalYoS_total : this.properties.externalYoS_total) +
-			(this.changes.internalYoS_total ? this.changes.internalYoS_total : this.properties.internalYoS_total);
+			(this.changes.externalYoS_total ? this.changes.externalYoS_total : this.properties.externalYoS_total) + (this.changes.internalYoS_total ? this.changes.internalYoS_total : this.properties.internalYoS_total);
 		this.populateDate();
 		return this;
 	}
@@ -395,8 +396,7 @@ export class Employee {
 			containerExternal.innerHTML += dateListTemplate(p.from, p.till);
 		});
 		this.changes.totalYoS =
-			(this.changes.externalYoS_total ? this.changes.externalYoS_total : this.properties.externalYoS_total) +
-			(this.changes.internalYoS_total ? this.changes.internalYoS_total : this.properties.internalYoS_total);
+			(this.changes.externalYoS_total ? this.changes.externalYoS_total : this.properties.externalYoS_total) + (this.changes.internalYoS_total ? this.changes.internalYoS_total : this.properties.internalYoS_total);
 		this.populateDate();
 		return this;
 	}
