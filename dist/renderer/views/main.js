@@ -292,23 +292,58 @@ function colorEmployeeList() {
             else
                 item.classList.remove('list-group-item-dark');
     });
-    if (searchInp.value != '') {
-    }
 }
-function highlight(text, query) {
+function highlight(text, string) {
     text = text.trim();
-    //const p: RegExp = new RegExp(`<span class="bg-warning">${query}<\/span>`, 'gi');
-    const r = new RegExp(query, 'gi');
-    const matches = text.match(r);
-    let arr = text.split(r);
-    if (matches) {
-        matches.forEach((m, i) => {
-            const replacement = `<span class="bg-warning">${m}</span>`;
-            arr.splice(i == 0 ? i + 1 : i * 2 + 1, 0, replacement);
-        });
-        text = arr.join('');
+    const q = string.split(' ');
+    if (q.length == 1) {
+        const p = new RegExp(`<span class="bg-warning">.*?<\/span>`, 'gi');
+        const r = new RegExp(q[0], 'gi');
+        if (text.match(p)) {
+            let arr = text.split(p);
+            let result = [];
+            let old = text.match(p);
+            arr.forEach((t, i) => {
+                const matches = t.match(r);
+                let arr = t.split(r);
+                if (matches) {
+                    matches.forEach((m, i) => {
+                        const replacement = `<span class="bg-warning">${m}</span>`;
+                        arr.splice(i == 0 ? i + 1 : i * 2 + 1, 0, replacement);
+                    });
+                    t = arr.join('');
+                    result.push(t);
+                }
+                else {
+                    result.push(t);
+                }
+            });
+            result.forEach((r, i) => {
+                if (i != result.length - 1)
+                    result.splice(i == 0 ? i + 1 : i * 2 + 1, 0, old[i]);
+            });
+            return result.length > 0 ? result.join('') : text;
+        }
+        else {
+            const matches = text.match(r);
+            let arr = text.split(r);
+            if (matches) {
+                matches.forEach((m, i) => {
+                    const replacement = `<span class="bg-warning">${m}</span>`;
+                    arr.splice(i == 0 ? i + 1 : i * 2 + 1, 0, replacement);
+                });
+                text = arr.join('');
+            }
+            return text;
+        }
     }
-    return text;
+    else {
+        q.forEach(query => {
+            if (query != '')
+                text = highlight(text, query);
+        });
+        return text;
+    }
 }
 // function highlight2(text: string, query: string) {
 // 	const q: Array<string> = query.split(' ');
@@ -369,29 +404,38 @@ function populateEmployeeList() {
     });
 }
 function searchEmployeeArray(query) {
-    let uniqEs6 = (arrArg) => {
+    let unique = (arrArg) => {
         return arrArg.filter((elem, pos, arr) => {
             return arr.indexOf(elem) == pos;
         });
     };
+    let search = (arr, query) => {
+        const r = new RegExp(query, 'gi');
+        return arr.filter(e => {
+            const c = e.properties;
+            return r.test(c.id) || r.test(c.umcn) || r.test(c.firstName) || r.test(c.lastName);
+        });
+    };
     const q = query.split(' ');
-    let result = [];
+    let result = store.getState('employeeArray');
     q.forEach(query => {
-        const employees = store.getState('employeeArray');
-        const array = query
-            ? employees.filter(e => {
-                const c = e.properties;
-                const r = new RegExp(query, 'gi');
-                return r.test(c.id) || r.test(c.umcn) || r.test(c.firstName) || r.test(c.lastName);
-            })
-            : employees;
-        result.push(...array);
+        if (search(result, query).length == 0) {
+            for (let i = query.length - 1; i >= 0; i--) {
+                if (search(result, query.substring(0, i)).length == 0)
+                    continue;
+                else
+                    result = search(result, query.substring(0, i));
+            }
+        }
+        else {
+            result = search(result, query);
+        }
     });
-    result = uniqEs6(result);
     store.setState('employeeList', result);
 }
 function changeCurrentEmployee() {
     let btn = event.target;
+    console.log(btn.nodeName);
     let _id = btn.attributes.getNamedItem('data-id').value;
     const employees = store.getState('employeeArray');
     const employee = employees.find(e => {
