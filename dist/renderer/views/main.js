@@ -345,28 +345,6 @@ function highlight(text, string) {
         return text;
     }
 }
-// function highlight2(text: string, query: string) {
-// 	const q: Array<string> = query.split(' ');
-// 	console.log(q);
-// 	let result: Array<string> = [];
-// 	text = highlight(text, q[0]);
-// 	if (q.length > 0) {
-// 		for (let i = 1; i < q.length; i++) {
-// 			const p: RegExp = new RegExp(`<span class="bg-warning">${q[i - 1]}<\/span>`, 'gi');
-// 			if (text.match(p)) {
-// 				const old: string = text.match(p)[0];
-// 				let arr: Array<string> = text.split(p);
-// 				console.log(old);
-// 				for (let j = 0; j < arr.length; j++) {
-// 					result.push(highlight(arr[j], q[i]));
-// 				}
-// 				result.splice(1, 0, old);
-// 				text = result.join('');
-// 			}
-// 		}
-// 	}
-// 	return text;
-// }
 function populateEmployeeList() {
     let result = '';
     employeeList.innerHTML = '';
