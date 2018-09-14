@@ -16,7 +16,7 @@ const initialState = {
     isAsideOut: false,
     isModalUp: false,
     asideWidth: 400,
-    contentWidth: 500,
+    contentWidth: { left: 6, right: 6 },
     isResizingList: false,
     isResizingContent: false,
     newEmployee: null,
@@ -80,10 +80,7 @@ const mainInputs = Array.prototype.slice.call(document.querySelectorAll('main in
 const inputs = [...headerInputs, ...mainInputs, document.querySelector('main textarea')];
 inputs.forEach(i => {
     i.addEventListener('keyup', function () {
-        if (this.id.indexOf('fromDateInternal') == -1 &&
-            this.id.indexOf('tillDateInternal') == -1 &&
-            this.id.indexOf('fromDateExternal') == -1 &&
-            this.id.indexOf('tillDateExternal') == -1)
+        if (this.id.indexOf('fromDateInternal') == -1 && this.id.indexOf('tillDateInternal') == -1 && this.id.indexOf('fromDateExternal') == -1 && this.id.indexOf('tillDateExternal') == -1)
             handleInput(this.id, this.value, this);
     });
 });
@@ -125,7 +122,9 @@ function asideToggle() {
         aside.style.left = `-${store.getState('asideWidth')}px`;
         asideTrigger.classList.remove('active');
     }
-    main.style.width = `${getWidth()}px`;
+    setTimeout(() => {
+        main.style.width = `${getWidth()}px`;
+    }, 200);
     const config = {
         isAsideOut: store.getState('isAsideOut'),
         contentWidth: store.getState('contentWidth'),
@@ -172,35 +171,42 @@ function positionResizeBars() {
     aside.style.width = `${store.getState('asideWidth')}px`;
     if (store.getState('isAsideOut')) {
         resize0.style.display = 'block';
-        resize1.style.left = `${store.getState('asideWidth') + main.firstElementChild.clientWidth + 5}px`;
+        resize1.style.left = `${store.getState('asideWidth') + main.firstElementChild.clientWidth + 15}px`;
         resize0.style.left = `${store.getState('asideWidth')}px`;
     }
     else {
         resize0.style.display = 'none';
-        resize1.style.left = `${main.firstElementChild.clientWidth + 10}px`;
+        resize1.style.left = `${main.firstElementChild.clientWidth + 15}px`;
     }
 }
-function handleResizeContent() {
-    const width = main.offsetWidth;
+function handleResizeContent(mousePos) {
     const c0 = main.children[0];
     const c1 = main.children[1];
-    const mousePos = store.getState('contentWidth');
-    const x = mousePos < width / 2 ? Math.round(width / mousePos) : Math.round(width / (width - mousePos));
-    const col = mousePos < width / 2 ? Math.round(12 / x) : Math.round(12 / x);
-    if (col < 13 && col > -1) {
-        let col0 = col;
-        let col1 = 12 - col;
-        if (mousePos > width / 2) {
-            col0 = 12 - col;
-            col1 = col;
-        }
-        if (col == 12 || col == 0) {
-            col0 = col1 = 12;
-        }
-        c0.classList.replace(c0.className.match(/col.+/gi)[0], `col-lg-${col0}`);
-        c1.classList.replace(c1.className.match(/col.+/gi)[0], `col-lg-${col1}`);
+    if (!mousePos) {
+        const cols = store.getState('contentWidth');
+        c0.classList.replace(c0.className.match(/col.+/gi)[0], `col-lg-${cols.left}`);
+        c1.classList.replace(c1.className.match(/col.+/gi)[0], `col-lg-${cols.right}`);
     }
-    //resize1.style.left = `${store.getState('asideWidth') + main.firstElementChild.offsetWidth + 5}px`;
+    else {
+        const width = main.offsetWidth;
+        const x = mousePos < width / 2 ? width / mousePos : width / (width - mousePos);
+        const col = Math.round(12 / x);
+        if (col < 13 && col > -1) {
+            let col0 = col;
+            let col1 = 12 - col;
+            if (mousePos > width / 2) {
+                col0 = 12 - col;
+                col1 = col;
+            }
+            if (col == 12 || col == 0) {
+                col0 = col1 = 12;
+            }
+            c0.classList.replace(c0.className.match(/col.+/gi)[0], `col-lg-${col0}`);
+            c1.classList.replace(c1.className.match(/col.+/gi)[0], `col-lg-${col1}`);
+            store.setState('contentWidth', { left: col0, right: col1 });
+        }
+        //resize1.style.left = `${store.getState('asideWidth') + main.firstElementChild.offsetWidth + 5}px`;
+    }
 }
 function handleInput(prop, value, target) {
     if (prop == 'umcn') {
@@ -261,7 +267,7 @@ function colorEmployeeList() {
     const employees = store.getState('employeeList');
     employees.forEach(e => {
         const item = document.querySelector(`[data-id="${e.properties._id}"]`);
-        const badge = item.firstElementChild;
+        const badge = item.lastElementChild;
         if (Object.keys(e.changes).length > 0) {
             if (item)
                 item.classList.add('list-group-item-warning');
@@ -276,12 +282,32 @@ function colorEmployeeList() {
         }
     });
     listItems.forEach(item => {
+        if (searchInp.value != '') {
+            let q = searchInp.value;
+            item.firstElementChild.innerHTML = highlight(item.firstElementChild.innerHTML, q);
+        }
         if (item.attributes.getNamedItem('data-id'))
             if (item.attributes.getNamedItem('data-id').value == currentEmployee.properties._id)
                 item.classList.add('list-group-item-dark');
             else
                 item.classList.remove('list-group-item-dark');
     });
+    if (searchInp.value != '') {
+    }
+}
+function highlight(text, query) {
+    text = text.trim();
+    const r = new RegExp(query, 'gi');
+    const matches = text.match(r);
+    let arr = text.split(r);
+    if (matches) {
+        matches.forEach((m, i) => {
+            const replacement = `<span class="bg-warning">${m}</span>`;
+            arr.splice(i == 0 ? i + 1 : i * 2 + 1, 0, replacement);
+        });
+        text = arr.join('');
+    }
+    return text;
 }
 function populateEmployeeList() {
     let result = '';
@@ -297,7 +323,7 @@ function populateEmployeeList() {
         const employee = employees.find(e => {
             return e.properties._id == item.attributes.getNamedItem('data-id').value;
         });
-        item.addEventListener('contextmenu', function (event) {
+        item.addEventListener('contextmenu', event => {
             menu = new Menu_1.Menu(event, [
                 {
                     name: 'Sacuvaj',
@@ -323,15 +349,17 @@ function searchEmployeeArray(query) {
     const employees = store.getState('employeeArray');
     const array = query
         ? employees.filter(e => {
-            return (parseInt(e.properties.id) == parseInt(query) ||
-                e.properties.umcn.startsWith(query) ||
-                e.properties.firstName.startsWith(query) ||
-                e.properties.lastName.startsWith(query));
+            const c = e.properties;
+            const r = new RegExp(query, 'gi');
+            //return parseInt(e.properties.id) == parseInt(query) || e.properties.umcn.startsWith(query) || e.properties.firstName.startsWith(query) || e.properties.lastName.startsWith(query);
+            return r.test(c.id) || r.test(c.umcn) || r.test(c.firstName) || r.test(c.lastName);
         })
         : employees;
     store.setState('employeeList', array);
 }
-function changeCurrentEmployee(btn, _id) {
+function changeCurrentEmployee() {
+    let btn = event.target;
+    let _id = btn.attributes.getNamedItem('data-id').value;
     const employees = store.getState('employeeArray');
     const employee = employees.find(e => {
         return e.properties._id == _id;
@@ -460,6 +488,7 @@ function setEmployees(data) {
     }
 }
 function setSettings(data) {
+    console.log(data);
     for (let key in data) {
         store.setState(key, data[key]);
     }
@@ -503,10 +532,12 @@ document.addEventListener('mousemove', event => {
     }
     if (store.getState('isResizingContent')) {
         if (store.getState('isAsideOut')) {
-            store.setState('contentWidth', event.screenX - store.getState('asideWidth'));
+            //store.setState('contentWidth', event.screenX - store.getState('asideWidth'));
+            handleResizeContent(event.screenX - store.getState('asideWidth'));
         }
         else {
-            store.setState('contentWidth', event.screenX);
+            handleResizeContent(event.screenX);
+            //store.setState('contentWidth', event.screenX);
         }
     }
 });
@@ -536,7 +567,7 @@ function settingsGetHandler() {
     // 		.catch(err => console.log(err));
     //}
     const isAsideOut = localStorage.getItem('isAsideOut') === 'true';
-    const contentWidth = parseInt(localStorage.getItem('contentWidth'));
+    const contentWidth = JSON.parse(localStorage.getItem('contentWidth'));
     const asideWidth = parseInt(localStorage.getItem('asideWidth'));
     const config = {
         isAsideOut: isAsideOut,
@@ -559,7 +590,7 @@ function settingsUpdateHandler(config) {
     // 		.catch(err => console.log(err));
     // }
     localStorage.setItem('isAsideOut', config.isAsideOut ? 'true' : 'false');
-    localStorage.setItem('contentWidth', config.contentWidth.toString());
+    localStorage.setItem('contentWidth', JSON.stringify(config.contentWidth));
     localStorage.setItem('asideWidth', config.asideWidth.toString());
 }
 function employeeGetHandler() {

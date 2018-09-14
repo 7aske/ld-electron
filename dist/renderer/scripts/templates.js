@@ -3,8 +3,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 function dateListTemplate(f, t) {
     const from = new Date(f);
     const till = new Date(t);
-    return `<div class="list-group-item">${from.getDate()}/${from.getMonth() +
-        1}/${from.getFullYear()} - ${till.getDate()}/${till.getMonth() + 1}/${till.getFullYear()}</div>`;
+    return `<div class="list-group-item">${from.getDate()}/${from.getMonth() + 1}/${from.getFullYear()} - ${till.getDate()}/${till.getMonth() + 1}/${till.getFullYear()}</div>`;
 }
 exports.dateListTemplate = dateListTemplate;
 function dateTemplate(date) {
@@ -13,10 +12,10 @@ function dateTemplate(date) {
 exports.dateTemplate = dateTemplate;
 function optionTemplate(e) {
     return `<li class="list-group-item list-group-item-action d-flex justify-content-between align-items-center"
-	onclick="changeCurrentEmployee(event.target,event.target.attributes['data-id'].value)"
-	data-id="${e.properties._id}">
-	${e.properties.id} - ${e.properties.umcn} - ${e.properties.lastName} ${e.properties.firstName}
-	<span class="badge badge-warning badge-pill"></span></li>`;
+	onclick="changeCurrentEmployee()"
+	data-id="${e.properties._id}"><div style="pointer-events:none">
+	${e.properties.id} - ${e.properties.umcn} - ${e.properties.lastName} ${e.properties.firstName}</div>
+	<span data-id="${e.properties._id}" class="badge badge-warning badge-pill"></span></li>`;
 }
 exports.optionTemplate = optionTemplate;
 function employeeSummaryTemplate(e) {

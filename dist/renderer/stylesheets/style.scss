@@ -49,7 +49,7 @@ label {
 }
 aside {
 	border-right: 2px solid #bbb;
-	transition: 100ms all;
+	transition: 200ms left;
 	position: absolute;
 	width: 400px;
 	left: -400px;
@@ -103,9 +103,6 @@ input::-webkit-calendar-picker-indicator {
 main {
 	.content:first-of-type {
 		border-right: 2px solid #bbb;
-	}
-	.content {
-		transition: 100ms all;
 	}
 	overflow-y: scroll;
 	display: block;

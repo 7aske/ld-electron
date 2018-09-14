@@ -67,8 +67,8 @@ label {
 
 aside {
   border-right: 2px solid #bbb;
-  -webkit-transition: 100ms all;
-  transition: 100ms all;
+  -webkit-transition: 200ms left;
+  transition: 200ms left;
   position: absolute;
   width: 400px;
   left: -400px;
@@ -137,11 +137,6 @@ main .content:first-of-type {
 }
 
 main .content {
-  -webkit-transition: 100ms all;
-  transition: 100ms all;
-}
-
-main .content {
   overflow-y: scroll;
 }
 
@@ -175,4 +170,3 @@ footer {
   height: 5vh;
   width: 100vw;
 }
-/*# sourceMappingURL=style.css.map */

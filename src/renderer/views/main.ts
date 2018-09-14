@@ -10,14 +10,14 @@ const ENV: string | undefined = window.process.type == 'renderer' ? 'electron' :
 import { Employee, EmployeeProperties } from '../scripts/Employee';
 import { Menu } from '../scripts/Menu';
 import { Modal } from '../scripts/Modal';
-import { Store, State } from '../scripts/Store';
+import { Store, State, ContentCols } from '../scripts/Store';
 import axios from 'axios';
 import { employeeSummaryTemplate, optionTemplate } from '../scripts/templates';
 interface Config {
 	isAsideOut: boolean;
-	contentWidth: number;
+	contentWidth: ContentCols;
 	asideWidth: number;
-	[key: string]: Employee | Array<Employee> | boolean | number | null;
+	[key: string]: Employee | Array<Employee> | boolean | number | ContentCols | null;
 }
 const initialState: State = {
 	employeeArray: [],
@@ -26,7 +26,7 @@ const initialState: State = {
 	isAsideOut: false,
 	isModalUp: false,
 	asideWidth: 400,
-	contentWidth: 500,
+	contentWidth: { left: 6, right: 6 },
 	isResizingList: false,
 	isResizingContent: false,
 	newEmployee: null,
@@ -92,12 +92,7 @@ const mainInputs: Array<HTMLInputElement> = Array.prototype.slice.call(document.
 const inputs: Array<HTMLInputElement> = [...headerInputs, ...mainInputs, document.querySelector('main textarea')];
 inputs.forEach(i => {
 	i.addEventListener('keyup', function() {
-		if (
-			this.id.indexOf('fromDateInternal') == -1 &&
-			this.id.indexOf('tillDateInternal') == -1 &&
-			this.id.indexOf('fromDateExternal') == -1 &&
-			this.id.indexOf('tillDateExternal') == -1
-		)
+		if (this.id.indexOf('fromDateInternal') == -1 && this.id.indexOf('tillDateInternal') == -1 && this.id.indexOf('fromDateExternal') == -1 && this.id.indexOf('tillDateExternal') == -1)
 			handleInput(this.id, this.value, this);
 	});
 });
@@ -137,7 +132,9 @@ function asideToggle(): void {
 		aside.style.left = `-${store.getState('asideWidth')}px`;
 		asideTrigger.classList.remove('active');
 	}
-	main.style.width = `${getWidth()}px`;
+	setTimeout(() => {
+		main.style.width = `${getWidth()}px`;
+	}, 200);
 	const config: Config = {
 		isAsideOut: store.getState('isAsideOut'),
 		contentWidth: store.getState('contentWidth'),
@@ -182,36 +179,41 @@ function positionResizeBars(): void {
 	aside.style.width = `${store.getState('asideWidth')}px`;
 	if (store.getState('isAsideOut')) {
 		resize0.style.display = 'block';
-		resize1.style.left = `${store.getState('asideWidth') + main.firstElementChild.clientWidth + 5}px`;
+		resize1.style.left = `${store.getState('asideWidth') + main.firstElementChild.clientWidth + 15}px`;
 		resize0.style.left = `${store.getState('asideWidth')}px`;
 	} else {
 		resize0.style.display = 'none';
-		resize1.style.left = `${main.firstElementChild.clientWidth + 10}px`;
+		resize1.style.left = `${main.firstElementChild.clientWidth + 15}px`;
 	}
 }
 
-function handleResizeContent(): void {
-	const width: number = main.offsetWidth;
+function handleResizeContent(mousePos?: number): void {
 	const c0: HTMLElement = <HTMLElement>main.children[0];
 	const c1: HTMLElement = <HTMLElement>main.children[1];
-	const mousePos: number = store.getState('contentWidth');
-	const x: number = mousePos < width / 2 ? Math.round(width / mousePos) : Math.round(width / (width - mousePos));
-	const col: number = mousePos < width / 2 ? Math.round(12 / x) : Math.round(12 / x);
-	if (col < 13 && col > -1) {
-		let col0: number = col;
-		let col1: number = 12 - col;
-		if (mousePos > width / 2) {
-			col0 = 12 - col;
-			col1 = col;
+	if (!mousePos) {
+		const cols: ContentCols = store.getState('contentWidth');
+		c0.classList.replace(c0.className.match(/col.+/gi)[0], `col-lg-${cols.left}`);
+		c1.classList.replace(c1.className.match(/col.+/gi)[0], `col-lg-${cols.right}`);
+	} else {
+		const width: number = main.offsetWidth;
+		const x: number = mousePos < width / 2 ? width / mousePos : width / (width - mousePos);
+		const col: number = Math.round(12 / x);
+		if (col < 13 && col > -1) {
+			let col0: number = col;
+			let col1: number = 12 - col;
+			if (mousePos > width / 2) {
+				col0 = 12 - col;
+				col1 = col;
+			}
+			if (col == 12 || col == 0) {
+				col0 = col1 = 12;
+			}
+			c0.classList.replace(c0.className.match(/col.+/gi)[0], `col-lg-${col0}`);
+			c1.classList.replace(c1.className.match(/col.+/gi)[0], `col-lg-${col1}`);
+			store.setState('contentWidth', { left: col0, right: col1 });
 		}
-		if (col == 12 || col == 0) {
-			col0 = col1 = 12;
-		}
-
-		c0.classList.replace(c0.className.match(/col.+/gi)[0], `col-lg-${col0}`);
-		c1.classList.replace(c1.className.match(/col.+/gi)[0], `col-lg-${col1}`);
+		//resize1.style.left = `${store.getState('asideWidth') + main.firstElementChild.offsetWidth + 5}px`;
 	}
-	//resize1.style.left = `${store.getState('asideWidth') + main.firstElementChild.offsetWidth + 5}px`;
 }
 function handleInput(prop: string, value: string, target: HTMLInputElement): void {
 	if (prop == 'umcn') {
@@ -260,13 +262,14 @@ function populateFields(): void {
 	const employee: Employee = store.getState('currentEmployee');
 	if (employee) employee.populate();
 }
+
 function colorEmployeeList(): void {
 	const currentEmployee: Employee = store.getState('currentEmployee');
 	const listItems: Array<HTMLElement> = Array.prototype.slice.call(document.querySelectorAll('#employeeList li'));
 	const employees: Array<Employee> = store.getState('employeeList');
 	employees.forEach(e => {
 		const item: HTMLElement = document.querySelector(`[data-id="${e.properties._id}"]`);
-		const badge: HTMLElement = <HTMLElement>item.firstElementChild;
+		const badge: HTMLElement = <HTMLElement>item.lastElementChild;
 		if (Object.keys(e.changes).length > 0) {
 			if (item) item.classList.add('list-group-item-warning');
 			if (badge) badge.innerHTML = Object.keys(e.changes).length.toString();
@@ -276,10 +279,31 @@ function colorEmployeeList(): void {
 		}
 	});
 	listItems.forEach(item => {
+		if (searchInp.value != '') {
+			let q: string = searchInp.value;
+			item.firstElementChild.innerHTML = highlight(item.firstElementChild.innerHTML, q);
+		}
 		if (item.attributes.getNamedItem('data-id'))
 			if (item.attributes.getNamedItem('data-id').value == currentEmployee.properties._id) item.classList.add('list-group-item-dark');
 			else item.classList.remove('list-group-item-dark');
 	});
+	if (searchInp.value != '') {
+	}
+}
+function highlight(text: string, query: string) {
+	text = text.trim();
+	const r: RegExp = new RegExp(query, 'gi');
+	const matches: Array<string> = text.match(r);
+	let arr = text.split(r);
+	if (matches) {
+		matches.forEach((m, i) => {
+			const replacement: string = `<span class="bg-warning">${m}</span>`;
+			arr.splice(i == 0 ? i + 1 : i * 2 + 1, 0, replacement);
+		});
+		text = arr.join('');
+	}
+
+	return text;
 }
 function populateEmployeeList(): void {
 	let result: string = '';
@@ -289,13 +313,15 @@ function populateEmployeeList(): void {
 		result += optionTemplate(e);
 	});
 	employeeList.innerHTML = result;
+
 	const listItems: Array<HTMLElement> = Array.prototype.slice.call(document.querySelectorAll('aside li'));
 	listItems.forEach(item => {
 		const employees: Array<Employee> = store.getState('employeeArray');
 		const employee: Employee = employees.find(e => {
 			return e.properties._id == item.attributes.getNamedItem('data-id').value;
 		});
-		item.addEventListener('contextmenu', function(event) {
+
+		item.addEventListener('contextmenu', event => {
 			menu = new Menu(event, [
 				{
 					name: 'Sacuvaj',
@@ -321,17 +347,17 @@ function searchEmployeeArray(query: string | null): void {
 	const employees: Array<Employee> = store.getState('employeeArray');
 	const array: Array<Employee> = query
 		? employees.filter(e => {
-				return (
-					parseInt(e.properties.id) == parseInt(query) ||
-					e.properties.umcn.startsWith(query) ||
-					e.properties.firstName.startsWith(query) ||
-					e.properties.lastName.startsWith(query)
-				);
+				const c: EmployeeProperties = e.properties;
+				const r: RegExp = new RegExp(query, 'gi');
+				//return parseInt(e.properties.id) == parseInt(query) || e.properties.umcn.startsWith(query) || e.properties.firstName.startsWith(query) || e.properties.lastName.startsWith(query);
+				return r.test(c.id) || r.test(c.umcn) || r.test(c.firstName) || r.test(c.lastName);
 		  })
 		: employees;
 	store.setState('employeeList', array);
 }
-function changeCurrentEmployee(btn: HTMLButtonElement, _id: string): void {
+function changeCurrentEmployee(): void {
+	let btn: HTMLButtonElement = <HTMLButtonElement>event.target;
+	let _id: string = btn.attributes.getNamedItem('data-id').value;
 	const employees: Array<Employee> = store.getState('employeeArray');
 	const employee: Employee = employees.find(e => {
 		return e.properties._id == _id;
@@ -376,6 +402,7 @@ function employeeReject(array: Array<Employee> | null): void {
 		modal.open('Obavestenje', 'Nema trenutnih promena.');
 	}
 }
+
 function employeeDelete(employeesToDelete: Array<Employee>): void {
 	if (employeesToDelete.length > 0) {
 		let text = 'Da li ste sigurni da zelite da obrisete ove unose?';
@@ -455,6 +482,8 @@ function setEmployees(data: Array<EmployeeProperties> | EmployeeProperties): voi
 	}
 }
 function setSettings(data: Config) {
+	console.log(data);
+
 	for (let key in data) {
 		store.setState(key, data[key]);
 	}
@@ -496,9 +525,11 @@ document.addEventListener('mousemove', event => {
 	}
 	if (store.getState('isResizingContent')) {
 		if (store.getState('isAsideOut')) {
-			store.setState('contentWidth', event.screenX - store.getState('asideWidth'));
+			//store.setState('contentWidth', event.screenX - store.getState('asideWidth'));
+			handleResizeContent(event.screenX - store.getState('asideWidth'));
 		} else {
-			store.setState('contentWidth', event.screenX);
+			handleResizeContent(event.screenX);
+			//store.setState('contentWidth', event.screenX);
 		}
 	}
 });
@@ -530,7 +561,7 @@ function settingsGetHandler() {
 	// 		.catch(err => console.log(err));
 	//}
 	const isAsideOut = localStorage.getItem('isAsideOut') === 'true';
-	const contentWidth = parseInt(localStorage.getItem('contentWidth'));
+	const contentWidth = JSON.parse(localStorage.getItem('contentWidth'));
 	const asideWidth = parseInt(localStorage.getItem('asideWidth'));
 	const config: Config = {
 		isAsideOut: isAsideOut,
@@ -554,7 +585,7 @@ function settingsUpdateHandler(config: Config) {
 	// 		.catch(err => console.log(err));
 	// }
 	localStorage.setItem('isAsideOut', config.isAsideOut ? 'true' : 'false');
-	localStorage.setItem('contentWidth', config.contentWidth.toString());
+	localStorage.setItem('contentWidth', JSON.stringify(config.contentWidth));
 	localStorage.setItem('asideWidth', config.asideWidth.toString());
 }
 

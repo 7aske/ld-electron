@@ -6,15 +6,19 @@ export interface State {
 	isAsideOut: boolean;
 	isModalUp: boolean;
 	asideWidth: number;
-	contentWidth: number;
+	contentWidth: ContentCols;
 	isResizingList: boolean;
 	isResizingContent: boolean;
 	newEmployee: Employee | null;
 	currentIndex: number;
 	[key: string]: any;
 }
+export interface ContentCols {
+	left: number;
+	right: number;
+}
 interface _StateProp {
-	value: Employee | Array<Employee> | boolean | number | null;
+	value: Employee | Array<Employee> | boolean | number | ContentCols | null;
 	actions: Array<Function>;
 }
 export interface _State {
@@ -86,7 +90,7 @@ export class Store {
 		});
 		this.state = initialState;
 	}
-	public setState(state: string, value: Employee | Array<Employee> | boolean | number | null): Store {
+	public setState(state: string, value: Employee | Array<Employee> | boolean | number | ContentCols | null): Store {
 		if (Object.keys(this._state).indexOf(state) == -1) {
 			this._state[state] = { value: value, actions: [] };
 			this.state[state] = value;
