@@ -1,4 +1,4 @@
-import { ipcRenderer, MenuItem } from 'electron';
+import { ipcRenderer } from 'electron';
 
 declare global {
 	interface Window {
@@ -11,6 +11,7 @@ import { Employee, EmployeeProperties } from '../scripts/Employee';
 import { Menu } from '../scripts/Menu';
 import { Modal } from '../scripts/Modal';
 import { Store, State, ContentCols } from '../scripts/Store';
+import { Resizer } from '../scripts/Resizer';
 import axios from 'axios';
 import { employeeSummaryTemplate, optionTemplate } from '../scripts/templates';
 interface Config {
@@ -32,33 +33,35 @@ const initialState: State = {
 	newEmployee: null,
 	currentIndex: 0
 };
-const store = new Store(initialState);
-
-const main: HTMLElement = document.querySelector('main');
-
-let menu: Menu | null = null;
 const url: string | null = ENV == 'electron' ? null : 'http://localhost:3000';
-store.subscribe('isAsideOut', [asideToggle, positionResizeBars]);
+
+let store: Store = new Store(initialState);
+let resizer: Resizer = new Resizer(store);
+let menu: Menu | null = null;
+function asideToggleWrapper() {
+	resizer.asideToggle();
+}
+function positionResizeBarsWrapper() {
+	resizer.positionResizeBars();
+}
+function handleResizeContentWrapper() {
+	resizer.handleResizeContent();
+}
+store.subscribe('isAsideOut', [asideToggleWrapper, positionResizeBarsWrapper]);
+store.subscribe('asideWidth', [positionResizeBarsWrapper]);
+store.subscribe('contentWidth', [handleResizeContentWrapper, positionResizeBarsWrapper]);
 store.subscribe('currentEmployee', [populateFields, colorEmployeeList]);
 store.subscribe('employeeArray', [populateEmployeeList]);
 store.subscribe('employeeList', [populateEmployeeList, colorEmployeeList]);
-store.subscribe('asideWidth', [positionResizeBars]);
-store.subscribe('contentWidth', [handleResizeContent, positionResizeBars]);
-const resize0: HTMLElement = document.querySelector('#resize0');
-resize0.addEventListener('mousedown', () => store.setState('isResizingList', !store.getState('isResizingList')));
-const resize1: HTMLElement = document.querySelector('#resize1');
-resize1.addEventListener('mousedown', () => store.setState('isResizingContent', !store.getState('isResizingContent')));
+
+//const main: HTMLElement = document.querySelector('main');
 const modal = new Modal(store);
 const employeeList: HTMLElement = document.querySelector('#employeeList');
 const searchInp: HTMLInputElement = document.querySelector('#searchInp');
 searchInp.addEventListener('input', function() {
 	searchEmployeeArray(this.value);
 });
-const aside: HTMLElement = document.querySelector('aside');
-const asideTrigger: HTMLButtonElement = document.querySelector('#asideTrigger');
-asideTrigger.addEventListener('click', () => {
-	store.setState('isAsideOut', !store.getState('isAsideOut'));
-});
+
 const saveBtn: HTMLButtonElement = document.querySelector('#saveBtn');
 saveBtn.addEventListener('click', () => {
 	employeeSave(null);
@@ -86,7 +89,7 @@ addExternalYoSPeriod.addEventListener('click', function() {
 	addYoSPeriod(this.id, fromDateExternal.value, tillDateExternal.value);
 });
 const addNewBtn: HTMLButtonElement = document.querySelector('#addNewBtn');
-addNewBtn.addEventListener('click', addNewEmployee);
+addNewBtn.addEventListener('click', employeeAdd);
 const headerInputs: HTMLInputElement[] = Array.prototype.slice.call(document.querySelectorAll<HTMLInputElement>('header input'));
 const mainInputs: HTMLInputElement[] = Array.prototype.slice.call(document.querySelectorAll<HTMLInputElement>('main input'));
 const inputs: HTMLInputElement[] = [...headerInputs, ...mainInputs, document.querySelector('main textarea')];
@@ -96,9 +99,6 @@ inputs.forEach(i => {
 			handleInput(this.id, this.value, this);
 	});
 });
-function getWidth(): number {
-	return store.getState('isAsideOut') ? window.innerWidth - store.getState('asideWidth') : window.innerWidth;
-}
 function handleBack(event: Event): void {
 	event.preventDefault();
 	let commit: Employee[] = [];
@@ -123,25 +123,7 @@ function handleBack(event: Event): void {
 		window.location.href = window.location.href.substring(0, window.location.href.lastIndexOf('/') + 1) + 'mainMenu.html';
 	}
 }
-function asideToggle(): void {
-	aside.style.width = `${store.getState('asideWidth')}px`;
-	if (store.getState('isAsideOut')) {
-		aside.style.left = `0px`;
-		asideTrigger.classList.add('active');
-	} else {
-		aside.style.left = `-${store.getState('asideWidth')}px`;
-		asideTrigger.classList.remove('active');
-	}
-	setTimeout(() => {
-		main.style.width = `${getWidth()}px`;
-	}, 200);
-	const config: Config = {
-		isAsideOut: store.getState('isAsideOut'),
-		contentWidth: store.getState('contentWidth'),
-		asideWidth: store.getState('asideWidth')
-	};
-	settingsUpdateHandler(config);
-}
+
 function changeListIndex(num: number): void {
 	let index: number = store.getState('currentIndex');
 	const employees: Employee[] = store.getState('employeeArray');
@@ -172,46 +154,6 @@ function changeInputIndex(): void {
 	}
 	if (index < inputs.length - 1) {
 		inputs[index + 1].focus();
-	}
-}
-function positionResizeBars(): void {
-	main.style.width = `${getWidth()}px`;
-	aside.style.width = `${store.getState('asideWidth')}px`;
-	if (store.getState('isAsideOut')) {
-		resize0.style.display = 'block';
-		resize1.style.left = `${store.getState('asideWidth') + main.firstElementChild.clientWidth + 15}px`;
-		resize0.style.left = `${store.getState('asideWidth')}px`;
-	} else {
-		resize0.style.display = 'none';
-		resize1.style.left = `${main.firstElementChild.clientWidth + 15}px`;
-	}
-}
-
-function handleResizeContent(mousePos?: number): void {
-	const c0: HTMLElement = <HTMLElement>main.children[0];
-	const c1: HTMLElement = <HTMLElement>main.children[1];
-	if (!mousePos) {
-		const cols: ContentCols = store.getState('contentWidth');
-		c0.classList.replace(c0.className.match(/col.+/gi)[0], `col-lg-${cols.left}`);
-		c1.classList.replace(c1.className.match(/col.+/gi)[0], `col-lg-${cols.right}`);
-	} else {
-		const width: number = main.offsetWidth;
-		const x: number = mousePos < width / 2 ? width / mousePos : width / (width - mousePos);
-		const col: number = Math.round(12 / x);
-		if (col < 13 && col > -1) {
-			let col0: number = col;
-			let col1: number = 12 - col;
-			if (mousePos > width / 2) {
-				col0 = 12 - col;
-				col1 = col;
-			}
-			if (col == 12 || col == 0) {
-				col0 = col1 = 12;
-			}
-			c0.classList.replace(c0.className.match(/col.+/gi)[0], `col-lg-${col0}`);
-			c1.classList.replace(c1.className.match(/col.+/gi)[0], `col-lg-${col1}`);
-			store.setState('contentWidth', { left: col0, right: col1 });
-		}
 	}
 }
 function handleInput(prop: string, value: string, target: HTMLInputElement): void {
@@ -408,7 +350,7 @@ function changeCurrentEmployee(): void {
 	});
 	if (employee) store.setState('currentEmployee', employee);
 }
-function addNewEmployee(): void {
+function employeeAdd(): void {
 	if (!store.getState('newEmployee')) {
 		const newEmployee: Employee = new Employee(null);
 		const newEmployeeArray: Employee[] = store.getState('employeeArray');
@@ -525,23 +467,9 @@ function setEmployees(data: EmployeeProperties[] | EmployeeProperties): void {
 		store.setState('employeeList', array);
 	}
 }
-function setSettings(data: Config) {
-	console.log(data);
-
-	for (let key in data) {
-		store.setState(key, data[key]);
-	}
-	setTimeout(() => {
-		positionResizeBars();
-	}, 100);
-}
 window.onload = () => {
 	employeeGetHandler();
-	settingsGetHandler();
 };
-window.addEventListener('resize', event => {
-	positionResizeBars();
-});
 document.addEventListener('keydown', event => {
 	switch (event.key) {
 		case 'Escape':
@@ -560,78 +488,10 @@ document.addEventListener('keydown', event => {
 			changeListIndex(1);
 			break;
 		default:
-		//console.log(event.key);
 	}
-});
-document.addEventListener('mousemove', event => {
-	if (store.getState('isResizingList')) {
-		store.setState('asideWidth', event.screenX);
-	}
-	if (store.getState('isResizingContent')) {
-		if (store.getState('isAsideOut')) {
-			//store.setState('contentWidth', event.screenX - store.getState('asideWidth'));
-			handleResizeContent(event.screenX - store.getState('asideWidth'));
-		} else {
-			handleResizeContent(event.screenX);
-			//store.setState('contentWidth', event.screenX);
-		}
-	}
-});
-document.addEventListener('mouseup', event => {
-	if (store.getState('isResizingList') || store.getState('isResizingContent')) {
-		const config: Config = {
-			isAsideOut: store.getState('isAsideOut'),
-			contentWidth: store.getState('contentWidth'),
-			asideWidth: store.getState('asideWidth')
-		};
-		settingsUpdateHandler(config);
-	}
-	store.setState('isResizingList', false);
-	store.setState('isResizingContent', false);
 });
 
 document.addEventListener('contextmenu', event => {});
-
-function settingsGetHandler() {
-	// if (ENV == 'electron') {
-	// 	setSettings(ipcRenderer.sendSync('window:settings-get'));
-	// } else {
-	// 	axios
-	// 		.get(`${url}/config`)
-	// 		.then(response => {
-	// 			console.log(response.data);
-	// 			setSettings(response.data);
-	// 		})
-	// 		.catch(err => console.log(err));
-	//}
-	const isAsideOut = localStorage.getItem('isAsideOut') === 'true';
-	const contentWidth = JSON.parse(localStorage.getItem('contentWidth'));
-	const asideWidth = parseInt(localStorage.getItem('asideWidth'));
-	const config: Config = {
-		isAsideOut: isAsideOut,
-		contentWidth: contentWidth,
-		asideWidth: asideWidth
-	};
-	console.log(config);
-
-	setSettings(config);
-}
-function settingsUpdateHandler(config: Config) {
-	// if (ENV == 'electron') {
-	// 	ipcRenderer.sendSync('window:settings-update', config);
-	// } else {
-	// 	axios
-	// 		.post(`${url}/config/update`, { config: config })
-	// 		.then(response => {
-	// 			console.log(response.data);
-	// 			return response.data;
-	// 		})
-	// 		.catch(err => console.log(err));
-	// }
-	localStorage.setItem('isAsideOut', config.isAsideOut ? 'true' : 'false');
-	localStorage.setItem('contentWidth', JSON.stringify(config.contentWidth));
-	localStorage.setItem('asideWidth', config.asideWidth.toString());
-}
 
 function employeeGetHandler() {
 	console.log(ENV == 'electron');

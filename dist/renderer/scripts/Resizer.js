@@ -1,10 +1,69 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 class Resizer {
-    constructor(store) {
+    constructor(store, main, aside) {
         this.store = store;
-        this.aside = document.querySelector('aside');
-        this.main = document.querySelector('main');
+        this.aside = aside ? aside : document.querySelector('aside');
+        this.main = main ? main : document.querySelector('main');
+        this.asideTrigger = document.querySelector('#asideTrigger');
+        this.asideResizer = document.createElement('div');
+        this.asideResizer.classList.add('resize');
+        this.mainResizer = document.createElement('div');
+        this.mainResizer.classList.add('resize');
+        this.asideResizer.addEventListener('mousedown', () => store.setState('isResizingList', !store.getState('isResizingList')));
+        this.mainResizer.addEventListener('mousedown', () => store.setState('isResizingContent', !store.getState('isResizingContent')));
+        document.body.insertBefore(this.asideResizer, document.body.firstElementChild);
+        document.body.insertBefore(this.mainResizer, document.body.firstElementChild);
+        this.asideTrigger.addEventListener('click', () => {
+            store.setState('isAsideOut', !store.getState('isAsideOut'));
+        });
+        document.addEventListener('mousemove', event => {
+            if (store.getState('isResizingList')) {
+                store.setState('asideWidth', event.screenX);
+            }
+            if (store.getState('isResizingContent')) {
+                if (store.getState('isAsideOut')) {
+                    this.handleResizeContent(event.screenX - store.getState('asideWidth'));
+                }
+                else {
+                    this.handleResizeContent(event.screenX);
+                }
+            }
+        });
+        document.addEventListener('mouseup', event => {
+            if (store.getState('isResizingList') || store.getState('isResizingContent')) {
+                const config = {
+                    isAsideOut: store.getState('isAsideOut'),
+                    contentWidth: store.getState('contentWidth'),
+                    asideWidth: store.getState('asideWidth')
+                };
+                localStorage.setItem('isAsideOut', config.isAsideOut ? 'true' : 'false');
+                localStorage.setItem('contentWidth', JSON.stringify(config.contentWidth));
+                localStorage.setItem('asideWidth', config.asideWidth.toString());
+            }
+            store.setState('isResizingList', false);
+            store.setState('isResizingContent', false);
+        });
+        window.addEventListener('resize', event => {
+            this.positionResizeBars();
+        });
+        if (localStorage.length < 3) {
+            localStorage.setItem('isAsideOut', 'true');
+            localStorage.setItem('contentWidth', JSON.stringify({ left: 6, right: 6 }));
+            localStorage.setItem('asideWidth', '400');
+        }
+        // const isAsideOut = localStorage.getItem('isAsideOut') === 'true';
+        // const contentWidth = JSON.parse(localStorage.getItem('contentWidth'));
+        // const asideWidth = parseInt(localStorage.getItem('asideWidth'));
+        const isAsideOut = store.getState('isAsideOut');
+        const contentWidth = store.getState('contentWidth');
+        const asideWidth = store.getState('asideWidth');
+        const config = {
+            isAsideOut: isAsideOut,
+            contentWidth: contentWidth,
+            asideWidth: asideWidth
+        };
+        this.setSettings(config);
     }
     positionResizeBars() {
         this.main.style.width = `${this.getWidth()}px`;
@@ -49,6 +108,29 @@ class Resizer {
                 this.store.setState('contentWidth', { left: col0, right: col1 });
             }
         }
+    }
+    asideToggle() {
+        this.aside.style.width = `${this.store.getState('asideWidth')}px`;
+        if (this.store.getState('isAsideOut')) {
+            this.aside.style.left = `0px`;
+            this.asideTrigger.classList.add('active');
+        }
+        else {
+            this.aside.style.left = `-${this.store.getState('asideWidth')}px`;
+            this.asideTrigger.classList.remove('active');
+        }
+        setTimeout(() => {
+            this.main.style.width = `${this.getWidth()}px`;
+        }, 200);
+    }
+    setSettings(data) {
+        for (let key in data) {
+            console.log(key, data[key]);
+            this.store.setState(key, data[key]);
+        }
+        setTimeout(() => {
+            this.positionResizeBars();
+        }, 200);
     }
 }
 exports.Resizer = Resizer;
