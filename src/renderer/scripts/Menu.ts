@@ -5,9 +5,9 @@ export interface MenuOption {
 	disabled: boolean;
 }
 export class Menu {
-	public items: Array<EventTarget>;
+	public items: EventTarget[];
 	private menu: HTMLElement | null;
-	constructor(event: MouseEvent, options: Array<MenuOption>) {
+	constructor(event: MouseEvent, options: MenuOption[]) {
 		this.menu = document.createElement('ul');
 		this.menu.id = 'contextmenu';
 		this.menu.classList.add('list-group', 'contextmenu');

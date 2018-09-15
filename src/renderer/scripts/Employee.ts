@@ -48,9 +48,9 @@ export interface EmployeeProperties {
 	employmentBooklet_DateOfIssue: string;
 	employmentBooklet_Muncipality: string;
 	employmentBooklet_EmploymentCode: string;
-	externalYoS_periods: Array<YoSPeriod>;
+	externalYoS_periods: YoSPeriod[];
 	externalYoS_total: number;
-	internalYoS_periods: Array<YoSPeriod>;
+	internalYoS_periods: YoSPeriod[];
 	internalYoS_total: number;
 	totalYoS: number;
 	address: string;
@@ -70,7 +70,7 @@ export interface EmployeeProperties {
 	numberOfKids: string;
 	email: string;
 	comment: string;
-	[key: string]: string | Array<YoSPeriod> | number;
+	[key: string]: string | YoSPeriod[] | number;
 }
 export interface EmployeeChanges {
 	id?: string;
@@ -115,9 +115,9 @@ export interface EmployeeChanges {
 	employmentBooklet_DateOfIssue?: string;
 	employmentBooklet_Muncipality?: string;
 	employmentBooklet_EmploymentCode?: string;
-	externalYoS_periods?: Array<YoSPeriod>;
+	externalYoS_periods?: YoSPeriod[];
 	externalYoS_total?: number;
-	internalYoS_periods?: Array<YoSPeriod>;
+	internalYoS_periods?: YoSPeriod[];
 	internalYoS_total?: number;
 	totalYoS?: number;
 	address?: string;

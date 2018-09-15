@@ -205,7 +205,6 @@ function handleResizeContent(mousePos) {
             c1.classList.replace(c1.className.match(/col.+/gi)[0], `col-lg-${col1}`);
             store.setState('contentWidth', { left: col0, right: col1 });
         }
-        //resize1.style.left = `${store.getState('asideWidth') + main.firstElementChild.offsetWidth + 5}px`;
     }
 }
 function handleInput(prop, value, target) {

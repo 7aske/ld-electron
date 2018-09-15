@@ -17,7 +17,7 @@ interface Config {
 	isAsideOut: boolean;
 	contentWidth: ContentCols;
 	asideWidth: number;
-	[key: string]: Employee | Array<Employee> | boolean | number | ContentCols | null;
+	[key: string]: Employee | Employee[] | boolean | number | ContentCols | null;
 }
 const initialState: State = {
 	employeeArray: [],
@@ -87,9 +87,9 @@ addExternalYoSPeriod.addEventListener('click', function() {
 });
 const addNewBtn: HTMLButtonElement = document.querySelector('#addNewBtn');
 addNewBtn.addEventListener('click', addNewEmployee);
-const headerInputs: Array<HTMLInputElement> = Array.prototype.slice.call(document.querySelectorAll<HTMLInputElement>('header input'));
-const mainInputs: Array<HTMLInputElement> = Array.prototype.slice.call(document.querySelectorAll<HTMLInputElement>('main input'));
-const inputs: Array<HTMLInputElement> = [...headerInputs, ...mainInputs, document.querySelector('main textarea')];
+const headerInputs: HTMLInputElement[] = Array.prototype.slice.call(document.querySelectorAll<HTMLInputElement>('header input'));
+const mainInputs: HTMLInputElement[] = Array.prototype.slice.call(document.querySelectorAll<HTMLInputElement>('main input'));
+const inputs: HTMLInputElement[] = [...headerInputs, ...mainInputs, document.querySelector('main textarea')];
 inputs.forEach(i => {
 	i.addEventListener('keyup', function() {
 		if (this.id.indexOf('fromDateInternal') == -1 && this.id.indexOf('tillDateInternal') == -1 && this.id.indexOf('fromDateExternal') == -1 && this.id.indexOf('tillDateExternal') == -1)
@@ -101,10 +101,10 @@ function getWidth(): number {
 }
 function handleBack(event: Event): void {
 	event.preventDefault();
-	let commit: Array<Employee> = [];
+	let commit: Employee[] = [];
 	let text = 'Imate nesacuvane promene.<br>';
 	let check: boolean = false;
-	const array: Array<Employee> = store.getState('employeeArray');
+	const array: Employee[] = store.getState('employeeArray');
 	array.forEach(e => {
 		if (Object.keys(e.changes).length > 0) {
 			check = true;
@@ -144,7 +144,7 @@ function asideToggle(): void {
 }
 function changeListIndex(num: number): void {
 	let index: number = store.getState('currentIndex');
-	const employees: Array<Employee> = store.getState('employeeArray');
+	const employees: Employee[] = store.getState('employeeArray');
 	index += num;
 	if (index > employees.length || index < 0) index -= num;
 	store.setState('currentIndex', index);
@@ -152,7 +152,7 @@ function changeListIndex(num: number): void {
 	if (employee) store.setState('currentEmployee', employee);
 }
 function changeInputIndex(): void {
-	const tabs: Array<HTMLInputElement> = Array.prototype.slice.call(document.querySelectorAll<HTMLElement>('[name="tabs"]'));
+	const tabs: HTMLInputElement[] = Array.prototype.slice.call(document.querySelectorAll<HTMLElement>('[name="tabs"]'));
 	const input: HTMLInputElement = <HTMLInputElement>document.activeElement;
 	let index: number = inputs.indexOf(input);
 	if (index == 16) {
@@ -212,12 +212,11 @@ function handleResizeContent(mousePos?: number): void {
 			c1.classList.replace(c1.className.match(/col.+/gi)[0], `col-lg-${col1}`);
 			store.setState('contentWidth', { left: col0, right: col1 });
 		}
-		//resize1.style.left = `${store.getState('asideWidth') + main.firstElementChild.offsetWidth + 5}px`;
 	}
 }
 function handleInput(prop: string, value: string, target: HTMLInputElement): void {
 	if (prop == 'umcn') {
-		const employees: Array<Employee> = store.getState('employeeArray');
+		const employees: Employee[] = store.getState('employeeArray');
 		employees.forEach(e => {
 			if (e.properties.umcn == value && store.getState('currentEmployee').properties.umcn != value) {
 				modal.open('Greska', `Vec postoji radnik sa tim JMBG. ${employeeSummaryTemplate(e)}`);
@@ -265,8 +264,8 @@ function populateFields(): void {
 
 function colorEmployeeList(): void {
 	const currentEmployee: Employee = store.getState('currentEmployee');
-	const listItems: Array<HTMLElement> = Array.prototype.slice.call(document.querySelectorAll('#employeeList li'));
-	const employees: Array<Employee> = store.getState('employeeList');
+	const listItems: HTMLElement[] = Array.prototype.slice.call(document.querySelectorAll('#employeeList li'));
+	const employees: Employee[] = store.getState('employeeList');
 	employees.forEach(e => {
 		const item: HTMLElement = document.querySelector(`[data-id="${e.properties._id}"]`);
 		const badge: HTMLElement = <HTMLElement>item.lastElementChild;
@@ -290,17 +289,17 @@ function colorEmployeeList(): void {
 }
 function highlight(text: string, string: string) {
 	text = text.trim();
-	const q: Array<string> = string.split(' ');
+	const q: string[] = string.split(' ');
 	if (q.length == 1) {
 		const p: RegExp = new RegExp(`<span class="bg-warning">.*?<\/span>`, 'gi');
 		const r: RegExp = new RegExp(q[0], 'gi');
 		if (text.match(p)) {
-			let arr: Array<string> = text.split(p);
-			let result: Array<string> = [];
-			let old: Array<string> = text.match(p);
+			let arr: string[] = text.split(p);
+			let result: string[] = [];
+			let old: string[] = text.match(p);
 			arr.forEach((t, i) => {
-				const matches: Array<string> = t.match(r);
-				let arr: Array<string> = t.split(r);
+				const matches: string[] = t.match(r);
+				let arr: string[] = t.split(r);
 				if (matches) {
 					matches.forEach((m, i) => {
 						const replacement: string = `<span class="bg-warning">${m}</span>`;
@@ -317,8 +316,8 @@ function highlight(text: string, string: string) {
 			});
 			return result.length > 0 ? result.join('') : text;
 		} else {
-			const matches: Array<string> = text.match(r);
-			let arr: Array<string> = text.split(r);
+			const matches: string[] = text.match(r);
+			let arr: string[] = text.split(r);
 			if (matches) {
 				matches.forEach((m, i) => {
 					const replacement: string = `<span class="bg-warning">${m}</span>`;
@@ -338,15 +337,15 @@ function highlight(text: string, string: string) {
 function populateEmployeeList(): void {
 	let result: string = '';
 	employeeList.innerHTML = '';
-	const employees: Array<Employee> = store.getState('employeeList');
+	const employees: Employee[] = store.getState('employeeList');
 	employees.forEach(e => {
 		result += optionTemplate(e);
 	});
 	employeeList.innerHTML = result;
 
-	const listItems: Array<HTMLElement> = Array.prototype.slice.call(document.querySelectorAll('aside li'));
+	const listItems: HTMLElement[] = Array.prototype.slice.call(document.querySelectorAll('aside li'));
 	listItems.forEach(item => {
-		const employees: Array<Employee> = store.getState('employeeArray');
+		const employees: Employee[] = store.getState('employeeArray');
 		const employee: Employee = employees.find(e => {
 			return e.properties._id == item.attributes.getNamedItem('data-id').value;
 		});
@@ -373,20 +372,20 @@ function populateEmployeeList(): void {
 	});
 }
 function searchEmployeeArray(query: string | null): void {
-	let unique = (arrArg: Array<Employee>) => {
+	let unique = (arrArg: Employee[]) => {
 		return arrArg.filter((elem, pos, arr) => {
 			return arr.indexOf(elem) == pos;
 		});
 	};
-	let search = (arr: Array<Employee>, query: string) => {
+	let search = (arr: Employee[], query: string) => {
 		const r: RegExp = new RegExp(query, 'gi');
 		return arr.filter(e => {
 			const c: EmployeeProperties = e.properties;
 			return r.test(c.id) || r.test(c.umcn) || r.test(c.firstName) || r.test(c.lastName);
 		});
 	};
-	const q: Array<string> = query.split(' ');
-	let result: Array<Employee> = store.getState('employeeArray');
+	const q: string[] = query.split(' ');
+	let result: Employee[] = store.getState('employeeArray');
 	q.forEach(query => {
 		if (search(result, query).length == 0) {
 			for (let i = query.length - 1; i >= 0; i--) {
@@ -403,7 +402,7 @@ function changeCurrentEmployee(): void {
 	let btn: HTMLButtonElement = <HTMLButtonElement>event.target;
 	console.log(btn.nodeName);
 	let _id: string = btn.attributes.getNamedItem('data-id').value;
-	const employees: Array<Employee> = store.getState('employeeArray');
+	const employees: Employee[] = store.getState('employeeArray');
 	const employee: Employee = employees.find(e => {
 		return e.properties._id == _id;
 	});
@@ -412,17 +411,17 @@ function changeCurrentEmployee(): void {
 function addNewEmployee(): void {
 	if (!store.getState('newEmployee')) {
 		const newEmployee: Employee = new Employee(null);
-		const newEmployeeArray: Array<Employee> = store.getState('employeeArray');
+		const newEmployeeArray: Employee[] = store.getState('employeeArray');
 		newEmployeeArray.push(newEmployee);
 		store.setState('newEmployee', newEmployee);
 		store.setState('employeeArray', newEmployeeArray);
 		store.setState('currentEmployee', newEmployee);
 	}
 }
-function employeeReject(array: Array<Employee> | null): void {
-	const employees: Array<Employee> = array ? array : store.getState('employeeArray');
+function employeeReject(array: Employee[] | null): void {
+	const employees: Employee[] = array ? array : store.getState('employeeArray');
 	let text = 'Da li zelite da odbacite sve promene?<br>';
-	let employeesToReject: Array<Employee> = [];
+	let employeesToReject: Employee[] = [];
 	employees.forEach(employee => {
 		if (Object.keys(employee.changes).length > 0) {
 			employeesToReject.push(employee);
@@ -432,7 +431,7 @@ function employeeReject(array: Array<Employee> | null): void {
 	if (employeesToReject.length > 0) {
 		modal.open('Upozorenje', text, () => {
 			employeesToReject.forEach((employee, i) => {
-				const keys: Array<string> = Object.keys(employee.changes);
+				const keys: string[] = Object.keys(employee.changes);
 				if (keys.length > 0) {
 					keys.forEach(k => {
 						delete employee.changes[k];
@@ -448,16 +447,16 @@ function employeeReject(array: Array<Employee> | null): void {
 	}
 }
 
-function employeeDelete(employeesToDelete: Array<Employee>): void {
+function employeeDelete(employeesToDelete: Employee[]): void {
 	if (employeesToDelete.length > 0) {
 		let text = 'Da li ste sigurni da zelite da obrisete ove unose?';
 		employeesToDelete.forEach(e => {
 			text += employeeSummaryTemplate(e);
 		});
 		modal.open('Upozorenje', text, () => {
-			let toDelete: Array<EmployeeProperties> = [];
+			let toDelete: EmployeeProperties[] = [];
 			employeesToDelete.forEach(employee => {
-				const employees: Array<Employee> = store.getState('employeeArray');
+				const employees: Employee[] = store.getState('employeeArray');
 				const newEmployee: Employee = store.getState('newEmployee');
 				employees.splice(employees.indexOf(employee), 1);
 				store.setState('employeeArray', employees);
@@ -474,9 +473,9 @@ function employeeDelete(employeesToDelete: Array<Employee>): void {
 		});
 	}
 }
-function employeeSave(array: Array<Employee>, skipModal?: boolean): void {
+function employeeSave(array: Employee[], skipModal?: boolean): void {
 	if (skipModal) {
-		let save: Array<EmployeeProperties> = [];
+		let save: EmployeeProperties[] = [];
 		array.forEach(e => {
 			e.commitChanges();
 			save.push(e.properties);
@@ -484,9 +483,9 @@ function employeeSave(array: Array<Employee>, skipModal?: boolean): void {
 		store.setState('newEmployee', null);
 		employeeSaveHandler(save);
 	} else {
-		let commit: Array<Employee> = [];
+		let commit: Employee[] = [];
 		let check: boolean = false;
-		const employees: Array<Employee> = array ? array : store.getState('employeeArray');
+		const employees: Employee[] = array ? array : store.getState('employeeArray');
 		employees.forEach(e => {
 			if (Object.keys(e.changes).length > 0) {
 				check = true;
@@ -502,7 +501,7 @@ function employeeSave(array: Array<Employee>, skipModal?: boolean): void {
 			});
 
 			modal.open('Da li zelite da sacuvate sve promene?', text, () => {
-				let save: Array<EmployeeProperties> = [];
+				let save: EmployeeProperties[] = [];
 				commit.forEach(e => {
 					e.commitChanges();
 					save.push(e.properties);
@@ -515,8 +514,8 @@ function employeeSave(array: Array<Employee>, skipModal?: boolean): void {
 		}
 	}
 }
-function setEmployees(data: Array<EmployeeProperties> | EmployeeProperties): void {
-	const array: Array<Employee> = [];
+function setEmployees(data: EmployeeProperties[] | EmployeeProperties): void {
+	const array: Employee[] = [];
 	if (data instanceof Array) {
 		data.forEach(e => {
 			array.push(new Employee(e));
@@ -648,9 +647,9 @@ function employeeGetHandler() {
 			.catch(err => console.log(err));
 	}
 }
-function employeeDeleteHandler(employees: Array<EmployeeProperties>) {
+function employeeDeleteHandler(employees: EmployeeProperties[]) {
 	if (ENV == 'electron') {
-		const result: Array<EmployeeProperties> = ipcRenderer.sendSync('employee:delete', employees);
+		const result: EmployeeProperties[] = ipcRenderer.sendSync('employee:delete', employees);
 		setEmployees(result);
 	} else {
 		axios
@@ -662,7 +661,7 @@ function employeeDeleteHandler(employees: Array<EmployeeProperties>) {
 			.catch(err => console.log(err));
 	}
 }
-function employeeSaveHandler(save: Array<EmployeeProperties>) {
+function employeeSaveHandler(save: EmployeeProperties[]) {
 	if (ENV == 'electron') {
 		setEmployees(ipcRenderer.sendSync('employee:save', save));
 	} else {

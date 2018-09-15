@@ -3,7 +3,7 @@ import { join } from 'path';
 import { readFileSync, writeFileSync } from 'fs';
 import { EmployeeProperties } from '../renderer/scripts/Employee';
 interface EmployeesFile {
-	employees: Array<EmployeeProperties>;
+	employees: EmployeeProperties[];
 }
 const employeesFilePath: string = join(__dirname, 'database/employees.json');
 let window: BrowserWindow | null;
@@ -32,7 +32,7 @@ app.on('ready', main);
 app.on('window-all-closed', () => {
 	app.quit();
 });
-function handleSave(employees: Array<EmployeeProperties>) {
+function handleSave(employees: EmployeeProperties[]) {
 	employees.forEach(employee => {
 		const check: EmployeeProperties | undefined = employeesFile.employees.find(e => {
 			return e._id == employee._id;
@@ -55,7 +55,7 @@ function handleSave(employees: Array<EmployeeProperties>) {
 	writeFileSync(employeesFilePath, JSON.stringify(employeesFile), 'utf8');
 	return employeesFile.employees;
 }
-function handleDelete(toDelete: Array<EmployeeProperties>) {
+function handleDelete(toDelete: EmployeeProperties[]) {
 	toDelete.forEach(employee => {
 		employeesFile.employees.splice(employeesFile.employees.indexOf(employee), 1);
 	});

@@ -1,7 +1,7 @@
 import { Employee } from './Employee';
 export interface State {
-	employeeArray: Array<Employee>;
-	employeeList: Array<Employee>;
+	employeeArray: Employee[];
+	employeeList: Employee[];
 	currentEmployee: Employee | null;
 	isAsideOut: boolean;
 	isModalUp: boolean;
@@ -18,8 +18,8 @@ export interface ContentCols {
 	right: number;
 }
 interface _StateProp {
-	value: Employee | Array<Employee> | boolean | number | ContentCols | null;
-	actions: Array<Function>;
+	value: Employee | Employee[] | boolean | number | ContentCols | null;
+	actions: Function[];
 }
 export interface _State {
 	employeeArray: _StateProp;
@@ -90,7 +90,7 @@ export class Store {
 		});
 		this.state = initialState;
 	}
-	public setState(state: string, value: Employee | Array<Employee> | boolean | number | ContentCols | null): Store {
+	public setState(state: string, value: Employee | Employee[] | boolean | number | ContentCols | null): Store {
 		if (Object.keys(this._state).indexOf(state) == -1) {
 			this._state[state] = { value: value, actions: [] };
 			this.state[state] = value;
@@ -105,7 +105,7 @@ export class Store {
 		}
 		return this;
 	}
-	public subscribe(state: string, actions: Array<Function>): Store {
+	public subscribe(state: string, actions: Function[]): Store {
 		if (Object.keys(this._state).indexOf(state) != -1) {
 			this._state[state].actions = actions;
 		}
