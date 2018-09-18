@@ -38,18 +38,18 @@ const url: string | null = ENV == 'electron' ? null : 'http://localhost:3000';
 let store: Store = new Store(initialState);
 let resizer: Resizer = new Resizer(store);
 let menu: Menu | null = null;
-function asideToggleWrapper() {
-	resizer.asideToggle();
-}
-function positionResizeBarsWrapper() {
-	resizer.positionResizeBars();
-}
-function handleResizeContentWrapper() {
-	resizer.handleResizeContent();
-}
-store.subscribe('isAsideOut', [asideToggleWrapper, positionResizeBarsWrapper]);
-store.subscribe('asideWidth', [positionResizeBarsWrapper]);
-store.subscribe('contentWidth', [handleResizeContentWrapper, positionResizeBarsWrapper]);
+// function asideToggleWrapper() {
+// 	resizer.asideToggle();
+// }
+// function handleResizeAsideWrapper() {
+// 	resizer.handleResizeAside();
+// }
+// function handleResizeContentWrapper() {
+// 	resizer.handleResizeContent();
+// }
+// store.subscribe('isAsideOut', [asideToggleWrapper]);
+// store.subscribe('asideWidth', [handleResizeAsideWrapper]);
+// store.subscribe('contentWidth', [handleResizeContentWrapper]);
 store.subscribe('currentEmployee', [populateFields, colorEmployeeList]);
 store.subscribe('employeeArray', [populateEmployeeList]);
 store.subscribe('employeeList', [populateEmployeeList, colorEmployeeList]);

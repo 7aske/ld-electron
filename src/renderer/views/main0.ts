@@ -33,15 +33,3 @@ const initialState: State = {
 };
 let store: Store = new Store(initialState);
 let resizer: Resizer = new Resizer(store);
-function asideToggleWrapper() {
-	resizer.asideToggle();
-}
-function positionResizeBarsWrapper() {
-	resizer.positionResizeBars();
-}
-function handleResizeContentWrapper() {
-	resizer.handleResizeContent();
-}
-store.subscribe('isAsideOut', [asideToggleWrapper, positionResizeBarsWrapper]);
-store.subscribe('asideWidth', [positionResizeBarsWrapper]);
-store.subscribe('contentWidth', [handleResizeContentWrapper, positionResizeBarsWrapper]);

@@ -8,8 +8,8 @@ interface Config {
 }
 
 export class Resizer {
-	public asideResizer: HTMLElement;
-	public mainResizer: HTMLElement;
+	private asideResizer: HTMLElement;
+	private mainResizer: HTMLElement;
 	private asideTrigger: HTMLButtonElement;
 	private main: HTMLElement;
 	private aside: HTMLElement;
@@ -28,11 +28,11 @@ export class Resizer {
 		document.body.insertBefore(this.asideResizer, document.body.firstElementChild);
 		document.body.insertBefore(this.mainResizer, document.body.firstElementChild);
 		this.asideTrigger.addEventListener('click', () => {
-			store.setState('isAsideOut', !store.getState('isAsideOut'));
+			this.asideToggle(!this.store.getState('isAsideOut'));
 		});
 		document.addEventListener('mousemove', event => {
 			if (store.getState('isResizingList')) {
-				store.setState('asideWidth', event.screenX);
+				this.handleResizeAside(event.screenX);
 			}
 			if (store.getState('isResizingContent')) {
 				if (store.getState('isAsideOut')) {
@@ -43,13 +43,12 @@ export class Resizer {
 			}
 		});
 		document.addEventListener('mouseup', event => {
+			const config: Config = {
+				isAsideOut: store.getState('isAsideOut'),
+				contentWidth: store.getState('contentWidth'),
+				asideWidth: store.getState('asideWidth')
+			};
 			if (store.getState('isResizingList') || store.getState('isResizingContent')) {
-				const config: Config = {
-					isAsideOut: store.getState('isAsideOut'),
-					contentWidth: store.getState('contentWidth'),
-					asideWidth: store.getState('asideWidth')
-				};
-				localStorage.setItem('isAsideOut', config.isAsideOut ? 'true' : 'false');
 				localStorage.setItem('contentWidth', JSON.stringify(config.contentWidth));
 				localStorage.setItem('asideWidth', config.asideWidth.toString());
 			}
@@ -59,27 +58,25 @@ export class Resizer {
 		window.addEventListener('resize', event => {
 			this.positionResizeBars();
 		});
-		if (localStorage.length < 3) {
-			localStorage.setItem('isAsideOut', 'true');
-			localStorage.setItem('contentWidth', JSON.stringify({ left: 6, right: 6 }));
-			localStorage.setItem('asideWidth', '400');
+		this.store.setState('isAsideOut', localStorage.getItem('isAsideOut') == 'true' ? true : false);
+		this.store.setState('asideWidth', parseInt(localStorage.getItem('asideWidth')));
+		this.store.setState('contentWidth', JSON.parse(localStorage.getItem('contentWidth')));
+		this.asideToggle();
+		this.handleResizeAside();
+		this.handleResizeContent();
+	}
+	public handleResizeAside(width?: number): void {
+		if (width) {
+			this.aside.style.width = width + 'px';
+			this.store.setState('asideWidth', width);
+		} else {
+			this.aside.style.width = this.store.getState('asideWidth') + 'px';
 		}
-		// const isAsideOut = localStorage.getItem('isAsideOut') === 'true';
-		// const contentWidth = JSON.parse(localStorage.getItem('contentWidth'));
-		// const asideWidth = parseInt(localStorage.getItem('asideWidth'));
-		const isAsideOut = store.getState('isAsideOut');
-		const contentWidth = store.getState('contentWidth');
-		const asideWidth = store.getState('asideWidth');
-		const config: Config = {
-			isAsideOut: isAsideOut,
-			contentWidth: contentWidth,
-			asideWidth: asideWidth
-		};
-		this.setSettings(config);
+
+		this.positionResizeBars();
 	}
 	public positionResizeBars(): void {
 		this.main.style.width = `${this.getWidth()}px`;
-		this.aside.style.width = `${this.store.getState('asideWidth')}px`;
 		if (this.store.getState('isAsideOut')) {
 			this.asideResizer.style.display = 'block';
 			this.mainResizer.style.left = `${this.store.getState('asideWidth') + this.main.firstElementChild.clientWidth + 15}px`;
@@ -92,7 +89,6 @@ export class Resizer {
 	public getWidth(): number {
 		return this.store.getState('isAsideOut') ? window.innerWidth - this.store.getState('asideWidth') : window.innerWidth;
 	}
-
 	public handleResizeContent(mousePos?: number): void {
 		const c0: HTMLElement = <HTMLElement>this.main.children[0];
 		const c1: HTMLElement = <HTMLElement>this.main.children[1];
@@ -119,26 +115,30 @@ export class Resizer {
 				this.store.setState('contentWidth', { left: col0, right: col1 });
 			}
 		}
+		this.positionResizeBars();
 	}
-	public asideToggle(): void {
-		this.aside.style.width = `${this.store.getState('asideWidth')}px`;
-		if (this.store.getState('isAsideOut')) {
-			this.aside.style.left = `0px`;
-			this.asideTrigger.classList.add('active');
+	public asideToggle(toggle?: boolean): void {
+		if (toggle != null || toggle != undefined) {
+			if (toggle) {
+				this.aside.style.left = `0px`;
+				this.asideTrigger.classList.add('active');
+			} else {
+				this.aside.style.left = `-${this.store.getState('asideWidth')}px`;
+				this.asideTrigger.classList.remove('active');
+			}
+			localStorage.setItem('isAsideOut', toggle ? 'true' : 'false');
+			this.store.setState('isAsideOut', toggle);
 		} else {
-			this.aside.style.left = `-${this.store.getState('asideWidth')}px`;
-			this.asideTrigger.classList.remove('active');
+			if (this.store.getState('isAsideOut')) {
+				this.aside.style.left = `0px`;
+				this.asideTrigger.classList.add('active');
+			} else {
+				this.aside.style.left = `-${this.store.getState('asideWidth')}px`;
+				this.asideTrigger.classList.remove('active');
+			}
 		}
 		setTimeout(() => {
 			this.main.style.width = `${this.getWidth()}px`;
-		}, 200);
-	}
-	public setSettings(data: Config) {
-		for (let key in data) {
-			console.log(key, data[key]);
-			this.store.setState(key, data[key]);
-		}
-		setTimeout(() => {
 			this.positionResizeBars();
 		}, 200);
 	}
