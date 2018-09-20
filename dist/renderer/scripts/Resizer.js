@@ -46,6 +46,11 @@ class Resizer {
         window.addEventListener('resize', event => {
             this.positionResizeBars();
         });
+        if (localStorage.length < 3) {
+            localStorage.setItem('contentWidth', JSON.stringify(this.store.getState('contentWidth')));
+            localStorage.setItem('isAsideOut', this.store.getState('isAsideOut') ? 'true' : 'false');
+            localStorage.setItem('asideWidth', this.store.getState('asideWidth').toString());
+        }
         this.store.setState('isAsideOut', localStorage.getItem('isAsideOut') == 'true' ? true : false);
         this.store.setState('asideWidth', parseInt(localStorage.getItem('asideWidth')));
         this.store.setState('contentWidth', JSON.parse(localStorage.getItem('contentWidth')));
