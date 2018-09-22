@@ -48,6 +48,24 @@ label {
 	}
 }
 aside {
+	#lastOpen {
+		.lastOpen-mgod {
+			width: 15%;
+		}
+		.lastOpen-code {
+			width: 10%;
+		}
+		.lastOpen-name {
+			width: 35%;
+		}
+		.lastOpen-date {
+			width: 15%;
+		}
+		.lastOpen-badge {
+			text-align: right;
+			width: 10%;
+		}
+	}
 	border-right: 2px solid #bbb;
 	transition: 200ms left;
 	position: absolute;

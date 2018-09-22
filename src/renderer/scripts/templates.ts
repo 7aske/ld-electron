@@ -25,3 +25,22 @@ export function employeeSummaryTemplate(e: Employee): string {
 	${id} - ${umcn} - ${lastName} ${firstName}
 	<span class="badge badge-warning badge-pill">${changes}</span></div>`;
 }
+export function openCalculationTemplate(): string {
+	return `<li class="pr-2 pl-2 list-group-item bg-warning d-flex justify-content-between align-items-center">
+				<div class="lastOpen-mgod">
+					M-God
+				</div>
+				<div class="lastOpen-code">
+					Sifra
+				</div>
+				<div class="lastOpen-name">
+					Naziv obracuna
+				</div>
+				<div class="lastOpen-date">
+					Datum
+				</div>
+				<div class="lastOpen-badge">
+					<span class="badge badge-primary badge-pill">T</span>
+				</div>
+			</li>`;
+}

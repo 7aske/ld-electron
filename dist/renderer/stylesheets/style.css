@@ -77,6 +77,27 @@ aside {
   z-index: 100;
 }
 
+aside #lastOpen .lastOpen-mgod {
+  width: 15%;
+}
+
+aside #lastOpen .lastOpen-code {
+  width: 10%;
+}
+
+aside #lastOpen .lastOpen-name {
+  width: 35%;
+}
+
+aside #lastOpen .lastOpen-date {
+  width: 15%;
+}
+
+aside #lastOpen .lastOpen-badge {
+  text-align: right;
+  width: 10%;
+}
+
 aside #employeeList {
   padding: 0px;
   overflow-y: scroll;
