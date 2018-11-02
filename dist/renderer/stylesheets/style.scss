@@ -49,6 +49,12 @@ label {
 }
 aside {
 	#lastOpen {
+		.separator {
+			box-sizing: border-box;
+			width: 10px;
+			height: 25px;
+			border-left: 1px solid black;
+		}
 		.lastOpen-mgod {
 			width: 15%;
 		}
@@ -59,11 +65,11 @@ aside {
 			width: 35%;
 		}
 		.lastOpen-date {
-			width: 15%;
+			width: 20%;
 		}
 		.lastOpen-badge {
 			text-align: right;
-			width: 10%;
+			width: 5%;
 		}
 	}
 	border-right: 2px solid #bbb;
@@ -74,7 +80,7 @@ aside {
 	height: 100vh;
 	background-color: #eee;
 	z-index: 100;
-	#employeeList {
+	.list {
 		padding: 0px;
 		overflow-y: scroll;
 		overflow-x: hidden;
@@ -87,10 +93,6 @@ aside {
 			overflow-x: hidden;
 			padding: 5px 10px;
 			font-weight: 600;
-			// &:hover {
-			// 	background-color: darkslategray;
-			// 	color: white;
-			// }
 		}
 		.selected {
 			border-bottom: 5px solid orange;

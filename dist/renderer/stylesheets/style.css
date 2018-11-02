@@ -77,6 +77,14 @@ aside {
   z-index: 100;
 }
 
+aside #lastOpen .separator {
+  -webkit-box-sizing: border-box;
+          box-sizing: border-box;
+  width: 10px;
+  height: 25px;
+  border-left: 1px solid black;
+}
+
 aside #lastOpen .lastOpen-mgod {
   width: 15%;
 }
@@ -90,22 +98,22 @@ aside #lastOpen .lastOpen-name {
 }
 
 aside #lastOpen .lastOpen-date {
-  width: 15%;
+  width: 20%;
 }
 
 aside #lastOpen .lastOpen-badge {
   text-align: right;
-  width: 10%;
+  width: 5%;
 }
 
-aside #employeeList {
+aside .list {
   padding: 0px;
   overflow-y: scroll;
   overflow-x: hidden;
   height: 90vh !important;
 }
 
-aside #employeeList .list-group-item {
+aside .list .list-group-item {
   -webkit-box-sizing: border-box;
           box-sizing: border-box;
   cursor: pointer;
@@ -116,11 +124,11 @@ aside #employeeList .list-group-item {
   font-weight: 600;
 }
 
-aside #employeeList .selected {
+aside .list .selected {
   border-bottom: 5px solid orange;
 }
 
-aside #employeeList .edited {
+aside .list .edited {
   background-color: peru;
   color: white;
 }
