@@ -4,6 +4,7 @@ var Store = /** @class */ (function () {
     function Store(initialState) {
         var _this = this;
         this._state = {};
+        this.state = {};
         Object.keys(initialState).forEach(function (key) {
             _this._state[key] = { value: initialState[key], actions: [] };
         });
@@ -23,13 +24,6 @@ var Store = /** @class */ (function () {
                 });
             }
         }
-        return this;
-    };
-    Store.prototype.subscribe = function (state, actions) {
-        if (Object.keys(this._state).indexOf(state) != -1) {
-            this._state[state].actions = actions;
-        }
-        return this;
     };
     Store.prototype.getState = function (state) {
         if (state) {
@@ -43,6 +37,14 @@ var Store = /** @class */ (function () {
         else {
             return this.state;
         }
+    };
+    Store.prototype.subscribe = function (state, actions) {
+        if (Object.keys(this._state).indexOf(state) != -1) {
+            this._state[state].actions = actions;
+        }
+    };
+    Store.prototype.getStateObject = function () {
+        return this.state;
     };
     return Store;
 }());

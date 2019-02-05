@@ -6,21 +6,21 @@
 	box-sizing: border-box;
 }
 
-html,
-body {
-	height: 100vh;
-}
+/*html,*/
+/*body {*/
+	/*height: 100vh;*/
+/*}*/
 
-body {
-	color: #555;
-	background: #eee;
-}
+/*body {*/
+	/*color: #555;*/
+	/*background: #eee;*/
+/*}*/
 
-h1 {
-	padding: 50px 0;
-	font-weight: 400;
-	text-align: center;
-}
+/*h1 {*/
+	/*padding: 50px 0;*/
+	/*font-weight: 400;*/
+	/*text-align: center;*/
+/*}*/
 
 p {
 	margin: 0 0 20px;
@@ -39,7 +39,8 @@ p {
 
 .section-tab {
 	display: none;
-	padding: 20px 0 0;
+	padding: 20px 0;
+	margin-top: -7px;
 	border-top: 1px solid #ddd;
 }
 
@@ -52,8 +53,8 @@ input {
 	cursor: pointer;
 	display: inline-block;
 	margin: 0 0 -1px;
-	padding: 15px 25px;
-	font-weight: 600;
+	padding: 10px 25px;
+	font-weight: 700;
 	text-align: center;
 	color: #bbb;
 	border: 1px solid transparent;
@@ -63,7 +64,7 @@ input:checked + label {
 	color: #555;
 	border: 1px solid #ddd;
 	border-top: 5px solid orange;
-	border-bottom: 1px solid #fff;
+	border-bottom: 1px solid #eee;
 }
 
 #tab1:checked ~ #content1,

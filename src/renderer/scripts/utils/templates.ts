@@ -1,5 +1,5 @@
-import { Calc } from "./Calc";
-import { Employee } from "./Employee";
+import { Calc } from "../models/Calc";
+import { Employee } from "../models/Employee";
 
 export function dateListTemplate(f: number, t: number): string {
 	const from = new Date(f);

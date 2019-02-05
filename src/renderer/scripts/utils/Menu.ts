@@ -1,4 +1,4 @@
-import { MenuOption } from "../../@types";
+import { MenuOption } from "../../../@types";
 
 export class Menu {
 	public items: EventTarget[];

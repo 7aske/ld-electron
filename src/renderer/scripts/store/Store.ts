@@ -1,20 +1,18 @@
-import { _State, _StateProp, ContentCols } from "../../../@types";
-import { State } from "../../../@types";
-import { Calc } from "../models/Calc";
-import { Employee } from "../models/Employee";
+import { _State, DataStoreKeys, State } from "../../../@types";
+import { DataStore, DataStoreTypes } from "../../../@types";
 
-export class Store {
-	private _state: _State = {};
-	private state: any;
+export class Store implements DataStore {
+	public readonly _state: _State = {};
+	public readonly state: State = {};
 
-	constructor(initialState: any) {
+	constructor(initialState: State) {
 		Object.keys(initialState).forEach(key => {
 			this._state[key] = {value: initialState[key], actions: []};
 		});
 		this.state = initialState;
 	}
 
-	public setState(state: string, value: Employee | Employee[] | boolean | number | ContentCols | null | Calc | Calc[]): Store {
+	public setState(state: DataStoreKeys, value: DataStoreTypes) {
 		if (Object.keys(this._state).indexOf(state) == -1) {
 			this._state[state] = {value, actions: []};
 			this.state[state] = value;
@@ -27,17 +25,9 @@ export class Store {
 				});
 			}
 		}
-		return this;
 	}
 
-	public subscribe(state: string, actions: Function[]): Store {
-		if (Object.keys(this._state).indexOf(state) != -1) {
-			this._state[state].actions = actions;
-		}
-		return this;
-	}
-
-	public getState(state: string): any {
+	public getState(state: DataStoreKeys): any {
 		if (state) {
 			if (Object.keys(this.state).indexOf(state) != -1) {
 				return this.state[state];
@@ -47,5 +37,15 @@ export class Store {
 		} else {
 			return this.state;
 		}
+	}
+
+	public subscribe(state: DataStoreKeys, actions: Function[]) {
+		if (Object.keys(this._state).indexOf(state) != -1) {
+			this._state[state].actions = actions;
+		}
+	}
+
+	public getStateObject() {
+		return this.state;
 	}
 }

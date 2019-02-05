@@ -10,10 +10,10 @@ const ENV: string | undefined = window.process.type == "renderer" ? "electron" :
 import axios from "axios";
 import { EmployeeProperties, State } from "../../@types";
 import { Employee } from "../scripts/models/Employee";
+import { Store } from "../scripts/store/Store";
 import { Menu } from "../scripts/utils/Menu";
 import { Modal } from "../scripts/utils/Modal";
 import { Resizer } from "../scripts/utils/Resizer";
-import { Store } from "../scripts/store/Store";
 import { employeeSummaryTemplate, optionTemplate } from "../scripts/utils/templates";
 
 const initialState: State = {
@@ -34,18 +34,7 @@ const url: string | null = ENV == "electron" ? null : "http://localhost:3000";
 const store: Store = new Store(initialState);
 const resizer: Resizer = new Resizer(store);
 let menu: Menu | null = null;
-// function asideToggleWrapper() {
-// 	resizer.asideToggle();
-// }
-// function handleResizeAsideWrapper() {
-// 	resizer.handleResizeAside();
-// }
-// function handleResizeContentWrapper() {
-// 	resizer.handleResizeContent();
-// }
-// store.subscribe('isAsideOut', [asideToggleWrapper]);
-// store.subscribe('asideWidth', [handleResizeAsideWrapper]);
-// store.subscribe('contentWidth', [handleResizeContentWrapper]);
+
 store.subscribe("currentEmployee", [populateFields, colorEmployeeList]);
 store.subscribe("employeeArray", [populateEmployeeList]);
 store.subscribe("employeeList", [populateEmployeeList, colorEmployeeList]);
@@ -183,14 +172,14 @@ function addYoSPeriod(type: string, f: string, t: string): void {
 		const employee: Employee = store.getState("currentEmployee");
 		if (type == "addExternalYoSPeriod") {
 			if (employee) {
-				employee.addExternalYoS(parseInt(f, 10), parseInt(t, 10));
+				employee.addExternalYoS(new Date(f).getTime(), new Date(t).getTime());
 				store.setState("currentEmployee", employee);
 			} else {
 				alert("Izaberite radnika");
 			}
 		} else if (type == "addInternalYoSPeriod") {
 			if (employee) {
-				employee.addInternalYoS(parseInt(f, 10), parseInt(t, 10));
+				employee.addInternalYoS(new Date(f).getTime(), new Date(t).getTime());
 				store.setState("currentEmployee", employee);
 			} else {
 				alert("Izaberite radnika");

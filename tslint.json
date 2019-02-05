@@ -14,7 +14,14 @@
         "no-console": false,
         "curly": false,
         "import-spacing": true,
-        "no-unsafe-any": false
+        "no-unsafe-any": false,
+        "object-literal-sort-keys": false,
+        "forin": false,
+        "variable-name": false,
+        "max-line-length": false,
+        "class-name": false,
+        "ban-types": false,
+        "no-empty": false
     },
     "rulesDirectory": []
 }

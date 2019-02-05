@@ -1,12 +1,12 @@
-import { Employee } from "./Employee";
-import { ContentCols, Store } from "./Store";
+import { ContentCols, DataStoreTypes } from "../../../@types";
+import { Store } from "../store/Store";
 
 interface Config {
 	isAsideOut: boolean;
 	contentWidth: ContentCols;
 	asideWidth: number;
 
-	[key: string]: Employee | Employee[] | boolean | number | ContentCols | null;
+	[key: string]: DataStoreTypes;
 }
 
 export class Resizer {
@@ -22,8 +22,10 @@ export class Resizer {
 		this.aside = aside ? aside : document.querySelector("aside");
 		this.main = main ? main : document.querySelector("main");
 		this.asideTrigger = document.querySelector("#asideTrigger");
+
 		this.asideResizer = document.createElement("div");
 		this.asideResizer.classList.add("resize");
+
 		this.mainResizer = document.createElement("div");
 		this.mainResizer.classList.add("resize");
 		this.asideResizer.addEventListener("mousedown", () => store.setState("isResizingList", !store.getState("isResizingList")));
@@ -83,7 +85,6 @@ export class Resizer {
 		} else {
 			this.aside.style.width = this.store.getState("asideWidth") + "px";
 		}
-
 		this.positionResizeBars();
 	}
 

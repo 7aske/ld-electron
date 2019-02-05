@@ -1,4 +1,4 @@
-import { Store } from "./Store";
+import { Store } from "../store/Store";
 
 export class Modal {
 	public confirm: HTMLButtonElement | null;
