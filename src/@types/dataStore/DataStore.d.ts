@@ -14,6 +14,7 @@ export type DataStoreKeys =
 	"isResizingList" |
 	"isResizingContent" |
 	"newEmployee" |
+	"isPopUp" |
 	"currentIndex";
 
 export interface DataStore {

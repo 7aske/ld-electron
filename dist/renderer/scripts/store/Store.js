@@ -10,55 +10,55 @@ var Store = /** @class */ (function () {
         });
         this.state = initialState;
     }
-    Store.prototype.setState = function (state, value) {
-        if (Object.keys(this._state).indexOf(state) == -1) {
+    Store.prototype.setState = function (name, state) {
+        if (Object.keys(this._state).indexOf(name) == -1) {
             throw new Error("State must be registered first");
         }
         else {
-            this.set(state, value);
-            if (this._state[state].actions) {
-                this._state[state].actions.forEach(function (action) {
+            this.set(name, state);
+            if (this._state[name].actions) {
+                this._state[name].actions.forEach(function (action) {
                     action();
                 });
             }
         }
-        return this.state[state];
+        return this.state[name];
     };
-    Store.prototype.registerState = function (state, value) {
-        if (Object.keys(this.state).indexOf(state) == -1) {
+    Store.prototype.registerState = function (name, initialState) {
+        if (Object.keys(this.state).indexOf(name) != -1) {
             throw new Error("State already exists");
         }
         else {
-            this.set(state, value);
+            this.set(name, initialState);
         }
     };
-    Store.prototype.getState = function (state) {
-        if (Object.keys(this.state).indexOf(state) == -1) {
+    Store.prototype.getState = function (name) {
+        if (Object.keys(this.state).indexOf(name) == -1) {
+            throw new Error("State is not registered - '" + name + "'");
+        }
+        else {
+            return this.state[name];
+        }
+    };
+    Store.prototype.subscribe = function (name, actions) {
+        if (Object.keys(this._state).indexOf(name) == -1) {
             throw new Error("State is not registered");
         }
         else {
-            return this.state[state];
-        }
-    };
-    Store.prototype.subscribe = function (state, actions) {
-        if (Object.keys(this._state).indexOf(state) == -1) {
-            throw new Error("State is not registered");
-        }
-        else {
-            this._state[state].actions = actions;
+            this._state[name].actions = actions;
         }
     };
     Store.prototype.getStateObject = function () {
         return this._state;
     };
-    Store.prototype.set = function (state, value) {
-        if (Object.keys(this.state).indexOf(state) == -1) {
-            this.state[state] = value;
-            this._state[state] = { value: value, actions: [] };
+    Store.prototype.set = function (name, state) {
+        if (Object.keys(this.state).indexOf(name) == -1) {
+            this.state[name] = state;
+            this._state[name] = { value: state, actions: [] };
         }
         else {
-            this._state[state].value = value;
-            this.state[state] = value;
+            this._state[name].value = state;
+            this.state[name] = state;
         }
     };
     return Store;

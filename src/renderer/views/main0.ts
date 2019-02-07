@@ -9,10 +9,11 @@ window.process = process || {};
 const ENV: string | undefined = window.process.type == "renderer" ? "electron" : "web";
 import axios from "axios";
 import { EmployeeProperties, State } from "../../@types";
+import { Modal } from "../scripts/modal/Modal";
 import { Employee } from "../scripts/models/Employee";
 import { Store } from "../scripts/store/Store";
 import { Menu } from "../scripts/utils/Menu";
-import { Modal } from "../scripts/utils/Modal";
+import { PopupDialog } from "../scripts/utils/PopupDialog";
 import { Resizer } from "../scripts/utils/Resizer";
 import { employeeSummaryTemplate, optionTemplate } from "../scripts/utils/templates";
 
@@ -20,13 +21,7 @@ const initialState: State = {
 	employeeArray: [],
 	employeeList: [],
 	currentEmployee: null,
-	isAsideOut: false,
-	isModalUp: false,
-	asideWidth: 400,
-	contentWidth: {left: 6, right: 6},
-	isResizingList: false,
-	isResizingContent: false,
-	newEmployee: null,
+	newEmployee: null,\
 	currentIndex: 0
 };
 const url: string | null = ENV == "electron" ? null : "http://localhost:3000";
@@ -34,12 +29,13 @@ const url: string | null = ENV == "electron" ? null : "http://localhost:3000";
 const store: Store = new Store(initialState);
 const resizer: Resizer = new Resizer(store, true);
 let menu: Menu | null = null;
-
+const modal = new Modal(store);
+document.querySelector("#moreBtn").addEventListener("click", () => modal.open());
 store.subscribe("currentEmployee", [populateFields, colorEmployeeList]);
 store.subscribe("employeeArray", [populateEmployeeList]);
 store.subscribe("employeeList", [populateEmployeeList, colorEmployeeList]);
 // const main: HTMLElement = document.querySelector('main');
-const modal = new Modal(store);
+const popup = new PopupDialog(store);
 const employeeList = document.querySelector("#employeeList") as HTMLElement;
 const searchInp = document.querySelector("#searchInp") as HTMLInputElement;
 searchInp.addEventListener("input", function() {
@@ -100,7 +96,7 @@ function handleBack(event: Event): void {
 		text += employeeSummaryTemplate(e);
 	});
 	if (check) {
-		modal.open("Obevestenje", text, () => {
+		popup.open("Obevestenje", text, () => {
 			employeeSave(commit, true);
 			window.location.href = window.location.href.substring(0, window.location.href.lastIndexOf("/") + 1) + "mainMenu.html";
 		});
@@ -148,7 +144,7 @@ function handleInput(prop: string, value: string, target: HTMLInputElement): voi
 		const employees: Employee[] = store.getState("employeeArray");
 		employees.forEach(e => {
 			if (e.properties.umcn == value && store.getState("currentEmployee").properties.umcn != value) {
-				modal.open("Greska", `Vec postoji radnik sa tim JMBG. ${employeeSummaryTemplate(e)}`);
+				popup.open("Greska", `Vec postoji radnik sa tim JMBG. ${employeeSummaryTemplate(e)}`);
 				value = value.substring(0, target.value.length - 1);
 			}
 		});
@@ -184,7 +180,7 @@ function addYoSPeriod(type: string, f: string, t: string): void {
 			}
 		}
 	} else {
-		modal.open("Greska", "Neispravan datum");
+		popup.open("Greska", "Neispravan datum");
 	}
 }
 
@@ -322,8 +318,7 @@ function searchEmployeeArray(query: string | null): void {
 	q.forEach(q2 => {
 		if (search(result, q2).length == 0) {
 			for (let i = q2.length - 1; i >= 0; i--) {
-				if (search(result, q2.substring(0, i)).length == 0) continue;
-				else result = search(result, q2.substring(0, i));
+				result = search(result, q2.substring(0, i));
 			}
 		} else {
 			result = search(result, q2);
@@ -356,7 +351,7 @@ function employeeAdd(): void {
 
 function employeeReject(array: Employee[] | null): void {
 	const employees: Employee[] = array ? array : store.getState("employeeArray");
-	let text = "Da li zelite da odbacite sve promene?<br>";
+	let text = "Da li zelite da odbacite sve promene?\n";
 	const employeesToReject: Employee[] = [];
 	employees.forEach(employee => {
 		if (Object.keys(employee.changes).length > 0) {
@@ -365,7 +360,7 @@ function employeeReject(array: Employee[] | null): void {
 		}
 	});
 	if (employeesToReject.length > 0) {
-		modal.open("Upozorenje", text, () => {
+		popup.open("Upozorenje", text, () => {
 			employeesToReject.forEach((employee, i) => {
 				const keys: string[] = Object.keys(employee.changes);
 				if (keys.length > 0) {
@@ -379,7 +374,7 @@ function employeeReject(array: Employee[] | null): void {
 			store.setState("currentEmployee", store.getState("employeeArray")[0]);
 		});
 	} else {
-		modal.open("Obavestenje", "Nema trenutnih promena.");
+		popup.open("Obavestenje", "Nema trenutnih promena.");
 	}
 }
 
@@ -389,7 +384,7 @@ function employeeDelete(employeesToDelete: Employee[]): void {
 		employeesToDelete.forEach(e => {
 			text += employeeSummaryTemplate(e);
 		});
-		modal.open("Upozorenje", text, () => {
+		popup.open("Upozorenje", text, () => {
 			const toDelete: EmployeeProperties[] = [];
 			employeesToDelete.forEach(employee => {
 				const employees: Employee[] = store.getState("employeeArray");
@@ -437,7 +432,7 @@ function employeeSave(array: Employee[], skipModal?: boolean): void {
 				}
 			});
 
-			modal.open("Da li zelite da sacuvate sve promene?", text, () => {
+			popup.open("Da li zelite da sacuvate sve promene?", text, () => {
 				const save: EmployeeProperties[] = [];
 				commit.forEach(e => {
 					e.commitChanges();
@@ -447,7 +442,7 @@ function employeeSave(array: Employee[], skipModal?: boolean): void {
 				employeeSaveHandler(save);
 			});
 		} else {
-			modal.open("Obavestenje", "Nema izmena");
+			popup.open("Obavestenje", "Nema izmena");
 		}
 	}
 }
@@ -470,10 +465,10 @@ window.onload = () => {
 document.addEventListener("keydown", event => {
 	switch (event.key) {
 		case "Escape":
-			if (store.getState("isModalUp")) modal.close.click();
+			if (store.getState("isModalUp")) popup.close.click();
 			break;
 		case "Enter":
-			if (store.getState("isModalUp")) modal.confirm.click();
+			if (store.getState("isModalUp")) popup.confirm.click();
 			else {
 				changeInputIndex();
 			}
@@ -492,7 +487,6 @@ document.addEventListener("contextmenu", () => {
 });
 
 function employeeGetHandler() {
-	console.log(ENV == "electron");
 	if (ENV == "electron") {
 		setEmployees(ipcRenderer.sendSync("employee:get", null));
 	} else {

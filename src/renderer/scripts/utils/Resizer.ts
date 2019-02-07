@@ -1,23 +1,39 @@
-import { ContentCols, Config } from "../../../@types";
+import { Config, ContentCols } from "../../../@types";
 import { Store } from "../store/Store";
+import { addStyleSheet } from "./utils";
 
 export class Resizer {
 	private readonly asideResizer: HTMLElement;
 	private readonly mainResizer: HTMLElement;
 	private asideTrigger: HTMLButtonElement;
-	private main: HTMLElement;
+	private readonly main: HTMLElement;
 	private aside: HTMLElement;
 	private store: Store;
-	private double: boolean;
+	private readonly double: boolean;
 
 	constructor(store: Store, double: boolean, main?: HTMLElement, aside?: HTMLElement) {
-		this.double = double;
 		this.store = store;
+		this.double = double;
 		this.aside = aside ? aside : document.querySelector("aside");
 		this.main = main ? main : document.querySelector("main");
+		if (!this.main) {
+			throw new Error("Invalid main element");
+		}
 
+		// set required states to the store
+		this.initStates();
+
+		if (double) {
+			if (this.main.childElementCount < 2) {
+				for (let i = 0; i < 2 - this.main.childElementCount; i++) {
+					const content = document.createElement("div");
+					content.classList.add("content");
+					content.classList.add("col-xl-6");
+					this.main.appendChild(content);
+				}
+			}
+		}
 		this.initStyleSheet();
-
 		this.asideTrigger = document.querySelector("#asideTrigger");
 
 		this.asideResizer = document.createElement("div");
@@ -38,19 +54,7 @@ export class Resizer {
 					}
 				}
 			});
-		}
-
-		document.body.insertBefore(this.asideResizer, document.body.firstElementChild);
-		this.asideTrigger.addEventListener("click", () => {
-			this.asideToggle(!this.store.getState("isAsideOut"));
-		});
-		document.addEventListener("mousemove", event => {
-			if (store.getState("isResizingList")) {
-				this.handleResizeAside(event.screenX);
-			}
-		});
-		document.addEventListener("mouseup", () => {
-			if (double) {
+			document.addEventListener("mouseup", () => {
 				const config: Config = {
 					isAsideOut: store.getState("isAsideOut"),
 					contentWidth: store.getState("contentWidth"),
@@ -62,7 +66,9 @@ export class Resizer {
 				}
 				store.setState("isResizingList", false);
 				store.setState("isResizingContent", false);
-			} else {
+			});
+		} else {
+			document.addEventListener("mouseup", () => {
 				const config: Config = {
 					isAsideOut: store.getState("isAsideOut"),
 					asideWidth: store.getState("asideWidth")
@@ -71,29 +77,43 @@ export class Resizer {
 					localStorage.setItem("asideWidth", config.asideWidth.toString());
 				}
 				store.setState("isResizingList", false);
+			});
+		}
+		document.body.insertBefore(this.asideResizer, document.body.firstElementChild);
+		this.asideTrigger.addEventListener("click", () => {
+			this.asideToggle(!this.store.getState("isAsideOut"));
+		});
+		document.addEventListener("mousemove", event => {
+			if (store.getState("isResizingList")) {
+				this.handleResizeAside(event.screenX);
 			}
-
 		});
 		window.addEventListener("resize", () => {
 			this.positionResizeBars();
 		});
-		if (localStorage.length < 3) {
-			if (double) {
-				localStorage.setItem("contentWidth", JSON.stringify(this.store.getState("contentWidth")));
-			}
-			localStorage.setItem("isAsideOut", this.store.getState("isAsideOut") ? "true" : "false");
-			localStorage.setItem("asideWidth", this.store.getState("asideWidth").toString());
-		}
-		if (double){
-			this.store.setState("contentWidth", JSON.parse(localStorage.getItem("contentWidth")));
-		}
-		this.store.setState("isAsideOut", localStorage.getItem("isAsideOut") == "true");
-		this.store.setState("asideWidth", parseInt(localStorage.getItem("asideWidth"), 10));
+
+		// update starting positions
+		this.updateValues();
 		this.asideToggle();
 		this.handleResizeAside();
 		if (double) {
 			this.handleResizeContent();
 		}
+	}
+
+	private updateValues() {
+		if (localStorage.length < 3) {
+			if (this.double) {
+				localStorage.setItem("contentWidth", JSON.stringify(this.store.getState("contentWidth")));
+			}
+			localStorage.setItem("isAsideOut", this.store.getState("isAsideOut") ? "true" : "false");
+			localStorage.setItem("asideWidth", this.store.getState("asideWidth").toString());
+		}
+		if (this.double) {
+			this.store.setState("contentWidth", JSON.parse(localStorage.getItem("contentWidth")));
+		}
+		this.store.setState("isAsideOut", localStorage.getItem("isAsideOut") == "true");
+		this.store.setState("asideWidth", parseInt(localStorage.getItem("asideWidth"), 10));
 	}
 
 	public handleResizeAside(width?: number): void {
@@ -199,12 +219,17 @@ export class Resizer {
 			.resize:hover, .resize:active {
 			background-color: orange;
 		`;
-		const rules = [rule0, rule1];
-		const style = document.createElement("style") as HTMLStyleElement;
-		style.appendChild(document.createTextNode(""));
-		document.head.append(style);
-		for (let i = 0; i < rules.length; i++) {
-			(style.sheet as CSSStyleSheet).insertRule(rules[i], i);
-		}
+		addStyleSheet([rule0, rule1]);
 	}
+
+	private initStates() {
+		if (this.double) {
+			this.store.registerState("contentWidth", {left: 6, right: 6});
+			this.store.registerState("isResizingContent", false);
+		}
+		this.store.registerState("isResizingList", false);
+		this.store.registerState("isAsideOut", false);
+		this.store.registerState("asideWidth", 400);
+	}
+
 }

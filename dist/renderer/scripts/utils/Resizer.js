@@ -1,12 +1,28 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
+var utils_1 = require("./utils");
 var Resizer = /** @class */ (function () {
     function Resizer(store, double, main, aside) {
         var _this = this;
-        this.double = double;
         this.store = store;
+        this.double = double;
         this.aside = aside ? aside : document.querySelector("aside");
         this.main = main ? main : document.querySelector("main");
+        if (!this.main) {
+            throw new Error("Invalid main element");
+        }
+        // set required states to the store
+        this.initStates();
+        if (double) {
+            if (this.main.childElementCount < 2) {
+                for (var i = 0; i < 2 - this.main.childElementCount; i++) {
+                    var content = document.createElement("div");
+                    content.classList.add("content");
+                    content.classList.add("col-xl-6");
+                    this.main.appendChild(content);
+                }
+            }
+        }
         this.initStyleSheet();
         this.asideTrigger = document.querySelector("#asideTrigger");
         this.asideResizer = document.createElement("div");
@@ -27,18 +43,7 @@ var Resizer = /** @class */ (function () {
                     }
                 }
             });
-        }
-        document.body.insertBefore(this.asideResizer, document.body.firstElementChild);
-        this.asideTrigger.addEventListener("click", function () {
-            _this.asideToggle(!_this.store.getState("isAsideOut"));
-        });
-        document.addEventListener("mousemove", function (event) {
-            if (store.getState("isResizingList")) {
-                _this.handleResizeAside(event.screenX);
-            }
-        });
-        document.addEventListener("mouseup", function () {
-            if (double) {
+            document.addEventListener("mouseup", function () {
                 var config = {
                     isAsideOut: store.getState("isAsideOut"),
                     contentWidth: store.getState("contentWidth"),
@@ -50,8 +55,10 @@ var Resizer = /** @class */ (function () {
                 }
                 store.setState("isResizingList", false);
                 store.setState("isResizingContent", false);
-            }
-            else {
+            });
+        }
+        else {
+            document.addEventListener("mouseup", function () {
                 var config = {
                     isAsideOut: store.getState("isAsideOut"),
                     asideWidth: store.getState("asideWidth")
@@ -60,29 +67,42 @@ var Resizer = /** @class */ (function () {
                     localStorage.setItem("asideWidth", config.asideWidth.toString());
                 }
                 store.setState("isResizingList", false);
+            });
+        }
+        document.body.insertBefore(this.asideResizer, document.body.firstElementChild);
+        this.asideTrigger.addEventListener("click", function () {
+            _this.asideToggle(!_this.store.getState("isAsideOut"));
+        });
+        document.addEventListener("mousemove", function (event) {
+            if (store.getState("isResizingList")) {
+                _this.handleResizeAside(event.screenX);
             }
         });
         window.addEventListener("resize", function () {
             _this.positionResizeBars();
         });
-        if (localStorage.length < 3) {
-            if (double) {
-                localStorage.setItem("contentWidth", JSON.stringify(this.store.getState("contentWidth")));
-            }
-            localStorage.setItem("isAsideOut", this.store.getState("isAsideOut") ? "true" : "false");
-            localStorage.setItem("asideWidth", this.store.getState("asideWidth").toString());
-        }
-        if (double) {
-            this.store.setState("contentWidth", JSON.parse(localStorage.getItem("contentWidth")));
-        }
-        this.store.setState("isAsideOut", localStorage.getItem("isAsideOut") == "true");
-        this.store.setState("asideWidth", parseInt(localStorage.getItem("asideWidth"), 10));
+        // update starting positions
+        this.updateValues();
         this.asideToggle();
         this.handleResizeAside();
         if (double) {
             this.handleResizeContent();
         }
     }
+    Resizer.prototype.updateValues = function () {
+        if (localStorage.length < 3) {
+            if (this.double) {
+                localStorage.setItem("contentWidth", JSON.stringify(this.store.getState("contentWidth")));
+            }
+            localStorage.setItem("isAsideOut", this.store.getState("isAsideOut") ? "true" : "false");
+            localStorage.setItem("asideWidth", this.store.getState("asideWidth").toString());
+        }
+        if (this.double) {
+            this.store.setState("contentWidth", JSON.parse(localStorage.getItem("contentWidth")));
+        }
+        this.store.setState("isAsideOut", localStorage.getItem("isAsideOut") == "true");
+        this.store.setState("asideWidth", parseInt(localStorage.getItem("asideWidth"), 10));
+    };
     Resizer.prototype.handleResizeAside = function (width) {
         if (width) {
             if (width > 400) {
@@ -175,13 +195,16 @@ var Resizer = /** @class */ (function () {
     Resizer.prototype.initStyleSheet = function () {
         var rule0 = "\n\t\t.resize {\n\t \t\tuser-select: none;\n\t \t\tposition: absolute;\n\t \t\tcursor: all-scroll;\n\t \t\tz-index: 10;\n\t \t\twidth: 15px;\n\t \t\theight: 100vh;\n\t \t\tbackground-color: transparent;\n\t \t}\n\t\t";
         var rule1 = "\n\t\t\t.resize:hover, .resize:active {\n\t\t\tbackground-color: orange;\n\t\t";
-        var rules = [rule0, rule1];
-        var style = document.createElement("style");
-        style.appendChild(document.createTextNode(""));
-        document.head.append(style);
-        for (var i = 0; i < rules.length; i++) {
-            style.sheet.insertRule(rules[i], i);
+        utils_1.addStyleSheet([rule0, rule1]);
+    };
+    Resizer.prototype.initStates = function () {
+        if (this.double) {
+            this.store.registerState("contentWidth", { left: 6, right: 6 });
+            this.store.registerState("isResizingContent", false);
         }
+        this.store.registerState("isResizingList", false);
+        this.store.registerState("isAsideOut", false);
+        this.store.registerState("asideWidth", 400);
     };
     return Resizer;
 }());

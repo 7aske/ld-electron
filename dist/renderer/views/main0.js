@@ -27,22 +27,17 @@ var electron_1 = require("electron");
 window.process = process || {};
 var ENV = window.process.type == "renderer" ? "electron" : "web";
 var axios_1 = __importDefault(require("axios"));
+var Modal_1 = require("../scripts/modal/Modal");
 var Employee_1 = require("../scripts/models/Employee");
 var Store_1 = require("../scripts/store/Store");
 var Menu_1 = require("../scripts/utils/Menu");
-var Modal_1 = require("../scripts/utils/Modal");
+var PopupDialog_1 = require("../scripts/utils/PopupDialog");
 var Resizer_1 = require("../scripts/utils/Resizer");
 var templates_1 = require("../scripts/utils/templates");
 var initialState = {
     employeeArray: [],
     employeeList: [],
     currentEmployee: null,
-    isAsideOut: false,
-    isModalUp: false,
-    asideWidth: 400,
-    contentWidth: { left: 6, right: 6 },
-    isResizingList: false,
-    isResizingContent: false,
     newEmployee: null,
     currentIndex: 0
 };
@@ -50,11 +45,13 @@ var url = ENV == "electron" ? null : "http://localhost:3000";
 var store = new Store_1.Store(initialState);
 var resizer = new Resizer_1.Resizer(store, true);
 var menu = null;
+var modal = new Modal_1.Modal(store);
+document.querySelector("#moreBtn").addEventListener("click", function () { return modal.open(); });
 store.subscribe("currentEmployee", [populateFields, colorEmployeeList]);
 store.subscribe("employeeArray", [populateEmployeeList]);
 store.subscribe("employeeList", [populateEmployeeList, colorEmployeeList]);
 // const main: HTMLElement = document.querySelector('main');
-var modal = new Modal_1.Modal(store);
+var popup = new PopupDialog_1.PopupDialog(store);
 var employeeList = document.querySelector("#employeeList");
 var searchInp = document.querySelector("#searchInp");
 searchInp.addEventListener("input", function () {
@@ -113,7 +110,7 @@ function handleBack(event) {
         text += templates_1.employeeSummaryTemplate(e);
     });
     if (check) {
-        modal.open("Obevestenje", text, function () {
+        popup.open("Obevestenje", text, function () {
             employeeSave(commit, true);
             window.location.href = window.location.href.substring(0, window.location.href.lastIndexOf("/") + 1) + "mainMenu.html";
         });
@@ -161,7 +158,7 @@ function handleInput(prop, value, target) {
         var employees = store.getState("employeeArray");
         employees.forEach(function (e) {
             if (e.properties.umcn == value && store.getState("currentEmployee").properties.umcn != value) {
-                modal.open("Greska", "Vec postoji radnik sa tim JMBG. " + templates_1.employeeSummaryTemplate(e));
+                popup.open("Greska", "Vec postoji radnik sa tim JMBG. " + templates_1.employeeSummaryTemplate(e));
                 value = value.substring(0, target.value.length - 1);
             }
         });
@@ -201,7 +198,7 @@ function addYoSPeriod(type, f, t) {
         }
     }
     else {
-        modal.open("Greska", "Neispravan datum");
+        popup.open("Greska", "Neispravan datum");
     }
 }
 function populateFields() {
@@ -346,10 +343,7 @@ function searchEmployeeArray(query) {
     q.forEach(function (q2) {
         if (search(result, q2).length == 0) {
             for (var i = q2.length - 1; i >= 0; i--) {
-                if (search(result, q2.substring(0, i)).length == 0)
-                    continue;
-                else
-                    result = search(result, q2.substring(0, i));
+                result = search(result, q2.substring(0, i));
             }
         }
         else {
@@ -381,7 +375,7 @@ function employeeAdd() {
 }
 function employeeReject(array) {
     var employees = array ? array : store.getState("employeeArray");
-    var text = "Da li zelite da odbacite sve promene?<br>";
+    var text = "Da li zelite da odbacite sve promene?\n";
     var employeesToReject = [];
     employees.forEach(function (employee) {
         if (Object.keys(employee.changes).length > 0) {
@@ -390,7 +384,7 @@ function employeeReject(array) {
         }
     });
     if (employeesToReject.length > 0) {
-        modal.open("Upozorenje", text, function () {
+        popup.open("Upozorenje", text, function () {
             employeesToReject.forEach(function (employee, i) {
                 var keys = Object.keys(employee.changes);
                 if (keys.length > 0) {
@@ -405,7 +399,7 @@ function employeeReject(array) {
         });
     }
     else {
-        modal.open("Obavestenje", "Nema trenutnih promena.");
+        popup.open("Obavestenje", "Nema trenutnih promena.");
     }
 }
 function employeeDelete(employeesToDelete) {
@@ -414,7 +408,7 @@ function employeeDelete(employeesToDelete) {
         employeesToDelete.forEach(function (e) {
             text_1 += templates_1.employeeSummaryTemplate(e);
         });
-        modal.open("Upozorenje", text_1, function () {
+        popup.open("Upozorenje", text_1, function () {
             var toDelete = [];
             employeesToDelete.forEach(function (employee) {
                 var employees = store.getState("employeeArray");
@@ -463,7 +457,7 @@ function employeeSave(array, skipModal) {
                     commit_1.push(e);
                 }
             });
-            modal.open("Da li zelite da sacuvate sve promene?", text_2, function () {
+            popup.open("Da li zelite da sacuvate sve promene?", text_2, function () {
                 var save = [];
                 commit_1.forEach(function (e) {
                     e.commitChanges();
@@ -474,7 +468,7 @@ function employeeSave(array, skipModal) {
             });
         }
         else {
-            modal.open("Obavestenje", "Nema izmena");
+            popup.open("Obavestenje", "Nema izmena");
         }
     }
 }
@@ -496,11 +490,11 @@ document.addEventListener("keydown", function (event) {
     switch (event.key) {
         case "Escape":
             if (store.getState("isModalUp"))
-                modal.close.click();
+                popup.close.click();
             break;
         case "Enter":
             if (store.getState("isModalUp"))
-                modal.confirm.click();
+                popup.confirm.click();
             else {
                 changeInputIndex();
             }
@@ -517,7 +511,6 @@ document.addEventListener("keydown", function (event) {
 document.addEventListener("contextmenu", function () {
 });
 function employeeGetHandler() {
-    console.log(ENV == "electron");
     if (ENV == "electron") {
         setEmployees(electron_1.ipcRenderer.sendSync("employee:get", null));
     }

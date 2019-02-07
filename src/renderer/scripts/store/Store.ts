@@ -1,6 +1,5 @@
 import { _State, DataStoreKeys, State } from "../../../@types";
 import { DataStore, DataStoreTypes } from "../../../@types";
-import Data = Electron.Data;
 
 export class Store implements DataStore {
 	public readonly _state: _State = {};
@@ -13,41 +12,41 @@ export class Store implements DataStore {
 		this.state = initialState;
 	}
 
-	public setState(state: DataStoreKeys, value: DataStoreTypes): DataStoreTypes {
-		if (Object.keys(this._state).indexOf(state) == -1) {
+	public setState(name: DataStoreKeys, state: DataStoreTypes): DataStoreTypes {
+		if (Object.keys(this._state).indexOf(name) == -1) {
 			throw new Error("State must be registered first");
 		} else {
-			this.set(state, value);
-			if (this._state[state].actions) {
-				this._state[state].actions.forEach(action => {
+			this.set(name, state);
+			if (this._state[name].actions) {
+				this._state[name].actions.forEach(action => {
 					action();
 				});
 			}
 		}
-		return this.state[state];
+		return this.state[name];
 	}
 
-	public registerState(state: DataStoreKeys, value: DataStoreTypes) {
-		if (Object.keys(this.state).indexOf(state) == -1) {
+	public registerState(name: DataStoreKeys, initialState: DataStoreTypes) {
+		if (Object.keys(this.state).indexOf(name) != -1) {
 			throw new Error("State already exists");
 		} else {
-			this.set(state, value);
+			this.set(name, initialState);
 		}
 	}
 
-	public getState(state: DataStoreKeys): any {
-		if (Object.keys(this.state).indexOf(state) == -1) {
-			throw new Error("State is not registered");
+	public getState(name: DataStoreKeys): any {
+		if (Object.keys(this.state).indexOf(name) == -1) {
+			throw new Error("State is not registered - '" + name + "'");
 		} else {
-			return this.state[state];
+			return this.state[name];
 		}
 	}
 
-	public subscribe(state: DataStoreKeys, actions: Function[]) {
-		if (Object.keys(this._state).indexOf(state) == -1) {
+	public subscribe(name: DataStoreKeys, actions: Function[]) {
+		if (Object.keys(this._state).indexOf(name) == -1) {
 			throw new Error("State is not registered");
 		} else {
-			this._state[state].actions = actions;
+			this._state[name].actions = actions;
 		}
 	}
 
@@ -55,13 +54,13 @@ export class Store implements DataStore {
 		return this._state;
 	}
 
-	private set(state: DataStoreKeys, value: DataStoreTypes) {
-		if (Object.keys(this.state).indexOf(state) == -1) {
-			this.state[state] = value;
-			this._state[state] = {value, actions: []};
+	private set(name: DataStoreKeys, state: DataStoreTypes) {
+		if (Object.keys(this.state).indexOf(name) == -1) {
+			this.state[name] = state;
+			this._state[name] = {value: state, actions: []};
 		} else {
-			this._state[state].value = value;
-			this.state[state] = value;
+			this._state[name].value = state;
+			this.state[name] = state;
 		}
 	}
 }
