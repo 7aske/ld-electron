@@ -1,5 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
+var Modal_1 = require("../scripts/modal/Modal");
 window.process = process || {};
 var ENV = window.process.type == "renderer" ? "electron" : "web";
 var url = ENV == "electron" ? null : "http://localhost:3000";
@@ -7,12 +8,14 @@ var Store_1 = require("../scripts/store/Store");
 var PopupDialog_1 = require("../scripts/utils/PopupDialog");
 var Resizer_1 = require("../scripts/utils/Resizer");
 var initialState = {
-    isModalUp: false,
     currentIndex: 0
 };
 var store = new Store_1.Store(initialState);
 var resizer = new Resizer_1.Resizer(store, true);
-var modal = new PopupDialog_1.PopupDialog(store);
+var popup = new PopupDialog_1.PopupDialog(store);
+var modal = new Modal_1.Modal(store);
+var test = document.querySelector("#testBtn");
+test.addEventListener("click", function () { return modal.open(); });
 // const saveBtn = document.querySelector("#saveBtn") as HTMLButtonElement;
 // saveBtn.addEventListener("click", () => {
 // 	calcSave(null);

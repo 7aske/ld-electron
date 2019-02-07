@@ -1,6 +1,7 @@
 import axios from "axios";
 import { ipcRenderer } from "electron";
 import { CalcProps, State } from "../../@types";
+import { Modal } from "../scripts/modal/Modal";
 import { Calc } from "../scripts/models/Calc";
 
 declare global {
@@ -18,13 +19,14 @@ import { Resizer } from "../scripts/utils/Resizer";
 import { calcSummaryTemplate } from "../scripts/utils/templates";
 
 const initialState: State = {
-	isModalUp: false,
 	currentIndex: 0
 };
 const store = new Store(initialState);
 const resizer = new Resizer(store, true);
-const modal = new PopupDialog(store);
-
+const popup = new PopupDialog(store);
+const modal = new Modal(store);
+const test = document.querySelector("#testBtn") as HTMLButtonElement;
+test.addEventListener("click", () => modal.open());
 // const saveBtn = document.querySelector("#saveBtn") as HTMLButtonElement;
 // saveBtn.addEventListener("click", () => {
 // 	calcSave(null);

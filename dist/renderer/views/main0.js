@@ -27,7 +27,6 @@ var electron_1 = require("electron");
 window.process = process || {};
 var ENV = window.process.type == "renderer" ? "electron" : "web";
 var axios_1 = __importDefault(require("axios"));
-var Modal_1 = require("../scripts/modal/Modal");
 var Employee_1 = require("../scripts/models/Employee");
 var Store_1 = require("../scripts/store/Store");
 var Menu_1 = require("../scripts/utils/Menu");
@@ -45,8 +44,8 @@ var url = ENV == "electron" ? null : "http://localhost:3000";
 var store = new Store_1.Store(initialState);
 var resizer = new Resizer_1.Resizer(store, true);
 var menu = null;
-var modal = new Modal_1.Modal(store);
-document.querySelector("#moreBtn").addEventListener("click", function () { return modal.open(); });
+// const modal = new Modal(store);
+// document.querySelector("#moreBtn").addEventListener("click", () => modal.open());
 store.subscribe("currentEmployee", [populateFields, colorEmployeeList]);
 store.subscribe("employeeArray", [populateEmployeeList]);
 store.subscribe("employeeList", [populateEmployeeList, colorEmployeeList]);
@@ -97,7 +96,7 @@ inputs.forEach(function (i) {
 function handleBack(event) {
     event.preventDefault();
     var commit = [];
-    var text = "Imate nesacuvane promene.<br>";
+    var text = "Imate nesacuvane promene.\n";
     var check = false;
     var array = store.getState("employeeArray");
     array.forEach(function (e) {

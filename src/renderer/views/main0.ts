@@ -1,5 +1,5 @@
 import { ipcRenderer } from "electron";
-
+// ts fix
 declare global {
 	interface Window {
 		process: any;
@@ -9,7 +9,6 @@ window.process = process || {};
 const ENV: string | undefined = window.process.type == "renderer" ? "electron" : "web";
 import axios from "axios";
 import { EmployeeProperties, State } from "../../@types";
-import { Modal } from "../scripts/modal/Modal";
 import { Employee } from "../scripts/models/Employee";
 import { Store } from "../scripts/store/Store";
 import { Menu } from "../scripts/utils/Menu";
@@ -21,7 +20,7 @@ const initialState: State = {
 	employeeArray: [],
 	employeeList: [],
 	currentEmployee: null,
-	newEmployee: null,\
+	newEmployee: null,
 	currentIndex: 0
 };
 const url: string | null = ENV == "electron" ? null : "http://localhost:3000";
@@ -29,8 +28,8 @@ const url: string | null = ENV == "electron" ? null : "http://localhost:3000";
 const store: Store = new Store(initialState);
 const resizer: Resizer = new Resizer(store, true);
 let menu: Menu | null = null;
-const modal = new Modal(store);
-document.querySelector("#moreBtn").addEventListener("click", () => modal.open());
+// const modal = new Modal(store);
+// document.querySelector("#moreBtn").addEventListener("click", () => modal.open());
 store.subscribe("currentEmployee", [populateFields, colorEmployeeList]);
 store.subscribe("employeeArray", [populateEmployeeList]);
 store.subscribe("employeeList", [populateEmployeeList, colorEmployeeList]);
@@ -83,7 +82,7 @@ inputs.forEach(i => {
 function handleBack(event: Event): void {
 	event.preventDefault();
 	const commit: Employee[] = [];
-	let text = "Imate nesacuvane promene.<br>";
+	let text = "Imate nesacuvane promene.\n";
 	let check: boolean = false;
 	const array: Employee[] = store.getState("employeeArray");
 	array.forEach(e => {

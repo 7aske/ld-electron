@@ -1,4 +1,14 @@
 "use strict";
+var __values = (this && this.__values) || function (o) {
+    var m = typeof Symbol === "function" && o[Symbol.iterator], i = 0;
+    if (m) return m.call(o);
+    return {
+        next: function () {
+            if (o && i >= o.length) o = void 0;
+            return { value: o && o[i++], done: !o };
+        }
+    };
+};
 var __read = (this && this.__read) || function (o, n) {
     var m = typeof Symbol === "function" && o[Symbol.iterator];
     if (!m) return o;
@@ -92,6 +102,7 @@ var employeeKeys = ["healthInsuranceDateOfIssue",
     "zip"];
 var Employee = /** @class */ (function () {
     function Employee(newEmployee) {
+        var e_1, _a;
         this.properties = {};
         if (newEmployee) {
             for (var key in newEmployee) {
@@ -99,23 +110,34 @@ var Employee = /** @class */ (function () {
             }
         }
         else {
-            for (var key in employeeKeys) {
-                if (key == "_id")
-                    this.properties._id = shortid_1.default.generate();
-                else if (key == "externalYoS_periods")
-                    this.properties.externalYoS_periods = [];
-                else if (key == "externalYoS_total")
-                    this.properties.externalYoS_total = 0;
-                else if (key == "internalYoS_periods")
-                    this.properties.internalYoS_periods = [];
-                else if (key == "internalYoS_total")
-                    this.properties.internalYoS_total = 0;
-                else if (key == "totalYoS")
-                    this.properties.totalYoS = 0;
-                else
-                    this.properties[key] = "";
+            try {
+                for (var employeeKeys_1 = __values(employeeKeys), employeeKeys_1_1 = employeeKeys_1.next(); !employeeKeys_1_1.done; employeeKeys_1_1 = employeeKeys_1.next()) {
+                    var key = employeeKeys_1_1.value;
+                    if (key == "_id")
+                        this.properties._id = shortid_1.default.generate();
+                    else if (key == "externalYoS_periods")
+                        this.properties.externalYoS_periods = [];
+                    else if (key == "externalYoS_total")
+                        this.properties.externalYoS_total = 0;
+                    else if (key == "internalYoS_periods")
+                        this.properties.internalYoS_periods = [];
+                    else if (key == "internalYoS_total")
+                        this.properties.internalYoS_total = 0;
+                    else if (key == "totalYoS")
+                        this.properties.totalYoS = 0;
+                    else
+                        this.properties[key] = "";
+                }
+            }
+            catch (e_1_1) { e_1 = { error: e_1_1 }; }
+            finally {
+                try {
+                    if (employeeKeys_1_1 && !employeeKeys_1_1.done && (_a = employeeKeys_1.return)) _a.call(employeeKeys_1);
+                }
+                finally { if (e_1) throw e_1.error; }
             }
         }
+        console.log(this.properties);
         this.changes = {};
     }
     Employee.formatSexFromUMCN = function (umcn) {

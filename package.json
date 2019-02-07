@@ -6,10 +6,11 @@
 	"scripts": {
 		"start": "electron ./dist/main/app.js",
 		"webpack": "npx webpack --config webpack.config.js",
-		"package-linux": "electron-packager . ld-electron --overwrite --prune=true --platform=linux --arch=x64 --out=export/linux --ignore=\"./src\" --icon=dist/main/icons/default.png",
-		"package-win": "electron-packager . ld-electron --overwrite --prune=true --platform=win32 --arch=x64 --out=export/windows --ignore=\"./src\"",
-		"package-pi": "electron-packager . ld-electron --overwrite --prune=true --platform=linux --arch=armv7l --out=export/raspi --ignore=\"./src\"",
-		"package-mac": "electron-packager . ld-electron --overwrite --prune=true --platform=darwin --arch=x64 --out=export/mac --ignore=\"./src\""
+		"package-linux": "electron-packager . ld-electron --overwrite --prune=true --platform=linux --arch=x64 --out=build/linux --ignore=\"./src\"",
+		"package-win": "electron-packager . ld-electron --overwrite --prune=true --platform=win32 --arch=x64 --out=build/windows --ignore=\"./src\"",
+		"package-win32": "electron-packager . ld-electron --overwrite --prune=true --platform=win32 --arch=ia32 --out=build/windows --ignore=\"./src\"",
+		"package-pi": "electron-packager . ld-electron --overwrite --prune=true --platform=linux --arch=armv7l --out=build/raspi --ignore=\"./src\"",
+		"package-mac": "electron-packager . ld-electron --overwrite --prune=true --platform=darwin --arch=x64 --out=build/mac --ignore=\"./src\""
 	},
 	"author": "Nikola Tasic",
 	"license": "ISC",
