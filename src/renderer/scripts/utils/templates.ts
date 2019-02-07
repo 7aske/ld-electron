@@ -12,7 +12,7 @@ export function dateTemplate(date: Date) {
 }
 
 export function optionTemplate(e: Employee): string {
-	return `<li class="employee list-group-item list-group-item-action d-flex justify-content-between align-items-center"
+	return `<li class="list-group-item list-group-item-action d-flex justify-content-between align-items-center"
 	onclick="changeCurrentEmployee()"
 	data-id="${e.properties._id}"><div style="pointer-events:none">
 	${e.properties.id} - ${e.properties.umcn} - ${e.properties.lastName} ${e.properties.firstName}</div>

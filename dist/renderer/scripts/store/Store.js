@@ -12,39 +12,54 @@ var Store = /** @class */ (function () {
     }
     Store.prototype.setState = function (state, value) {
         if (Object.keys(this._state).indexOf(state) == -1) {
-            this._state[state] = { value: value, actions: [] };
-            this.state[state] = value;
+            throw new Error("State must be registered first");
         }
         else {
-            this._state[state].value = value;
-            this.state[state] = value;
+            this.set(state, value);
             if (this._state[state].actions) {
                 this._state[state].actions.forEach(function (action) {
                     action();
                 });
             }
         }
+        return this.state[state];
     };
-    Store.prototype.getState = function (state) {
-        if (state) {
-            if (Object.keys(this.state).indexOf(state) != -1) {
-                return this.state[state];
-            }
-            else {
-                return null;
-            }
+    Store.prototype.registerState = function (state, value) {
+        if (Object.keys(this.state).indexOf(state) == -1) {
+            throw new Error("State already exists");
         }
         else {
-            return this.state;
+            this.set(state, value);
+        }
+    };
+    Store.prototype.getState = function (state) {
+        if (Object.keys(this.state).indexOf(state) == -1) {
+            throw new Error("State is not registered");
+        }
+        else {
+            return this.state[state];
         }
     };
     Store.prototype.subscribe = function (state, actions) {
-        if (Object.keys(this._state).indexOf(state) != -1) {
+        if (Object.keys(this._state).indexOf(state) == -1) {
+            throw new Error("State is not registered");
+        }
+        else {
             this._state[state].actions = actions;
         }
     };
     Store.prototype.getStateObject = function () {
-        return this.state;
+        return this._state;
+    };
+    Store.prototype.set = function (state, value) {
+        if (Object.keys(this.state).indexOf(state) == -1) {
+            this.state[state] = value;
+            this._state[state] = { value: value, actions: [] };
+        }
+        else {
+            this._state[state].value = value;
+            this.state[state] = value;
+        }
     };
     return Store;
 }());

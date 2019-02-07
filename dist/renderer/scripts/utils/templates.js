@@ -11,7 +11,7 @@ function dateTemplate(date) {
 }
 exports.dateTemplate = dateTemplate;
 function optionTemplate(e) {
-    return "<li class=\"employee list-group-item list-group-item-action d-flex justify-content-between align-items-center\"\n\tonclick=\"changeCurrentEmployee()\"\n\tdata-id=\"" + e.properties._id + "\"><div style=\"pointer-events:none\">\n\t" + e.properties.id + " - " + e.properties.umcn + " - " + e.properties.lastName + " " + e.properties.firstName + "</div>\n\t<span data-id=\"" + e.properties._id + "\" class=\"badge badge-warning badge-pill\"></span></li>";
+    return "<li class=\"list-group-item list-group-item-action d-flex justify-content-between align-items-center\"\n\tonclick=\"changeCurrentEmployee()\"\n\tdata-id=\"" + e.properties._id + "\"><div style=\"pointer-events:none\">\n\t" + e.properties.id + " - " + e.properties.umcn + " - " + e.properties.lastName + " " + e.properties.firstName + "</div>\n\t<span data-id=\"" + e.properties._id + "\" class=\"badge badge-warning badge-pill\"></span></li>";
 }
 exports.optionTemplate = optionTemplate;
 function employeeSummaryTemplate(e) {

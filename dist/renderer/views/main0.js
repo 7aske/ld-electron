@@ -48,14 +48,13 @@ var initialState = {
 };
 var url = ENV == "electron" ? null : "http://localhost:3000";
 var store = new Store_1.Store(initialState);
-var resizer = new Resizer_1.Resizer(store);
+var resizer = new Resizer_1.Resizer(store, true);
 var menu = null;
 store.subscribe("currentEmployee", [populateFields, colorEmployeeList]);
 store.subscribe("employeeArray", [populateEmployeeList]);
 store.subscribe("employeeList", [populateEmployeeList, colorEmployeeList]);
 // const main: HTMLElement = document.querySelector('main');
 var modal = new Modal_1.Modal(store);
-console.log(modal);
 var employeeList = document.querySelector("#employeeList");
 var searchInp = document.querySelector("#searchInp");
 searchInp.addEventListener("input", function () {
@@ -232,8 +231,7 @@ function colorEmployeeList() {
     });
     listItems.forEach(function (item) {
         if (searchInp.value != "") {
-            var q = searchInp.value;
-            item.firstElementChild.innerHTML = highlight(item.firstElementChild.innerHTML, q);
+            item.firstElementChild.innerHTML = highlight(item.firstElementChild.innerHTML, searchInp.value);
         }
         if (item.attributes.getNamedItem("data-id"))
             if (item.attributes.getNamedItem("data-id").value == currentEmployee.properties._id)
@@ -249,10 +247,10 @@ function highlight(text, string) {
         var p = new RegExp("<span class=\"bg-warning\">.*?</span>", "gi");
         var res_1 = new RegExp(q[0], "gi");
         if (text.match(p)) {
-            var arr_1 = text.split(p);
+            var arr = text.split(p);
             var result_1 = [];
             var old_1 = text.match(p);
-            arr_1.forEach(function (t) {
+            arr.forEach(function (t) {
                 var matches = t.match(res_1);
                 var arr2 = t.split(res_1);
                 if (matches) {
@@ -260,7 +258,7 @@ function highlight(text, string) {
                         var replacement = "<span class=\"bg-warning\">" + m + "</span>";
                         arr2.splice(i2 == 0 ? i2 + 1 : i2 * 2 + 1, 0, replacement);
                     });
-                    t = arr_1.join("");
+                    t = arr2.join("");
                     result_1.push(t);
                 }
                 else {
@@ -275,13 +273,13 @@ function highlight(text, string) {
         }
         else {
             var matches = text.match(res_1);
-            var arr_2 = text.split(res_1);
+            var arr_1 = text.split(res_1);
             if (matches) {
                 matches.forEach(function (m, i) {
                     var replacement = "<span class=\"bg-warning\">" + m + "</span>";
-                    arr_2.splice(i == 0 ? i + 1 : i * 2 + 1, 0, replacement);
+                    arr_1.splice(i == 0 ? i + 1 : i * 2 + 1, 0, replacement);
                 });
-                text = arr_2.join("");
+                text = arr_1.join("");
             }
             return text;
         }

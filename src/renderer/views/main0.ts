@@ -32,16 +32,14 @@ const initialState: State = {
 const url: string | null = ENV == "electron" ? null : "http://localhost:3000";
 
 const store: Store = new Store(initialState);
-const resizer: Resizer = new Resizer(store);
+const resizer: Resizer = new Resizer(store, true);
 let menu: Menu | null = null;
 
 store.subscribe("currentEmployee", [populateFields, colorEmployeeList]);
 store.subscribe("employeeArray", [populateEmployeeList]);
 store.subscribe("employeeList", [populateEmployeeList, colorEmployeeList]);
-
 // const main: HTMLElement = document.querySelector('main');
 const modal = new Modal(store);
-console.log(modal);
 const employeeList = document.querySelector("#employeeList") as HTMLElement;
 const searchInp = document.querySelector("#searchInp") as HTMLInputElement;
 searchInp.addEventListener("input", function() {
@@ -212,8 +210,7 @@ function colorEmployeeList(): void {
 	});
 	listItems.forEach(item => {
 		if (searchInp.value != "") {
-			const q: string = searchInp.value;
-			item.firstElementChild.innerHTML = highlight(item.firstElementChild.innerHTML, q);
+			item.firstElementChild.innerHTML = highlight(item.firstElementChild.innerHTML, searchInp.value);
 		}
 		if (item.attributes.getNamedItem("data-id"))
 			if (item.attributes.getNamedItem("data-id").value == currentEmployee.properties._id) item.classList.add("list-group-item-dark");
@@ -239,7 +236,7 @@ function highlight(text: string, string: string) {
 						const replacement: string = `<span class="bg-warning">${m}</span>`;
 						arr2.splice(i2 == 0 ? i2 + 1 : i2 * 2 + 1, 0, replacement);
 					});
-					t = arr.join("");
+					t = arr2.join("");
 					result.push(t);
 				} else {
 					result.push(t);

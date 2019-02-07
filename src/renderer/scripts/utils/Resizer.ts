@@ -1,13 +1,5 @@
-import { ContentCols, DataStoreTypes } from "../../../@types";
+import { ContentCols, Config } from "../../../@types";
 import { Store } from "../store/Store";
-
-interface Config {
-	isAsideOut: boolean;
-	contentWidth: ContentCols;
-	asideWidth: number;
-
-	[key: string]: DataStoreTypes;
-}
 
 export class Resizer {
 	private readonly asideResizer: HTMLElement;
@@ -16,22 +8,39 @@ export class Resizer {
 	private main: HTMLElement;
 	private aside: HTMLElement;
 	private store: Store;
+	private double: boolean;
 
-	constructor(store: Store, main?: HTMLElement, aside?: HTMLElement) {
+	constructor(store: Store, double: boolean, main?: HTMLElement, aside?: HTMLElement) {
+		this.double = double;
 		this.store = store;
 		this.aside = aside ? aside : document.querySelector("aside");
 		this.main = main ? main : document.querySelector("main");
+
+		this.initStyleSheet();
+
 		this.asideTrigger = document.querySelector("#asideTrigger");
 
 		this.asideResizer = document.createElement("div");
 		this.asideResizer.classList.add("resize");
-
-		this.mainResizer = document.createElement("div");
-		this.mainResizer.classList.add("resize");
 		this.asideResizer.addEventListener("mousedown", () => store.setState("isResizingList", !store.getState("isResizingList")));
-		this.mainResizer.addEventListener("mousedown", () => store.setState("isResizingContent", !store.getState("isResizingContent")));
+
+		if (double) {
+			this.mainResizer = document.createElement("div");
+			this.mainResizer.classList.add("resize");
+			this.mainResizer.addEventListener("mousedown", () => store.setState("isResizingContent", !store.getState("isResizingContent")));
+			document.body.insertBefore(this.mainResizer, document.body.firstElementChild);
+			document.addEventListener("mousemove", event => {
+				if (store.getState("isResizingContent")) {
+					if (store.getState("isAsideOut")) {
+						this.handleResizeContent(event.screenX - store.getState("asideWidth"));
+					} else {
+						this.handleResizeContent(event.screenX);
+					}
+				}
+			});
+		}
+
 		document.body.insertBefore(this.asideResizer, document.body.firstElementChild);
-		document.body.insertBefore(this.mainResizer, document.body.firstElementChild);
 		this.asideTrigger.addEventListener("click", () => {
 			this.asideToggle(!this.store.getState("isAsideOut"));
 		});
@@ -39,41 +48,52 @@ export class Resizer {
 			if (store.getState("isResizingList")) {
 				this.handleResizeAside(event.screenX);
 			}
-			if (store.getState("isResizingContent")) {
-				if (store.getState("isAsideOut")) {
-					this.handleResizeContent(event.screenX - store.getState("asideWidth"));
-				} else {
-					this.handleResizeContent(event.screenX);
-				}
-			}
 		});
 		document.addEventListener("mouseup", () => {
-			const config: Config = {
-				isAsideOut: store.getState("isAsideOut"),
-				contentWidth: store.getState("contentWidth"),
-				asideWidth: store.getState("asideWidth")
-			};
-			if (store.getState("isResizingList") || store.getState("isResizingContent")) {
-				localStorage.setItem("contentWidth", JSON.stringify(config.contentWidth));
-				localStorage.setItem("asideWidth", config.asideWidth.toString());
+			if (double) {
+				const config: Config = {
+					isAsideOut: store.getState("isAsideOut"),
+					contentWidth: store.getState("contentWidth"),
+					asideWidth: store.getState("asideWidth")
+				};
+				if (store.getState("isResizingList") || store.getState("isResizingContent")) {
+					localStorage.setItem("contentWidth", JSON.stringify(config.contentWidth));
+					localStorage.setItem("asideWidth", config.asideWidth.toString());
+				}
+				store.setState("isResizingList", false);
+				store.setState("isResizingContent", false);
+			} else {
+				const config: Config = {
+					isAsideOut: store.getState("isAsideOut"),
+					asideWidth: store.getState("asideWidth")
+				};
+				if (store.getState("isResizingList") || store.getState("isResizingContent")) {
+					localStorage.setItem("asideWidth", config.asideWidth.toString());
+				}
+				store.setState("isResizingList", false);
 			}
-			store.setState("isResizingList", false);
-			store.setState("isResizingContent", false);
+
 		});
 		window.addEventListener("resize", () => {
 			this.positionResizeBars();
 		});
 		if (localStorage.length < 3) {
-			localStorage.setItem("contentWidth", JSON.stringify(this.store.getState("contentWidth")));
+			if (double) {
+				localStorage.setItem("contentWidth", JSON.stringify(this.store.getState("contentWidth")));
+			}
 			localStorage.setItem("isAsideOut", this.store.getState("isAsideOut") ? "true" : "false");
 			localStorage.setItem("asideWidth", this.store.getState("asideWidth").toString());
 		}
+		if (double){
+			this.store.setState("contentWidth", JSON.parse(localStorage.getItem("contentWidth")));
+		}
 		this.store.setState("isAsideOut", localStorage.getItem("isAsideOut") == "true");
 		this.store.setState("asideWidth", parseInt(localStorage.getItem("asideWidth"), 10));
-		this.store.setState("contentWidth", JSON.parse(localStorage.getItem("contentWidth")));
 		this.asideToggle();
 		this.handleResizeAside();
-		this.handleResizeContent();
+		if (double) {
+			this.handleResizeContent();
+		}
 	}
 
 	public handleResizeAside(width?: number): void {
@@ -92,11 +112,15 @@ export class Resizer {
 		this.main.style.width = `${this.getWidth()}px`;
 		if (this.store.getState("isAsideOut")) {
 			this.asideResizer.style.display = "block";
-			this.mainResizer.style.left = `${this.store.getState("asideWidth") + this.main.firstElementChild.clientWidth + 15}px`;
+			if (this.double) {
+				this.mainResizer.style.left = `${this.store.getState("asideWidth") + this.main.firstElementChild.clientWidth + 15}px`;
+			}
 			this.asideResizer.style.left = `${this.store.getState("asideWidth")}px`;
 		} else {
 			this.asideResizer.style.display = "none";
-			this.mainResizer.style.left = `${this.main.firstElementChild.clientWidth + 15}px`;
+			if (this.double) {
+				this.mainResizer.style.left = `${this.main.firstElementChild.clientWidth + 15}px`;
+			}
 		}
 	}
 
@@ -157,5 +181,30 @@ export class Resizer {
 			this.main.style.width = `${this.getWidth()}px`;
 			this.positionResizeBars();
 		}, 200);
+	}
+
+	private initStyleSheet() {
+		const rule0 = `
+		.resize {
+	 		user-select: none;
+	 		position: absolute;
+	 		cursor: all-scroll;
+	 		z-index: 10;
+	 		width: 15px;
+	 		height: 100vh;
+	 		background-color: transparent;
+	 	}
+		`;
+		const rule1 = `
+			.resize:hover, .resize:active {
+			background-color: orange;
+		`;
+		const rules = [rule0, rule1];
+		const style = document.createElement("style") as HTMLStyleElement;
+		style.appendChild(document.createTextNode(""));
+		document.head.append(style);
+		for (let i = 0; i < rules.length; i++) {
+			(style.sheet as CSSStyleSheet).insertRule(rules[i], i);
+		}
 	}
 }

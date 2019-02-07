@@ -97,17 +97,6 @@ aside {
 input::-webkit-calendar-picker-indicator {
   display: none; }
 
-.resize {
-  user-select: none;
-  position: absolute;
-  cursor: all-scroll;
-  z-index: 10;
-  width: 15px;
-  height: 100vh;
-  background-color: transparent; }
-  .resize:hover, .resize:active {
-    background-color: orange; }
-
 main {
   overflow-y: scroll;
   display: block;

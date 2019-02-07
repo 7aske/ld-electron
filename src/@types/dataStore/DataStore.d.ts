@@ -20,13 +20,15 @@ export interface DataStore {
 	readonly state: State;
 	readonly _state: _State;
 
-	setState(state: DataStoreKeys, value: DataStoreTypes): void;
+	setState(state: DataStoreKeys, value: DataStoreTypes): DataStoreTypes;
 
 	getState(state: DataStoreKeys): DataStoreTypes;
 
+	registerState(state: DataStoreKeys, value: DataStoreTypes): void;
+
 	subscribe(state: DataStoreKeys, actions: Function[]): void;
 
-	getStateObject?(): State;
+	getStateObject?(): _State;
 }
 
 export interface _State {

@@ -3,7 +3,7 @@ import { ContentCols } from "./ContentCols";
 
 export interface Config {
 	isAsideOut: boolean;
-	contentWidth: ContentCols;
+	contentWidth?: ContentCols;
 	asideWidth: number;
 	[key: string]: Employee | Employee[] | boolean | number | ContentCols | null;
 }
