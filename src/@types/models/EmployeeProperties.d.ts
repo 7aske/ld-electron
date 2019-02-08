@@ -1,4 +1,5 @@
 import { YoSPeriod } from "./YoSPeriod";
+
 export interface EmployeeProperties {
 	_id?: string;
 	id?: string;
@@ -65,5 +66,6 @@ export interface EmployeeProperties {
 	numberOfKids?: string;
 	email?: string;
 	comment?: string;
+
 	[key: string]: string | YoSPeriod[] | number;
 }

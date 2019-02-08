@@ -2,3 +2,4 @@ node_modules
 export
 .idea
 build
+*.sqlite3

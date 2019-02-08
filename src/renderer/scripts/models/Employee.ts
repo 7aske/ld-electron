@@ -140,7 +140,7 @@ export class Employee {
 				element.classList.add("bg-warning");
 			}
 		}
-		this.populateDate();
+		// this.populateDate();
 		return this;
 	}
 
@@ -195,7 +195,7 @@ export class Employee {
 		});
 		this.changes.totalYoS =
 			(this.changes.externalYoS_total ? this.changes.externalYoS_total : this.properties.externalYoS_total) + (this.changes.internalYoS_total ? this.changes.internalYoS_total : this.properties.internalYoS_total);
-		this.populateDate();
+		// this.populateDate();
 		return this;
 	}
 
@@ -214,7 +214,11 @@ export class Employee {
 		});
 		this.changes.totalYoS =
 			(this.changes.externalYoS_total ? this.changes.externalYoS_total : this.properties.externalYoS_total) + (this.changes.internalYoS_total ? this.changes.internalYoS_total : this.properties.internalYoS_total);
-		this.populateDate();
+		// try {
+		// 	this.populateDate();
+		// } catch (err) {
+		// 	console.error(err);
+		// }
 		return this;
 	}
 }

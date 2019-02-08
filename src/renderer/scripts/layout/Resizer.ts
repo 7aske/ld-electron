@@ -1,6 +1,6 @@
 import { Config, ContentCols } from "../../../@types";
 import { Store } from "../store/Store";
-import { addStyleSheet } from "./utils";
+import { addStyleSheet } from "../utils/utils";
 
 export class Resizer {
 	private readonly asideResizer: HTMLElement;

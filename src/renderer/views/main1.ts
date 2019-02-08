@@ -15,7 +15,7 @@ const url: string | null = ENV == "electron" ? null : "http://localhost:3000";
 import { Store } from "../scripts/store/Store";
 import { Menu } from "../scripts/utils/Menu";
 import { PopupDialog } from "../scripts/utils/PopupDialog";
-import { Resizer } from "../scripts/utils/Resizer";
+import { Resizer } from "../scripts/layout/Resizer";
 import { calcSummaryTemplate } from "../scripts/utils/templates";
 
 const initialState: State = {

@@ -1,9 +1,9 @@
 export { Config } from "./Config";
-export { EmployeeChanges } from "./EmployeeChanges";
-export { EmployeeProperties } from "./EmployeeProperties";
-export { YoSPeriod } from "./YoSPeriod";
+export { EmployeeChanges } from "./models/EmployeeChanges";
+export { EmployeeProperties } from "./models/EmployeeProperties";
+export { YoSPeriod } from "./models/YoSPeriod";
 export { ContentCols } from "./ContentCols";
 export { MenuOption } from "./MenuOption";
-export { CalcProp } from "./CalcProp";
-export { CalcProps } from "./CalcProps";
+export { CalcProp } from "./models/CalcProp";
+export { CalcProps } from "./models/CalcProps";
 export { DataStore, State, _State, _StateProp, DataStoreTypes, DataStoreKeys  } from "./dataStore/DataStore";

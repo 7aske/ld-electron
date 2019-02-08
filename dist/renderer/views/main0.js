@@ -31,7 +31,7 @@ var Employee_1 = require("../scripts/models/Employee");
 var Store_1 = require("../scripts/store/Store");
 var Menu_1 = require("../scripts/utils/Menu");
 var PopupDialog_1 = require("../scripts/utils/PopupDialog");
-var Resizer_1 = require("../scripts/utils/Resizer");
+var Resizer_1 = require("../scripts/layout/Resizer");
 var templates_1 = require("../scripts/utils/templates");
 var initialState = {
     employeeArray: [],
@@ -472,6 +472,7 @@ function employeeSave(array, skipModal) {
     }
 }
 function setEmployees(data) {
+    console.log(data);
     var array = [];
     if (data instanceof Array) {
         data.forEach(function (e) {
