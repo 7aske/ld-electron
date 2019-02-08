@@ -71,87 +71,103 @@ import { sequelize } from "../app";
 // }
 type EmployeeDBMethods = "update" | "insert" | "remove" | "get" | "get-all";
 export const execute = async (method: EmployeeDBMethods, e ?: EmployeeProperties) => {
-	const employee = {
-		_id: e._id,
-		id: e.id,
-		umcn: e.umcn,
-		passport: e.passport,
-		firstName: e.firstName,
-		lastName: e.lastName,
-		middleName: e.middleName,
-		typeReceiver: e.typeReceiver,
-		typeEmployment: e.typeEmployment,
-		typeEmployee: e.typeEmployee,
-		employmentUnit: e.employmentUnit,
-		employmentSection: e.employmentSection,
-		employmentPosition: e.employmentPosition,
-		rating: e.rating,
-		group: e.group,
-		realQualification: e.realQualification,
-		verifiedQualification: e.verifiedQualification,
-		points: e.points,
-		average1: e.average1,
-		average2: e.average2,
-		average3: e.average3,
-		allowanceMeal: e.allowanceMeal,
-		allowanceInsurance: e.allowanceInsurance,
-		transportAllowanceCategory1: e.transportAllowanceCategory1,
-		transportAllowanceCategory2: e.transportAllowanceCategory2,
-		transportAllowanceCategory3: e.transportAllowanceCategory3,
-		hours: e.hours,
-		amount: e.amount,
-		coefficient1: e.coefficient1,
-		percentage: e.percentage,
-		coefficient2: e.coefficient2,
-		reducedYoS: e.reducedYoS,
-		municipalityEmployment: e.municipalityEmployment,
-		municipalityResidency: e.municipalityResidency,
-		municipalityPayout1: e.municipalityPayout1,
-		municipalityPayout2: e.municipalityPayout2,
-		accountPayout1: e.accountPayout1,
-		accountPayout2: e.accountPayout2,
-		employmentBooklet_SerialNumber: e.employmentBooklet_SerialNumber,
-		employmentBooklet_RegistryNumber: e.employmentBooklet_RegistryNumber,
-		employmentBooklet_DateOfIssue: e.employmentBooklet_DateOfIssue,
-		employmentBooklet_Municipality: e.employmentBooklet_Municipality,
-		employmentBooklet_EmploymentCode: e.employmentBooklet_EmploymentCode,
-		// externalYoS_periods: YoSPeriod[],
-		externalYoS_total: e.externalYoS_total,
-		// internalYoS_periods: YoSPeriod[],
-		internalYoS_total: e.internalYoS_total,
-		totalYoS: e.totalYoS,
-		address: e.address,
-		zip: e.zip,
-		municipality: e.municipality,
-		sex: e.sex,
-		dateOfBirth: e.dateOfBirth,
-		idSerialNumber: e.idSerialNumber,
-		idRegistryNumber: e.idRegistryNumber,
-		idDateOfIssue: e.idDateOfIssue,
-		idMunicipalityOfIssue: e.idMunicipalityOfIssue,
-		healthInsuranceSerialNumber: e.healthInsuranceSerialNumber,
-		healthInsuranceRegistryNumber: e.healthInsuranceRegistryNumber,
-		healthInsuranceDateOfIssue: e.healthInsuranceDateOfIssue,
-		healthInsuranceMunicipalityOfIssue: e.healthInsuranceMunicipalityOfIssue,
-		familyMembers: e.familyMembers,
-		numberOfKids: e.numberOfKids,
-		email: e.email,
-		comment: e.comment
-	};
-	if (method == "update") {
-		try {
-			const res = await EmployeeModel.update(employee);
-			console.log(res);
-		} catch (err) {
-			throw new Error(err.message);
-		}
-	} else if (method == "insert") {
-		try {
-			const res = await EmployeeModel.insertOrUpdate(employee);
-			console.log(res);
-		} catch (err) {
-			throw new Error(err.message);
-		}
+	let employee;
+	if (method != "remove" && e) {
+		employee = {
+			_id: e._id,
+			id: e.id,
+			umcn: e.umcn,
+			passport: e.passport,
+			firstName: e.firstName,
+			lastName: e.lastName,
+			middleName: e.middleName,
+			typeReceiver: e.typeReceiver,
+			typeEmployment: e.typeEmployment,
+			typeEmployee: e.typeEmployee,
+			employmentUnit: e.employmentUnit,
+			employmentSection: e.employmentSection,
+			employmentPosition: e.employmentPosition,
+			rating: e.rating,
+			group: e.group,
+			realQualification: e.realQualification,
+			verifiedQualification: e.verifiedQualification,
+			points: e.points,
+			average1: e.average1,
+			average2: e.average2,
+			average3: e.average3,
+			allowanceMeal: e.allowanceMeal,
+			allowanceInsurance: e.allowanceInsurance,
+			transportAllowanceCategory1: e.transportAllowanceCategory1,
+			transportAllowanceCategory2: e.transportAllowanceCategory2,
+			transportAllowanceCategory3: e.transportAllowanceCategory3,
+			hours: e.hours,
+			amount: e.amount,
+			coefficient1: e.coefficient1,
+			percentage: e.percentage,
+			coefficient2: e.coefficient2,
+			reducedYoS: e.reducedYoS,
+			municipalityEmployment: e.municipalityEmployment,
+			municipalityResidency: e.municipalityResidency,
+			municipalityPayout1: e.municipalityPayout1,
+			municipalityPayout2: e.municipalityPayout2,
+			accountPayout1: e.accountPayout1,
+			accountPayout2: e.accountPayout2,
+			employmentBooklet_SerialNumber: e.employmentBooklet_SerialNumber,
+			employmentBooklet_RegistryNumber: e.employmentBooklet_RegistryNumber,
+			employmentBooklet_DateOfIssue: e.employmentBooklet_DateOfIssue,
+			employmentBooklet_Municipality: e.employmentBooklet_Municipality,
+			employmentBooklet_EmploymentCode: e.employmentBooklet_EmploymentCode,
+			// externalYoS_periods: YoSPeriod[],
+			externalYoS_total: e.externalYoS_total,
+			// internalYoS_periods: YoSPeriod[],
+			internalYoS_total: e.internalYoS_total,
+			totalYoS: e.totalYoS,
+			address: e.address,
+			zip: e.zip,
+			municipality: e.municipality,
+			sex: e.sex,
+			dateOfBirth: e.dateOfBirth,
+			idSerialNumber: e.idSerialNumber,
+			idRegistryNumber: e.idRegistryNumber,
+			idDateOfIssue: e.idDateOfIssue,
+			idMunicipalityOfIssue: e.idMunicipalityOfIssue,
+			healthInsuranceSerialNumber: e.healthInsuranceSerialNumber,
+			healthInsuranceRegistryNumber: e.healthInsuranceRegistryNumber,
+			healthInsuranceDateOfIssue: e.healthInsuranceDateOfIssue,
+			healthInsuranceMunicipalityOfIssue: e.healthInsuranceMunicipalityOfIssue,
+			familyMembers: e.familyMembers,
+			numberOfKids: e.numberOfKids,
+			email: e.email,
+			comment: e.comment
+		};
+	}
+	switch (method) {
+		case "update":
+			try {
+				return await EmployeeModel.update(employee);
+			} catch (err) {
+				throw new Error(err.message);
+			}
+		case "insert":
+			try {
+				return await EmployeeModel.insertOrUpdate(employee);
+			} catch (err) {
+				throw new Error(err.message);
+			}
+		case "get-all":
+			try {
+				return await EmployeeModel.findAll();
+			} catch (err) {
+				throw new Error(err.message);
+			}
+		case "remove":
+			try {
+				const res: any = await EmployeeModel.findOne({where: {_id: e._id}});
+				await res.destroy();
+				return res;
+			} catch (err) {
+				throw new Error(err.message);
+			}
 	}
 };
 
@@ -222,4 +238,3 @@ export const EmployeeModel = sequelize.define("Employee", {
 	email: Sequelize.STRING,
 	comment: Sequelize.STRING
 });
-sequelize.sync();

@@ -73,14 +73,14 @@ export class Employee {
 	public changes: EmployeeChanges;
 
 	constructor(newEmployee: EmployeeProperties) {
-		this.properties = {};
+		this.properties = {_id: shortid.generate()};
 		if (newEmployee) {
 			for (const key in newEmployee) {
 				this.properties[key] = newEmployee[key];
 			}
 		} else {
 			for (const key of employeeKeys) {
-				if (key == "_id") this.properties._id = shortid.generate();
+				if (key == "_id") continue;
 				else if (key == "externalYoS_periods") this.properties.externalYoS_periods = [];
 				else if (key == "externalYoS_total") this.properties.externalYoS_total = 0;
 				else if (key == "internalYoS_periods") this.properties.internalYoS_periods = [];

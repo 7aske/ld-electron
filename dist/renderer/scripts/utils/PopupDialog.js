@@ -34,6 +34,7 @@ var PopupDialog = /** @class */ (function () {
     PopupDialog.prototype.destroyPopup = function () {
         var _this = this;
         this.popup.style.transform = "translateY(-10vh)";
+        this.backdrop.style.backgroundColor = "background-color: rgba(0, 0, 0, 0)";
         setTimeout(function () {
             _this.confirm.remove();
             _this.close.remove();
@@ -54,11 +55,11 @@ var PopupDialog = /** @class */ (function () {
         this.close = document.querySelector("#popupClose");
     };
     PopupDialog.prototype.initStyleSheet = function () {
-        var rule0 = "\n\t\t\t#popup-backdrop {\n\t\t\t  visibility: hidden;\n\t\t\t  position: absolute;\n\t\t\t  height: 100vh;\n\t\t\t  width: 100vw;\n\t\t\t  opacity: 1;\n\t\t\t  background-color: rgba(0, 0, 0, 0.4);\n\t\t\t  z-index: 2000;\n\t\t\t}";
-        var rule1 = "#popup-backdrop #popup {\n\t\t\t  -webkit-transition: 200ms -webkit-transform;\n\t\t\t  transition: 200ms -webkit-transform;\n\t\t\t  transition: 200ms transform;\n\t\t\t  transition: 200ms transform, 200ms -webkit-transform;\n\t\t\t  width: 600px;\n\t\t\t  height: 300px;\n\t\t\t  margin: 20vh auto;\n\t\t\t}";
-        var rule2 = "#popup-backdrop #popup .card-body {\n\t\t\t  overflow-y: scroll;\n\t\t\t}";
-        var rule3 = "#popup-backdrop #popup .card-footer {\n\t\t\t  text-align: right;\n\t\t\t}";
-        var rule4 = "#popup-backdrop #popup #modalConfirm {\n\t\t\t  display: none;\n\t\t\t}";
+        var rule0 = "#popup-backdrop {\n\t\t\t\ttransition: 100ms all;\n\t\t\t\tvisibility: hidden;\n\t\t\t\tposition: absolute;\n\t\t\t\theight: 100vh;\n\t\t\t\twidth: 100vw;\n\t\t\t\topacity: 1;\n\t\t\t\tbackground-color: rgba(0, 0, 0, 0.4);\n\t\t\t\tz-index: 2000;}";
+        var rule1 = "#popup-backdrop #popup {\n\t\t\t\t-webkit-transition: 200ms -webkit-transform;\n\t\t\t\ttransition: 200ms -webkit-transform;\n\t\t\t\ttransition: 200ms transform;\n\t\t\t\ttransition: 200ms transform, 200ms -webkit-transform;\n\t\t\t\twidth: 600px;\n\t\t\t\theight: 300px;\n\t\t\t\tmargin: 20vh auto;}";
+        var rule2 = "#popup-backdrop #popup .card-body {\n\t\t\t  overflow-y: scroll;}";
+        var rule3 = "#popup-backdrop #popup .card-footer {\n\t\t\t  text-align: right;}";
+        var rule4 = "#popup-backdrop #popup #modalConfirm {\n\t\t\t  display: none;}";
         var rules = [rule0, rule1, rule2, rule3, rule4];
         utils_1.addStyleSheet(rules);
     };

@@ -103,7 +103,7 @@ var employeeKeys = ["healthInsuranceDateOfIssue",
 var Employee = /** @class */ (function () {
     function Employee(newEmployee) {
         var e_1, _a;
-        this.properties = {};
+        this.properties = { _id: shortid_1.default.generate() };
         if (newEmployee) {
             for (var key in newEmployee) {
                 this.properties[key] = newEmployee[key];
@@ -114,7 +114,7 @@ var Employee = /** @class */ (function () {
                 for (var employeeKeys_1 = __values(employeeKeys), employeeKeys_1_1 = employeeKeys_1.next(); !employeeKeys_1_1.done; employeeKeys_1_1 = employeeKeys_1.next()) {
                     var key = employeeKeys_1_1.value;
                     if (key == "_id")
-                        this.properties._id = shortid_1.default.generate();
+                        continue;
                     else if (key == "externalYoS_periods")
                         this.properties.externalYoS_periods = [];
                     else if (key == "externalYoS_total")

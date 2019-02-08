@@ -40,6 +40,7 @@ export class PopupDialog {
 
 	public destroyPopup() {
 		this.popup.style.transform = "translateY(-10vh)";
+		this.backdrop.style.backgroundColor = "background-color: rgba(0, 0, 0, 0)";
 		setTimeout(() => {
 			this.confirm.remove();
 			this.close.remove();
@@ -67,34 +68,29 @@ export class PopupDialog {
 	}
 
 	private initStyleSheet() {
-		const rule0 = `
-			#popup-backdrop {
-			  visibility: hidden;
-			  position: absolute;
-			  height: 100vh;
-			  width: 100vw;
-			  opacity: 1;
-			  background-color: rgba(0, 0, 0, 0.4);
-			  z-index: 2000;
-			}`;
+		const rule0 = `#popup-backdrop {
+				transition: 100ms all;
+				visibility: hidden;
+				position: absolute;
+				height: 100vh;
+				width: 100vw;
+				opacity: 1;
+				background-color: rgba(0, 0, 0, 0.4);
+				z-index: 2000;}`;
 		const rule1 = `#popup-backdrop #popup {
-			  -webkit-transition: 200ms -webkit-transform;
-			  transition: 200ms -webkit-transform;
-			  transition: 200ms transform;
-			  transition: 200ms transform, 200ms -webkit-transform;
-			  width: 600px;
-			  height: 300px;
-			  margin: 20vh auto;
-			}`;
+				-webkit-transition: 200ms -webkit-transform;
+				transition: 200ms -webkit-transform;
+				transition: 200ms transform;
+				transition: 200ms transform, 200ms -webkit-transform;
+				width: 600px;
+				height: 300px;
+				margin: 20vh auto;}`;
 		const rule2 = `#popup-backdrop #popup .card-body {
-			  overflow-y: scroll;
-			}`;
+			  overflow-y: scroll;}`;
 		const rule3 = `#popup-backdrop #popup .card-footer {
-			  text-align: right;
-			}`;
+			  text-align: right;}`;
 		const rule4 = `#popup-backdrop #popup #modalConfirm {
-			  display: none;
-			}`;
+			  display: none;}`;
 		const rules: string[] = [rule0, rule1, rule2, rule3, rule4];
 		addStyleSheet(rules);
 	}

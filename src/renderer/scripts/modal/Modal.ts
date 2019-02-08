@@ -43,6 +43,7 @@ export class Modal {
 
 	public destroyModal() {
 		this.modal.style.transform = "translateY(-10vh)";
+		this.backdrop.style.backgroundColor = "background-color: rgba(0, 0, 0, 0)";
 		setTimeout(() => {
 			this.close.remove();
 			this.modal.remove();
@@ -60,6 +61,7 @@ export class Modal {
 
 	private initStyleSheets() {
 		const rule0 = `#modal-backdrop {
+			transition: 100ms all;
 			visibility: hidden;
 			position: absolute;
 			height: 100vh;

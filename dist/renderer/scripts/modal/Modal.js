@@ -32,6 +32,7 @@ var Modal = /** @class */ (function () {
     Modal.prototype.destroyModal = function () {
         var _this = this;
         this.modal.style.transform = "translateY(-10vh)";
+        this.backdrop.style.backgroundColor = "background-color: rgba(0, 0, 0, 0)";
         setTimeout(function () {
             _this.close.remove();
             _this.modal.remove();
@@ -46,7 +47,7 @@ var Modal = /** @class */ (function () {
         this.store.registerState("isModalUp", false);
     };
     Modal.prototype.initStyleSheets = function () {
-        var rule0 = "#modal-backdrop {\n\t\t\tvisibility: hidden;\n\t\t\tposition: absolute;\n\t\t\theight: 100vh;\n\t\t\twidth: 100vw;\n\t\t\topacity: 1;\n\t\t\tbackground-color: rgba(0, 0, 0, 0.4);\n\t\t\tz-index: 3000;\n\t\t\tpadding: 20px;\n\t\t}";
+        var rule0 = "#modal-backdrop {\n\t\t\ttransition: 100ms all;\n\t\t\tvisibility: hidden;\n\t\t\tposition: absolute;\n\t\t\theight: 100vh;\n\t\t\twidth: 100vw;\n\t\t\topacity: 1;\n\t\t\tbackground-color: rgba(0, 0, 0, 0.4);\n\t\t\tz-index: 3000;\n\t\t\tpadding: 20px;\n\t\t}";
         var rule1 = "#modal-backdrop #modal {\n\t\t\t-webkit-transition: 200ms -webkit-transform;\n\t\t\ttransition: 200ms -webkit-transform;\n\t\t\ttransition: 200ms transform;\n\t\t\ttransition: 200ms transform, 200ms -webkit-transform;\n\t\t\tmargin-top: -10vh;\n\t\t\twidth: 100%;\n\t\t\theight: 100%;\n\t\t}";
         utils_1.addStyleSheet([rule0, rule1]);
     };

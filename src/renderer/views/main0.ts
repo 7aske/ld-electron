@@ -465,10 +465,12 @@ window.onload = () => {
 document.addEventListener("keydown", event => {
 	switch (event.key) {
 		case "Escape":
-			if (store.getState("isModalUp")) popup.close.click();
+			if (store.getState("isPopUp")) {
+				popup.close.click();
+			}
 			break;
 		case "Enter":
-			if (store.getState("isModalUp")) popup.confirm.click();
+			if (store.getState("isPopUp")) popup.confirm.click();
 			else {
 				changeInputIndex();
 			}

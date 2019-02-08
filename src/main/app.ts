@@ -4,6 +4,7 @@ import { join } from "path";
 import Sequelize from "sequelize";
 import sqlite3 from "sqlite3";
 import { CalcProps, EmployeeProperties } from "../@types";
+
 interface EmployeesFile {
 	employees: EmployeeProperties[];
 }
@@ -31,6 +32,7 @@ import { EmployeeModel, execute } from "./models/EmployeeModel";
 let window: BrowserWindow | null;
 const employeesFile: EmployeesFile = JSON.parse(readFileSync(employeesFilePath, "utf8").toString());
 const calcFile: CalcFile = JSON.parse(readFileSync(calcFilePath, "utf8").toString());
+
 function main() {
 	window = new BrowserWindow({
 		width: 1920,
@@ -56,6 +58,7 @@ app.on("ready", main);
 app.on("window-all-closed", () => {
 	app.quit();
 });
+
 async function handleSave(employees: EmployeeProperties[]) {
 	// employees.forEach(employee => {
 	// 	const check: EmployeeProperties | undefined = employeesFile.employees.find(e => {
@@ -79,7 +82,7 @@ async function handleSave(employees: EmployeeProperties[]) {
 	// writeFileSync(employeesFilePath, JSON.stringify(employeesFile), "utf8");
 	// return employeesFile.employees;
 	employees.forEach(async e => {
-		execute("insert", e);
+		await execute("insert", e);
 	});
 	const res: any[] = await EmployeeModel.findAll();
 	return res.map(e => e.dataValues);
@@ -91,7 +94,6 @@ function handleCalcSave(calcs: CalcProps[]) {
 			return c.id == calc.id;
 		});
 		if (check) {
-			console.log(check.id);
 			const replace: number = calcFile.calcElements.findIndex(e => {
 				return e.id == check.id;
 			});
@@ -103,12 +105,16 @@ function handleCalcSave(calcs: CalcProps[]) {
 	writeFileSync(calcFilePath, JSON.stringify(calcFile), "utf8");
 }
 
-function handleDelete(toDelete: EmployeeProperties[]) {
-	toDelete.forEach(employee => {
-		employeesFile.employees.splice(employeesFile.employees.indexOf(employee), 1);
+async function handleDelete(toDelete: EmployeeProperties[]) {
+	// toDelete.forEach(employee => {
+	// 	employeesFile.employees.splice(employeesFile.employees.indexOf(employee), 1);
+	// });
+	// writeFileSync(employeesFilePath, JSON.stringify(employeesFile), "utf8");
+	// return employeesFile.employees;
+	toDelete.forEach(async e => {
+		await execute("remove", e);
 	});
-	writeFileSync(employeesFilePath, JSON.stringify(employeesFile), "utf8");
-	return employeesFile.employees;
+	return await execute("get-all");
 }
 
 function handleCalcDelete(toDelete: CalcProps[]) {
@@ -120,11 +126,9 @@ function handleCalcDelete(toDelete: CalcProps[]) {
 }
 
 ipcMain.on("calc:save", (event: any, calc: any) => {
-	console.log(calc.length);
 	event.returnValue = handleCalcSave(calc);
 });
 ipcMain.on("calc:get", (event: any, query: string | null) => {
-	console.log(query);
 	if (query) {
 		const calcs = calcFile.calcElements.filter(e => {
 			return e.id == query;
@@ -140,7 +144,6 @@ ipcMain.on("calc:get", (event: any, query: string | null) => {
 	}
 });
 ipcMain.on("calc:delete", (event: any, calcs: any) => {
-	console.log(calcs.length);
 	event.returnValue = handleDelete(calcs);
 });
 ipcMain.on("employee:save", async (event: any, employees: any) => {
@@ -148,15 +151,11 @@ ipcMain.on("employee:save", async (event: any, employees: any) => {
 });
 
 ipcMain.on("employee:delete", (event: any, employees: any) => {
-	console.log(employees.length);
 	event.returnValue = handleDelete(employees);
 });
 ipcMain.on("employee:get", async (event: any, query: string | null) => {
-	console.log(query);
 	if (query) {
-		event.returnValue = employeesFile.employees.filter(e => {
-			return e._id == query;
-		});
+		event.returnValue = await execute("get", {_id: query});
 	} else {
 		const res: any[] = await EmployeeModel.findAll();
 		event.returnValue = res.map(e => e.dataValues);

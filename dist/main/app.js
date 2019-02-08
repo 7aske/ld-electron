@@ -112,8 +112,12 @@ function handleSave(employees) {
                     // return employeesFile.employees;
                     employees.forEach(function (e) { return __awaiter(_this, void 0, void 0, function () {
                         return __generator(this, function (_a) {
-                            EmployeeModel_1.execute("insert", e);
-                            return [2 /*return*/];
+                            switch (_a.label) {
+                                case 0: return [4 /*yield*/, EmployeeModel_1.execute("insert", e)];
+                                case 1:
+                                    _a.sent();
+                                    return [2 /*return*/];
+                            }
                         });
                     }); });
                     return [4 /*yield*/, EmployeeModel_1.EmployeeModel.findAll()];
@@ -130,7 +134,6 @@ function handleCalcSave(calcs) {
             return c.id == calc.id;
         });
         if (check) {
-            console.log(check.id);
             var replace = calcFile.calcElements.findIndex(function (e) {
                 return e.id == check.id;
             });
@@ -143,11 +146,31 @@ function handleCalcSave(calcs) {
     fs_1.writeFileSync(calcFilePath, JSON.stringify(calcFile), "utf8");
 }
 function handleDelete(toDelete) {
-    toDelete.forEach(function (employee) {
-        employeesFile.employees.splice(employeesFile.employees.indexOf(employee), 1);
+    return __awaiter(this, void 0, void 0, function () {
+        var _this = this;
+        return __generator(this, function (_a) {
+            switch (_a.label) {
+                case 0:
+                    // toDelete.forEach(employee => {
+                    // 	employeesFile.employees.splice(employeesFile.employees.indexOf(employee), 1);
+                    // });
+                    // writeFileSync(employeesFilePath, JSON.stringify(employeesFile), "utf8");
+                    // return employeesFile.employees;
+                    toDelete.forEach(function (e) { return __awaiter(_this, void 0, void 0, function () {
+                        return __generator(this, function (_a) {
+                            switch (_a.label) {
+                                case 0: return [4 /*yield*/, EmployeeModel_1.execute("remove", e)];
+                                case 1:
+                                    _a.sent();
+                                    return [2 /*return*/];
+                            }
+                        });
+                    }); });
+                    return [4 /*yield*/, EmployeeModel_1.execute("get-all")];
+                case 1: return [2 /*return*/, _a.sent()];
+            }
+        });
     });
-    fs_1.writeFileSync(employeesFilePath, JSON.stringify(employeesFile), "utf8");
-    return employeesFile.employees;
 }
 function handleCalcDelete(toDelete) {
     toDelete.forEach(function (calc) {
@@ -157,11 +180,9 @@ function handleCalcDelete(toDelete) {
     return calcFile.calcElements;
 }
 electron_1.ipcMain.on("calc:save", function (event, calc) {
-    console.log(calc.length);
     event.returnValue = handleCalcSave(calc);
 });
 electron_1.ipcMain.on("calc:get", function (event, query) {
-    console.log(query);
     if (query) {
         var calcs = calcFile.calcElements.filter(function (e) {
             return e.id == query;
@@ -181,7 +202,6 @@ electron_1.ipcMain.on("calc:get", function (event, query) {
     }
 });
 electron_1.ipcMain.on("calc:delete", function (event, calcs) {
-    console.log(calcs.length);
     event.returnValue = handleDelete(calcs);
 });
 electron_1.ipcMain.on("employee:save", function (event, employees) { return __awaiter(_this, void 0, void 0, function () {
@@ -198,26 +218,25 @@ electron_1.ipcMain.on("employee:save", function (event, employees) { return __aw
     });
 }); });
 electron_1.ipcMain.on("employee:delete", function (event, employees) {
-    console.log(employees.length);
     event.returnValue = handleDelete(employees);
 });
 electron_1.ipcMain.on("employee:get", function (event, query) { return __awaiter(_this, void 0, void 0, function () {
-    var res;
-    return __generator(this, function (_a) {
-        switch (_a.label) {
+    var _a, res;
+    return __generator(this, function (_b) {
+        switch (_b.label) {
             case 0:
-                console.log(query);
-                if (!query) return [3 /*break*/, 1];
-                event.returnValue = employeesFile.employees.filter(function (e) {
-                    return e._id == query;
-                });
-                return [3 /*break*/, 3];
-            case 1: return [4 /*yield*/, EmployeeModel_1.EmployeeModel.findAll()];
-            case 2:
-                res = _a.sent();
+                if (!query) return [3 /*break*/, 2];
+                _a = event;
+                return [4 /*yield*/, EmployeeModel_1.execute("get", { _id: query })];
+            case 1:
+                _a.returnValue = _b.sent();
+                return [3 /*break*/, 4];
+            case 2: return [4 /*yield*/, EmployeeModel_1.EmployeeModel.findAll()];
+            case 3:
+                res = _b.sent();
                 event.returnValue = res.map(function (e) { return e.dataValues; });
-                _a.label = 3;
-            case 3: return [2 /*return*/];
+                _b.label = 4;
+            case 4: return [2 /*return*/];
         }
     });
 }); });

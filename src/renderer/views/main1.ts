@@ -222,3 +222,22 @@ function handleBack(event: Event): void {
 // 	}
 // }
 // window.onload = () => calcGetHandler();
+document.addEventListener("keydown", event => {
+	switch (event.key) {
+		case "Escape":
+			if (store.getState("isPopUp")) {
+				popup.close.click();
+				break;
+			}
+			if (store.getState("isModalUp")) {
+				modal.close.click();
+				break;
+			}
+			break;
+		case "Enter":
+			if (store.getState("isPopUp")) popup.confirm.click();
+			break;
+		default:
+			break;
+	}
+});

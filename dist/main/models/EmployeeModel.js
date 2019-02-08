@@ -43,104 +43,121 @@ Object.defineProperty(exports, "__esModule", { value: true });
 var sequelize_1 = __importDefault(require("sequelize"));
 var app_1 = require("../app");
 exports.execute = function (method, e) { return __awaiter(_this, void 0, void 0, function () {
-    var employee, res, err_1, res, err_2;
-    return __generator(this, function (_a) {
-        switch (_a.label) {
+    var employee, _a, err_1, err_2, err_3, res, err_4;
+    return __generator(this, function (_b) {
+        switch (_b.label) {
             case 0:
-                employee = {
-                    _id: e._id,
-                    id: e.id,
-                    umcn: e.umcn,
-                    passport: e.passport,
-                    firstName: e.firstName,
-                    lastName: e.lastName,
-                    middleName: e.middleName,
-                    typeReceiver: e.typeReceiver,
-                    typeEmployment: e.typeEmployment,
-                    typeEmployee: e.typeEmployee,
-                    employmentUnit: e.employmentUnit,
-                    employmentSection: e.employmentSection,
-                    employmentPosition: e.employmentPosition,
-                    rating: e.rating,
-                    group: e.group,
-                    realQualification: e.realQualification,
-                    verifiedQualification: e.verifiedQualification,
-                    points: e.points,
-                    average1: e.average1,
-                    average2: e.average2,
-                    average3: e.average3,
-                    allowanceMeal: e.allowanceMeal,
-                    allowanceInsurance: e.allowanceInsurance,
-                    transportAllowanceCategory1: e.transportAllowanceCategory1,
-                    transportAllowanceCategory2: e.transportAllowanceCategory2,
-                    transportAllowanceCategory3: e.transportAllowanceCategory3,
-                    hours: e.hours,
-                    amount: e.amount,
-                    coefficient1: e.coefficient1,
-                    percentage: e.percentage,
-                    coefficient2: e.coefficient2,
-                    reducedYoS: e.reducedYoS,
-                    municipalityEmployment: e.municipalityEmployment,
-                    municipalityResidency: e.municipalityResidency,
-                    municipalityPayout1: e.municipalityPayout1,
-                    municipalityPayout2: e.municipalityPayout2,
-                    accountPayout1: e.accountPayout1,
-                    accountPayout2: e.accountPayout2,
-                    employmentBooklet_SerialNumber: e.employmentBooklet_SerialNumber,
-                    employmentBooklet_RegistryNumber: e.employmentBooklet_RegistryNumber,
-                    employmentBooklet_DateOfIssue: e.employmentBooklet_DateOfIssue,
-                    employmentBooklet_Municipality: e.employmentBooklet_Municipality,
-                    employmentBooklet_EmploymentCode: e.employmentBooklet_EmploymentCode,
-                    // externalYoS_periods: YoSPeriod[],
-                    externalYoS_total: e.externalYoS_total,
-                    // internalYoS_periods: YoSPeriod[],
-                    internalYoS_total: e.internalYoS_total,
-                    totalYoS: e.totalYoS,
-                    address: e.address,
-                    zip: e.zip,
-                    municipality: e.municipality,
-                    sex: e.sex,
-                    dateOfBirth: e.dateOfBirth,
-                    idSerialNumber: e.idSerialNumber,
-                    idRegistryNumber: e.idRegistryNumber,
-                    idDateOfIssue: e.idDateOfIssue,
-                    idMunicipalityOfIssue: e.idMunicipalityOfIssue,
-                    healthInsuranceSerialNumber: e.healthInsuranceSerialNumber,
-                    healthInsuranceRegistryNumber: e.healthInsuranceRegistryNumber,
-                    healthInsuranceDateOfIssue: e.healthInsuranceDateOfIssue,
-                    healthInsuranceMunicipalityOfIssue: e.healthInsuranceMunicipalityOfIssue,
-                    familyMembers: e.familyMembers,
-                    numberOfKids: e.numberOfKids,
-                    email: e.email,
-                    comment: e.comment
-                };
-                if (!(method == "update")) return [3 /*break*/, 5];
-                _a.label = 1;
+                if (method != "remove" && e) {
+                    employee = {
+                        _id: e._id,
+                        id: e.id,
+                        umcn: e.umcn,
+                        passport: e.passport,
+                        firstName: e.firstName,
+                        lastName: e.lastName,
+                        middleName: e.middleName,
+                        typeReceiver: e.typeReceiver,
+                        typeEmployment: e.typeEmployment,
+                        typeEmployee: e.typeEmployee,
+                        employmentUnit: e.employmentUnit,
+                        employmentSection: e.employmentSection,
+                        employmentPosition: e.employmentPosition,
+                        rating: e.rating,
+                        group: e.group,
+                        realQualification: e.realQualification,
+                        verifiedQualification: e.verifiedQualification,
+                        points: e.points,
+                        average1: e.average1,
+                        average2: e.average2,
+                        average3: e.average3,
+                        allowanceMeal: e.allowanceMeal,
+                        allowanceInsurance: e.allowanceInsurance,
+                        transportAllowanceCategory1: e.transportAllowanceCategory1,
+                        transportAllowanceCategory2: e.transportAllowanceCategory2,
+                        transportAllowanceCategory3: e.transportAllowanceCategory3,
+                        hours: e.hours,
+                        amount: e.amount,
+                        coefficient1: e.coefficient1,
+                        percentage: e.percentage,
+                        coefficient2: e.coefficient2,
+                        reducedYoS: e.reducedYoS,
+                        municipalityEmployment: e.municipalityEmployment,
+                        municipalityResidency: e.municipalityResidency,
+                        municipalityPayout1: e.municipalityPayout1,
+                        municipalityPayout2: e.municipalityPayout2,
+                        accountPayout1: e.accountPayout1,
+                        accountPayout2: e.accountPayout2,
+                        employmentBooklet_SerialNumber: e.employmentBooklet_SerialNumber,
+                        employmentBooklet_RegistryNumber: e.employmentBooklet_RegistryNumber,
+                        employmentBooklet_DateOfIssue: e.employmentBooklet_DateOfIssue,
+                        employmentBooklet_Municipality: e.employmentBooklet_Municipality,
+                        employmentBooklet_EmploymentCode: e.employmentBooklet_EmploymentCode,
+                        // externalYoS_periods: YoSPeriod[],
+                        externalYoS_total: e.externalYoS_total,
+                        // internalYoS_periods: YoSPeriod[],
+                        internalYoS_total: e.internalYoS_total,
+                        totalYoS: e.totalYoS,
+                        address: e.address,
+                        zip: e.zip,
+                        municipality: e.municipality,
+                        sex: e.sex,
+                        dateOfBirth: e.dateOfBirth,
+                        idSerialNumber: e.idSerialNumber,
+                        idRegistryNumber: e.idRegistryNumber,
+                        idDateOfIssue: e.idDateOfIssue,
+                        idMunicipalityOfIssue: e.idMunicipalityOfIssue,
+                        healthInsuranceSerialNumber: e.healthInsuranceSerialNumber,
+                        healthInsuranceRegistryNumber: e.healthInsuranceRegistryNumber,
+                        healthInsuranceDateOfIssue: e.healthInsuranceDateOfIssue,
+                        healthInsuranceMunicipalityOfIssue: e.healthInsuranceMunicipalityOfIssue,
+                        familyMembers: e.familyMembers,
+                        numberOfKids: e.numberOfKids,
+                        email: e.email,
+                        comment: e.comment
+                    };
+                }
+                _a = method;
+                switch (_a) {
+                    case "update": return [3 /*break*/, 1];
+                    case "insert": return [3 /*break*/, 4];
+                    case "get-all": return [3 /*break*/, 7];
+                    case "remove": return [3 /*break*/, 10];
+                }
+                return [3 /*break*/, 14];
             case 1:
-                _a.trys.push([1, 3, , 4]);
+                _b.trys.push([1, 3, , 4]);
                 return [4 /*yield*/, exports.EmployeeModel.update(employee)];
-            case 2:
-                res = _a.sent();
-                console.log(res);
-                return [3 /*break*/, 4];
+            case 2: return [2 /*return*/, _b.sent()];
             case 3:
-                err_1 = _a.sent();
+                err_1 = _b.sent();
                 throw new Error(err_1.message);
-            case 4: return [3 /*break*/, 9];
-            case 5:
-                if (!(method == "insert")) return [3 /*break*/, 9];
-                _a.label = 6;
-            case 6:
-                _a.trys.push([6, 8, , 9]);
+            case 4:
+                _b.trys.push([4, 6, , 7]);
                 return [4 /*yield*/, exports.EmployeeModel.insertOrUpdate(employee)];
-            case 7:
-                res = _a.sent();
-                console.log(res);
-                return [3 /*break*/, 9];
-            case 8:
-                err_2 = _a.sent();
+            case 5: return [2 /*return*/, _b.sent()];
+            case 6:
+                err_2 = _b.sent();
                 throw new Error(err_2.message);
-            case 9: return [2 /*return*/];
+            case 7:
+                _b.trys.push([7, 9, , 10]);
+                return [4 /*yield*/, exports.EmployeeModel.findAll()];
+            case 8: return [2 /*return*/, _b.sent()];
+            case 9:
+                err_3 = _b.sent();
+                throw new Error(err_3.message);
+            case 10:
+                _b.trys.push([10, 13, , 14]);
+                return [4 /*yield*/, exports.EmployeeModel.findOne({ where: { _id: e._id } })];
+            case 11:
+                res = _b.sent();
+                return [4 /*yield*/, res.destroy()];
+            case 12:
+                _b.sent();
+                return [2 /*return*/, res];
+            case 13:
+                err_4 = _b.sent();
+                throw new Error(err_4.message);
+            case 14: return [2 /*return*/];
         }
     });
 }); };
@@ -211,4 +228,3 @@ exports.EmployeeModel = app_1.sequelize.define("Employee", {
     email: sequelize_1.default.STRING,
     comment: sequelize_1.default.STRING
 });
-app_1.sequelize.sync();
