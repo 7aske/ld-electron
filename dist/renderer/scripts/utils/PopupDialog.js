@@ -55,7 +55,7 @@ var PopupDialog = /** @class */ (function () {
         this.close = document.querySelector("#popupClose");
     };
     PopupDialog.prototype.initStyleSheet = function () {
-        var rule0 = "#popup-backdrop {\n\t\t\t\ttransition: 100ms all;\n\t\t\t\tvisibility: hidden;\n\t\t\t\tposition: absolute;\n\t\t\t\theight: 100vh;\n\t\t\t\twidth: 100vw;\n\t\t\t\topacity: 1;\n\t\t\t\tbackground-color: rgba(0, 0, 0, 0.4);\n\t\t\t\tz-index: 2000;}";
+        var rule0 = "#popup-backdrop {\n\t\t\t\ttransition: 100ms all;\n\t\t\t\tvisibility: hidden;\n\t\t\t\tposition: absolute;\n\t\t\t\ttop:0;\n\t\t\t\tleft:0;\n\t\t\t\theight: 100vh;\n\t\t\t\twidth: 100vw;\n\t\t\t\topacity: 1;\n\t\t\t\tbackground-color: rgba(0, 0, 0, 0.4);\n\t\t\t\tz-index: 2000;}";
         var rule1 = "#popup-backdrop #popup {\n\t\t\t\t-webkit-transition: 200ms -webkit-transform;\n\t\t\t\ttransition: 200ms -webkit-transform;\n\t\t\t\ttransition: 200ms transform;\n\t\t\t\ttransition: 200ms transform, 200ms -webkit-transform;\n\t\t\t\twidth: 600px;\n\t\t\t\theight: 300px;\n\t\t\t\tmargin: 20vh auto;}";
         var rule2 = "#popup-backdrop #popup .card-body {\n\t\t\t  overflow-y: scroll;}";
         var rule3 = "#popup-backdrop #popup .card-footer {\n\t\t\t  text-align: right;}";

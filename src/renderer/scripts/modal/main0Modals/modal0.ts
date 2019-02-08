@@ -32,9 +32,11 @@ function employeeData(e: EmployeeProperties) {
 
 const employees: Employee[] = document.store.getState("employeeArray");
 const modalBody = document.querySelector("#modal .card-body");
-modalBody.appendChild(document.createElement("table"));
-modalBody.children[0].classList.add("w-100");
-modalBody.children[0].innerHTML += `<tr><th>ID</th><th>Mat. Br.</th><th>Ime</th><th>Prezime</th><th>Sati</th><th>Procenat</th><th>Koef.</th><th>Iznos</th></tr>`
+const table = document.createElement("table");
+table.classList.add("w-100");
+table.innerHTML += `<tr><th>ID</th><th>Mat. Br.</th><th>Ime</th><th>Prezime</th><th>Sati</th><th>Procenat</th><th>Koef.</th><th>Iznos</th></tr>`;
 employees.forEach(e => {
-	modalBody.children[0].innerHTML += employeeData(e.properties);
+	table.innerHTML += employeeData(e.properties);
 });
+modalBody.appendChild(table);
+document.querySelectorAll("table th").forEach(e => e.classList.add("text-center"));

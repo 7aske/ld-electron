@@ -1,15 +1,13 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-var Modal_1 = require("../scripts/modal/Modal");
-window.process = process || {};
-var ENV = window.process.type == "renderer" ? "electron" : "web";
-var url = ENV == "electron" ? null : "http://localhost:3000";
 var Resizer_1 = require("../scripts/layout/Resizer");
+var Modal_1 = require("../scripts/modal/Modal");
 var Store_1 = require("../scripts/store/Store");
 var PopupDialog_1 = require("../scripts/utils/PopupDialog");
 var initialState = {
     currentIndex: 0
 };
+// const url: string | null = ENV == "electron" ? null : "http://localhost:3000";
 var store = new Store_1.Store(initialState);
 var resizer = new Resizer_1.Resizer(store, true);
 var popup = new PopupDialog_1.PopupDialog(store);
@@ -215,6 +213,7 @@ document.addEventListener("keydown", function (event) {
                 modal.close.click();
                 break;
             }
+            handleBack(event);
             break;
         case "Enter":
             if (store.getState("isPopUp"))

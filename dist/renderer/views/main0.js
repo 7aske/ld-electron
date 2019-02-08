@@ -23,15 +23,13 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-var electron_1 = require("electron");
-// ts fix
-window.process = process || {};
-var ENV = window.process.type == "renderer" ? "electron" : "web";
 var axios_1 = __importDefault(require("axios"));
+var electron_1 = require("electron");
 var Resizer_1 = require("../scripts/layout/Resizer");
 var Modal_1 = require("../scripts/modal/Modal");
 var Employee_1 = require("../scripts/models/Employee");
 var Store_1 = require("../scripts/store/Store");
+var env_1 = require("../scripts/utils/env");
 var Menu_1 = require("../scripts/utils/Menu");
 var PopupDialog_1 = require("../scripts/utils/PopupDialog");
 var templates_1 = require("../scripts/utils/templates");
@@ -42,7 +40,6 @@ var initialState = {
     newEmployee: null,
     currentIndex: 0
 };
-var url = ENV == "electron" ? null : "http://localhost:3000";
 var store = new Store_1.Store(initialState);
 document.store = store;
 var resizer = new Resizer_1.Resizer(store, true);
@@ -503,6 +500,7 @@ document.addEventListener("keydown", function (event) {
                 modal.close.click();
                 break;
             }
+            handleBack(event);
             break;
         case "Enter":
             if (store.getState("isPopUp"))
@@ -527,12 +525,12 @@ document.addEventListener("keydown", function (event) {
 document.addEventListener("contextmenu", function () {
 });
 function employeeGetHandler() {
-    if (ENV == "electron") {
+    if (env_1.ENV == "electron") {
         setEmployees(electron_1.ipcRenderer.sendSync("employee:get", null));
     }
     else {
         axios_1.default
-            .get(url + "/employees")
+            .get(env_1.url + "/employees")
             .then(function (response) {
             console.log(response.data);
             setEmployees(response.data);
@@ -541,13 +539,13 @@ function employeeGetHandler() {
     }
 }
 function employeeDeleteHandler(employees) {
-    if (ENV == "electron") {
+    if (env_1.ENV == "electron") {
         var result = electron_1.ipcRenderer.sendSync("employee:delete", employees);
         setEmployees(result);
     }
     else {
         axios_1.default
-            .post(url + "/employees/delete", { employees: employees })
+            .post(env_1.url + "/employees/delete", { employees: employees })
             .then(function (response) {
             console.log(response.data);
             setEmployees(response.data);
@@ -556,12 +554,12 @@ function employeeDeleteHandler(employees) {
     }
 }
 function employeeSaveHandler(save) {
-    if (ENV == "electron") {
+    if (env_1.ENV == "electron") {
         setEmployees(electron_1.ipcRenderer.sendSync("employee:save", save));
     }
     else {
         axios_1.default
-            .post(url + "/employees/save", { save: save })
+            .post(env_1.url + "/employees/save", { save: save })
             .then(function (response) {
             console.log(response.data);
             setEmployees(response.data);

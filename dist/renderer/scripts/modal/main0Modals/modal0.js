@@ -5,9 +5,11 @@ function employeeData(e) {
 }
 var employees = document.store.getState("employeeArray");
 var modalBody = document.querySelector("#modal .card-body");
-modalBody.appendChild(document.createElement("table"));
-modalBody.children[0].classList.add("w-100");
-modalBody.children[0].innerHTML += "<tr><th>ID</th><th>Mat. Br.</th><th>Ime</th><th>Prezime</th><th>Sati</th><th>Procenat</th><th>Koef.</th><th>Iznos</th></tr>";
+var table = document.createElement("table");
+table.classList.add("w-100");
+table.innerHTML += "<tr><th>ID</th><th>Mat. Br.</th><th>Ime</th><th>Prezime</th><th>Sati</th><th>Procenat</th><th>Koef.</th><th>Iznos</th></tr>";
 employees.forEach(function (e) {
-    modalBody.children[0].innerHTML += employeeData(e.properties);
+    table.innerHTML += employeeData(e.properties);
 });
+modalBody.appendChild(table);
+document.querySelectorAll("table th").forEach(function (e) { return e.classList.add("text-center"); });

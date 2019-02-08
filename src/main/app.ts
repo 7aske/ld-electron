@@ -167,3 +167,7 @@ ipcMain.on("employee:get", async (event: any, query: string | null) => {
 		// event.returnValue = employeesFile.employees;
 	}
 });
+
+ipcMain.on("app:exit", async (event: any, data: any) => {
+	app.quit();
+});

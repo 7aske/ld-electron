@@ -1,13 +1,11 @@
-import { ipcRenderer } from "electron";
-// ts fix
-window.process = process || {};
-const ENV: string | undefined = window.process.type == "renderer" ? "electron" : "web";
 import axios from "axios";
+import { ipcRenderer } from "electron";
 import { EmployeeProperties, State } from "../../@types";
 import { Resizer } from "../scripts/layout/Resizer";
 import { Modal } from "../scripts/modal/Modal";
 import { Employee } from "../scripts/models/Employee";
 import { Store } from "../scripts/store/Store";
+import { ENV, url } from "../scripts/utils/env";
 import { Menu } from "../scripts/utils/Menu";
 import { PopupDialog } from "../scripts/utils/PopupDialog";
 import { employeeSummaryTemplate, optionTemplate } from "../scripts/utils/templates";
@@ -19,8 +17,6 @@ const initialState: State = {
 	newEmployee: null,
 	currentIndex: 0
 };
-const url: string | null = ENV == "electron" ? null : "http://localhost:3000";
-
 const store: Store = new Store(initialState);
 document.store = store;
 const resizer: Resizer = new Resizer(store, true);
@@ -33,7 +29,7 @@ store.subscribe("employeeList", [populateEmployeeList, colorEmployeeList]);
 const popup = new PopupDialog(store);
 const employeeList = document.querySelector("#employeeList") as HTMLElement;
 const searchInp = document.querySelector("#searchInp") as HTMLInputElement;
-searchInp.addEventListener("input", function () {
+searchInp.addEventListener("input", function() {
 	searchEmployeeArray(this.value);
 });
 const moreBtn = document.querySelector("#moreBtn") as HTMLButtonElement;
@@ -59,13 +55,13 @@ deleteBtn.addEventListener("click", () => {
 const fromDateInternal = document.querySelector("#fromDateInternal") as HTMLInputElement;
 const tillDateInternal = document.querySelector("#tillDateInternal") as HTMLInputElement;
 const addInternalYoSPeriod = document.querySelector("#addInternalYoSPeriod") as HTMLButtonElement;
-addInternalYoSPeriod.addEventListener("click", function () {
+addInternalYoSPeriod.addEventListener("click", function() {
 	addYoSPeriod(this.id, fromDateInternal.value, tillDateInternal.value);
 });
 const fromDateExternal = document.querySelector("#fromDateExternal") as HTMLInputElement;
 const tillDateExternal = document.querySelector("#tillDateExternal") as HTMLInputElement;
 const addExternalYoSPeriod = document.querySelector("#addExternalYoSPeriod") as HTMLButtonElement;
-addExternalYoSPeriod.addEventListener("click", function () {
+addExternalYoSPeriod.addEventListener("click", function() {
 	addYoSPeriod(this.id, fromDateExternal.value, tillDateExternal.value);
 });
 const addNewBtn: HTMLButtonElement = document.querySelector("#addNewBtn");
@@ -74,7 +70,7 @@ const headerInputs = document.querySelectorAll<HTMLInputElement>("header input")
 const mainInputs = document.querySelectorAll<HTMLInputElement>("main input") as unknown as HTMLInputElement[];
 const inputs = [...headerInputs, ...mainInputs, document.querySelector("main textarea")] as HTMLInputElement[];
 inputs.forEach(i => {
-	i.addEventListener("keyup", function () {
+	i.addEventListener("keyup", function() {
 		if (this.id.indexOf("fromDateInternal") == -1 && this.id.indexOf("tillDateInternal") == -1 && this.id.indexOf("fromDateExternal") == -1 && this.id.indexOf("tillDateExternal") == -1)
 			handleInput(this.id, this.value, this);
 	});
@@ -473,6 +469,7 @@ document.addEventListener("keydown", event => {
 				modal.close.click();
 				break;
 			}
+			handleBack(event);
 			break;
 		case "Enter":
 			if (store.getState("isPopUp")) popup.confirm.click();

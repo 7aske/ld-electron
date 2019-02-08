@@ -240,3 +240,9 @@ electron_1.ipcMain.on("employee:get", function (event, query) { return __awaiter
         }
     });
 }); });
+electron_1.ipcMain.on("app:exit", function (event, data) { return __awaiter(_this, void 0, void 0, function () {
+    return __generator(this, function (_a) {
+        electron_1.app.quit();
+        return [2 /*return*/];
+    });
+}); });

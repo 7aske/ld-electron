@@ -72,6 +72,8 @@ export class PopupDialog {
 				transition: 100ms all;
 				visibility: hidden;
 				position: absolute;
+				top:0;
+				left:0;
 				height: 100vh;
 				width: 100vw;
 				opacity: 1;

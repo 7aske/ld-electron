@@ -1,21 +1,16 @@
 import axios from "axios";
 import { ipcRenderer } from "electron";
-import { CalcProps, State } from "../../@types";
-import { Modal } from "../scripts/modal/Modal";
-import { Calc } from "../scripts/models/Calc";
-
-window.process = process || {};
-const ENV: string | undefined = window.process.type == "renderer" ? "electron" : "web";
-const url: string | null = ENV == "electron" ? null : "http://localhost:3000";
+import { State } from "../../@types";
 import { Resizer } from "../scripts/layout/Resizer";
+import { Modal } from "../scripts/modal/Modal";
 import { Store } from "../scripts/store/Store";
-import { Menu } from "../scripts/utils/Menu";
+import { ENV } from "../scripts/utils/env";
 import { PopupDialog } from "../scripts/utils/PopupDialog";
-import { calcSummaryTemplate } from "../scripts/utils/templates";
-
 const initialState: State = {
 	currentIndex: 0
 };
+// const url: string | null = ENV == "electron" ? null : "http://localhost:3000";
+
 const store = new Store(initialState);
 const resizer = new Resizer(store, true);
 const popup = new PopupDialog(store);
@@ -228,6 +223,7 @@ document.addEventListener("keydown", event => {
 				modal.close.click();
 				break;
 			}
+			handleBack(event);
 			break;
 		case "Enter":
 			if (store.getState("isPopUp")) popup.confirm.click();
