@@ -19,28 +19,40 @@ var Menu = /** @class */ (function () {
             if (opt.type)
                 li.classList.add("list-group-item-" + opt.type);
             li.innerHTML = opt.name;
-            if (!opt.disabled)
-                li.addEventListener("click", function () {
+            if (!opt.disabled) {
+                li.onclick = function () {
                     opt.action();
                     _this.close();
-                });
+                };
+            }
             _this.menu.appendChild(li);
         });
         document.body.appendChild(this.menu);
+        // const items = document.querySelectorAll("#contextmenu li") as unknown as HTMLElement[];
+        // options.forEach((opt, i) => {
+        //
+        // });
         this.items = document.querySelectorAll("#contextmenu li");
         document.addEventListener("mousedown", function (e) {
             var target = e.target;
             if (_this.menu) {
-                if (_this.items.indexOf(target) == -1) {
-                    _this.close();
-                }
+                _this.items.forEach(function (i) {
+                    if (i == target) {
+                        return;
+                    }
+                });
+                setTimeout(function () {
+                    if (_this.menu)
+                        _this.close();
+                }, 250);
             }
         });
     }
     Menu.prototype.close = function () {
         this.menu.remove();
         this.menu = null;
-        document.removeEventListener("mousedown", function () { });
+        document.removeEventListener("mousedown", function () {
+        });
     };
     return Menu;
 }());

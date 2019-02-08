@@ -1,19 +1,15 @@
 import { ipcRenderer } from "electron";
 // ts fix
-declare global {
-	interface Window {
-		process: any;
-	}
-}
 window.process = process || {};
 const ENV: string | undefined = window.process.type == "renderer" ? "electron" : "web";
 import axios from "axios";
 import { EmployeeProperties, State } from "../../@types";
+import { Resizer } from "../scripts/layout/Resizer";
+import { Modal } from "../scripts/modal/Modal";
 import { Employee } from "../scripts/models/Employee";
 import { Store } from "../scripts/store/Store";
 import { Menu } from "../scripts/utils/Menu";
 import { PopupDialog } from "../scripts/utils/PopupDialog";
-import { Resizer } from "../scripts/layout/Resizer";
 import { employeeSummaryTemplate, optionTemplate } from "../scripts/utils/templates";
 
 const initialState: State = {
@@ -26,10 +22,10 @@ const initialState: State = {
 const url: string | null = ENV == "electron" ? null : "http://localhost:3000";
 
 const store: Store = new Store(initialState);
+document.store = store;
 const resizer: Resizer = new Resizer(store, true);
 let menu: Menu | null = null;
-// const modal = new Modal(store);
-// document.querySelector("#moreBtn").addEventListener("click", () => modal.open());
+const modal = new Modal(store);
 store.subscribe("currentEmployee", [populateFields, colorEmployeeList]);
 store.subscribe("employeeArray", [populateEmployeeList]);
 store.subscribe("employeeList", [populateEmployeeList, colorEmployeeList]);
@@ -37,10 +33,15 @@ store.subscribe("employeeList", [populateEmployeeList, colorEmployeeList]);
 const popup = new PopupDialog(store);
 const employeeList = document.querySelector("#employeeList") as HTMLElement;
 const searchInp = document.querySelector("#searchInp") as HTMLInputElement;
-searchInp.addEventListener("input", function() {
+searchInp.addEventListener("input", function () {
 	searchEmployeeArray(this.value);
 });
+const moreBtn = document.querySelector("#moreBtn") as HTMLButtonElement;
+moreBtn.addEventListener("click", () => {
+	modal.open("Lista zapolsenih");
+	modal.runScripts("../scripts/modal/main0Modals/modal0.js");
 
+});
 const saveBtn = document.querySelector("#saveBtn") as HTMLButtonElement;
 saveBtn.addEventListener("click", () => {
 	employeeSave(null);
@@ -58,13 +59,13 @@ deleteBtn.addEventListener("click", () => {
 const fromDateInternal = document.querySelector("#fromDateInternal") as HTMLInputElement;
 const tillDateInternal = document.querySelector("#tillDateInternal") as HTMLInputElement;
 const addInternalYoSPeriod = document.querySelector("#addInternalYoSPeriod") as HTMLButtonElement;
-addInternalYoSPeriod.addEventListener("click", function() {
+addInternalYoSPeriod.addEventListener("click", function () {
 	addYoSPeriod(this.id, fromDateInternal.value, tillDateInternal.value);
 });
 const fromDateExternal = document.querySelector("#fromDateExternal") as HTMLInputElement;
 const tillDateExternal = document.querySelector("#tillDateExternal") as HTMLInputElement;
 const addExternalYoSPeriod = document.querySelector("#addExternalYoSPeriod") as HTMLButtonElement;
-addExternalYoSPeriod.addEventListener("click", function() {
+addExternalYoSPeriod.addEventListener("click", function () {
 	addYoSPeriod(this.id, fromDateExternal.value, tillDateExternal.value);
 });
 const addNewBtn: HTMLButtonElement = document.querySelector("#addNewBtn");
@@ -73,7 +74,7 @@ const headerInputs = document.querySelectorAll<HTMLInputElement>("header input")
 const mainInputs = document.querySelectorAll<HTMLInputElement>("main input") as unknown as HTMLInputElement[];
 const inputs = [...headerInputs, ...mainInputs, document.querySelector("main textarea")] as HTMLInputElement[];
 inputs.forEach(i => {
-	i.addEventListener("keyup", function() {
+	i.addEventListener("keyup", function () {
 		if (this.id.indexOf("fromDateInternal") == -1 && this.id.indexOf("tillDateInternal") == -1 && this.id.indexOf("fromDateExternal") == -1 && this.id.indexOf("tillDateExternal") == -1)
 			handleInput(this.id, this.value, this);
 	});
@@ -447,7 +448,6 @@ function employeeSave(array: Employee[], skipModal?: boolean): void {
 }
 
 function setEmployees(data: EmployeeProperties[] | EmployeeProperties): void {
-	console.log(data);
 	const array: Employee[] = [];
 	if (data instanceof Array) {
 		data.forEach(e => {
@@ -467,6 +467,11 @@ document.addEventListener("keydown", event => {
 		case "Escape":
 			if (store.getState("isPopUp")) {
 				popup.close.click();
+				break;
+			}
+			if (store.getState("isModalUp")) {
+				modal.close.click();
+				break;
 			}
 			break;
 		case "Enter":
@@ -476,10 +481,14 @@ document.addEventListener("keydown", event => {
 			}
 			break;
 		case "PageUp":
-			changeListIndex(-1);
+			if (!store.getState("isModalUp")) {
+				changeListIndex(-1);
+			}
 			break;
 		case "PageDown":
-			changeListIndex(1);
+			if (!store.getState("isModalUp")) {
+				changeListIndex(1);
+			}
 			break;
 		default:
 	}

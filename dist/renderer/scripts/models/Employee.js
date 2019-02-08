@@ -137,7 +137,6 @@ var Employee = /** @class */ (function () {
                 finally { if (e_1) throw e_1.error; }
             }
         }
-        console.log(this.properties);
         this.changes = {};
     }
     Employee.formatSexFromUMCN = function (umcn) {

@@ -24,14 +24,16 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 var electron_1 = require("electron");
+// ts fix
 window.process = process || {};
 var ENV = window.process.type == "renderer" ? "electron" : "web";
 var axios_1 = __importDefault(require("axios"));
+var Resizer_1 = require("../scripts/layout/Resizer");
+var Modal_1 = require("../scripts/modal/Modal");
 var Employee_1 = require("../scripts/models/Employee");
 var Store_1 = require("../scripts/store/Store");
 var Menu_1 = require("../scripts/utils/Menu");
 var PopupDialog_1 = require("../scripts/utils/PopupDialog");
-var Resizer_1 = require("../scripts/layout/Resizer");
 var templates_1 = require("../scripts/utils/templates");
 var initialState = {
     employeeArray: [],
@@ -42,10 +44,10 @@ var initialState = {
 };
 var url = ENV == "electron" ? null : "http://localhost:3000";
 var store = new Store_1.Store(initialState);
+document.store = store;
 var resizer = new Resizer_1.Resizer(store, true);
 var menu = null;
-// const modal = new Modal(store);
-// document.querySelector("#moreBtn").addEventListener("click", () => modal.open());
+var modal = new Modal_1.Modal(store);
 store.subscribe("currentEmployee", [populateFields, colorEmployeeList]);
 store.subscribe("employeeArray", [populateEmployeeList]);
 store.subscribe("employeeList", [populateEmployeeList, colorEmployeeList]);
@@ -55,6 +57,11 @@ var employeeList = document.querySelector("#employeeList");
 var searchInp = document.querySelector("#searchInp");
 searchInp.addEventListener("input", function () {
     searchEmployeeArray(this.value);
+});
+var moreBtn = document.querySelector("#moreBtn");
+moreBtn.addEventListener("click", function () {
+    modal.open("Lista zapolsenih");
+    modal.runScripts("../scripts/modal/main0Modals/modal0.js");
 });
 var saveBtn = document.querySelector("#saveBtn");
 saveBtn.addEventListener("click", function () {
@@ -472,7 +479,6 @@ function employeeSave(array, skipModal) {
     }
 }
 function setEmployees(data) {
-    console.log(data);
     var array = [];
     if (data instanceof Array) {
         data.forEach(function (e) {
@@ -491,6 +497,11 @@ document.addEventListener("keydown", function (event) {
         case "Escape":
             if (store.getState("isPopUp")) {
                 popup.close.click();
+                break;
+            }
+            if (store.getState("isModalUp")) {
+                modal.close.click();
+                break;
             }
             break;
         case "Enter":
@@ -501,10 +512,14 @@ document.addEventListener("keydown", function (event) {
             }
             break;
         case "PageUp":
-            changeListIndex(-1);
+            if (!store.getState("isModalUp")) {
+                changeListIndex(-1);
+            }
             break;
         case "PageDown":
-            changeListIndex(1);
+            if (!store.getState("isModalUp")) {
+                changeListIndex(1);
+            }
             break;
         default:
     }

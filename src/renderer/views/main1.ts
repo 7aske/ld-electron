@@ -4,18 +4,13 @@ import { CalcProps, State } from "../../@types";
 import { Modal } from "../scripts/modal/Modal";
 import { Calc } from "../scripts/models/Calc";
 
-declare global {
-	interface Window {
-		process: any;
-	}
-}
 window.process = process || {};
 const ENV: string | undefined = window.process.type == "renderer" ? "electron" : "web";
 const url: string | null = ENV == "electron" ? null : "http://localhost:3000";
+import { Resizer } from "../scripts/layout/Resizer";
 import { Store } from "../scripts/store/Store";
 import { Menu } from "../scripts/utils/Menu";
 import { PopupDialog } from "../scripts/utils/PopupDialog";
-import { Resizer } from "../scripts/layout/Resizer";
 import { calcSummaryTemplate } from "../scripts/utils/templates";
 
 const initialState: State = {

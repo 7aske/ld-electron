@@ -89,7 +89,6 @@ export class Employee {
 				else this.properties[key] = "";
 			}
 		}
-		console.log(this.properties);
 		this.changes = {};
 	}
 

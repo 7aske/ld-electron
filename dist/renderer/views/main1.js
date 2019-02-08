@@ -4,9 +4,9 @@ var Modal_1 = require("../scripts/modal/Modal");
 window.process = process || {};
 var ENV = window.process.type == "renderer" ? "electron" : "web";
 var url = ENV == "electron" ? null : "http://localhost:3000";
+var Resizer_1 = require("../scripts/layout/Resizer");
 var Store_1 = require("../scripts/store/Store");
 var PopupDialog_1 = require("../scripts/utils/PopupDialog");
-var Resizer_1 = require("../scripts/layout/Resizer");
 var initialState = {
     currentIndex: 0
 };

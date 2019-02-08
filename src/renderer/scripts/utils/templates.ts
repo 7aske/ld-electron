@@ -1,3 +1,4 @@
+import { EmployeeProperties } from "../../../@types";
 import { Calc } from "../models/Calc";
 import { Employee } from "../models/Employee";
 

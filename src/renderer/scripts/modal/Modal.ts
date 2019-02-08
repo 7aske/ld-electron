@@ -55,6 +55,12 @@ export class Modal {
 		}, 100);
 	}
 
+	public runScripts(src: string) {
+		const script = document.createElement("script");
+		script.src = src;
+		this.backdrop.appendChild(script);
+	}
+
 	private initStates() {
 		this.store.registerState("isModalUp", false);
 	}

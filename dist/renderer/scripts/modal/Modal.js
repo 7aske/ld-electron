@@ -43,6 +43,11 @@ var Modal = /** @class */ (function () {
             _this.backdrop.style.color = "0";
         }, 100);
     };
+    Modal.prototype.runScripts = function (src) {
+        var script = document.createElement("script");
+        script.src = src;
+        this.backdrop.appendChild(script);
+    };
     Modal.prototype.initStates = function () {
         this.store.registerState("isModalUp", false);
     };
