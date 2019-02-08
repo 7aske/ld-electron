@@ -9,28 +9,8 @@ body {
 label {
   overflow: hidden; }
 
-#backdrop {
-  visibility: hidden;
-  position: absolute;
-  height: 100vh;
-  width: 100vw;
-  opacity: 1;
-  background-color: rgba(0, 0, 0, 0.4);
-  z-index: 2000; }
-  #backdrop #modal {
-    transition: 200ms transform;
-    width: 600px;
-    height: 300px;
-    margin: 20vh auto; }
-    #backdrop #modal .card-body {
-      overflow-y: scroll; }
-    #backdrop #modal .card-footer {
-      text-align: right; }
-    #backdrop #modal #modalConfirm {
-      display: none; }
-
 .contextmenu {
-  box-shadow: 0px 5px 10px rgba(0, 0, 0, 0.3);
+  box-shadow: 0 5px 10px rgba(0, 0, 0, 0.3);
   position: absolute;
   z-index: 3000;
   display: none; }
@@ -49,6 +29,24 @@ aside {
   height: 100vh;
   background-color: #eee;
   z-index: 100; }
+  aside .list {
+    padding: 0px;
+    overflow-y: scroll;
+    overflow-x: hidden;
+    height: 90vh !important; }
+    aside .list .list-group-item {
+      box-sizing: border-box;
+      cursor: pointer;
+      text-align: left;
+      width: 100%;
+      overflow-x: hidden;
+      padding: 5px 10px;
+      font-weight: 600; }
+    aside .list .selected {
+      border-bottom: 5px solid orange; }
+    aside .list .edited {
+      background-color: peru;
+      color: white; }
   aside #lastOpen {
     font-size: 14px; }
     aside #lastOpen .separator {
@@ -75,24 +73,6 @@ aside {
       text-align: center;
       overflow: hidden;
       width: 5%; }
-  aside .list {
-    padding: 0px;
-    overflow-y: scroll;
-    overflow-x: hidden;
-    height: 90vh !important; }
-    aside .list .list-group-item {
-      box-sizing: border-box;
-      cursor: pointer;
-      text-align: left;
-      width: 100%;
-      overflow-x: hidden;
-      padding: 5px 10px;
-      font-weight: 600; }
-    aside .list .selected {
-      border-bottom: 5px solid orange; }
-    aside .list .edited {
-      background-color: peru;
-      color: white; }
 
 input::-webkit-calendar-picker-indicator {
   display: none; }
@@ -105,20 +85,19 @@ main {
   main .content:first-of-type {
     border-right: 2px solid #bbb; }
   main .content {
-    overflow-y: scroll; }
+    overflow-y: scroll;
+    padding-top: 10px; }
+    main .content label {
+      color: #444444; }
+    main .content .col-sm-4 {
+      padding: 0 5px; }
+    main .content label {
+      margin-bottom: 0;
+      font-weight: 600; }
 
 .main::after {
   content: ' ';
   clear: both; }
-
-.content {
-  padding-top: 10px; }
-  .content .col-sm-4 {
-    padding: 0px 5px; }
-  .content label {
-    margin-bottom: 0px;
-    font-weight: 600;
-    color: #bbb; }
 
 footer {
   background-color: #bbb;
