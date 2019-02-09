@@ -44,9 +44,9 @@ export interface EmployeeProperties {
 	employmentBooklet_DateOfIssue?: string;
 	employmentBooklet_Municipality?: string;
 	employmentBooklet_EmploymentCode?: string;
-	externalYoS_periods?: YoSPeriod[];
+	externalYoS_periods?: string;
 	externalYoS_total?: number;
-	internalYoS_periods?: YoSPeriod[];
+	internalYoS_periods?: string;
 	internalYoS_total?: number;
 	totalYoS?: number;
 	address?: string;

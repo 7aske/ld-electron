@@ -81,9 +81,7 @@ export class Employee {
 		} else {
 			for (const key of employeeKeys) {
 				if (key == "_id") continue;
-				else if (key == "externalYoS_periods") this.properties.externalYoS_periods = [];
 				else if (key == "externalYoS_total") this.properties.externalYoS_total = 0;
-				else if (key == "internalYoS_periods") this.properties.internalYoS_periods = [];
 				else if (key == "internalYoS_total") this.properties.internalYoS_total = 0;
 				else if (key == "totalYoS") this.properties.totalYoS = 0;
 				else this.properties[key] = "";
@@ -113,33 +111,34 @@ export class Employee {
 			this.properties[key] = this.changes[key];
 		}
 		this.changes = {};
+		// this.populate();
 		return this;
 	}
 
 	public populate() {
 		for (const key in this.properties) {
-			let input: HTMLInputElement;
-			let div: HTMLElement;
-			if (document.querySelector(`#${key}`)) {
-				if (document.querySelector(`#${key}`).nodeName == "DIV") div = document.querySelector(`#${key}`);
-				else input = document.querySelector(`#${key}`);
-				if (div) {
-					div.innerHTML = this.properties[key].toString();
-					div.classList.remove("bg-warning");
+			const element = document.querySelector(`#${key}`) as HTMLInputElement;
+			if (element) {
+				element.classList.remove("bg-warning");
+				if (key == "internalYoS_total" || key == "externalYoS_total" || key == "totalYoS")
+					continue;
+				if (element.nodeName == "DIV") {
+					element.innerHTML = this.properties[key].toString();
 				} else {
-					input.value = this.properties[key].toString();
-					input.classList.remove("bg-warning");
+					element.value = this.properties[key].toString();
 				}
 			}
 		}
 		for (const key in this.changes) {
 			const element: HTMLInputElement = document.querySelector(`#${key}`);
 			if (element) {
-				element.value = this.changes[key];
 				element.classList.add("bg-warning");
+				if (key == "internalYoS_total" || key == "externalYoS_total" || key == "totalYoS")
+					continue;
+				element.value = this.changes[key];
 			}
 		}
-		// this.populateDate();
+		this.populateDate();
 		return this;
 	}
 
@@ -149,25 +148,43 @@ export class Employee {
 		const internalYoS_total = document.querySelector("#internalYoS_total") as HTMLElement;
 		const externalYoS_total = document.querySelector("#externalYoS_total") as HTMLElement;
 		const totalYoS: HTMLElement = document.querySelector("#totalYoS");
-		this.properties.totalYoS = 0;
-		if (!this.changes.internalYoS_periods) {
-			containerInternal.innerHTML = "";
-			this.properties.internalYoS_total = 0;
-			this.properties.internalYoS_periods.forEach(p => {
-				this.properties.internalYoS_total += p.till - p.from;
-				containerInternal.innerHTML += dateListTemplate(p.from, p.till);
-			});
+		if (typeof this.changes.internalYoS_periods != "undefined") {
+			if (this.changes.internalYoS_periods != "") {
+				containerInternal.innerHTML = "";
+				this.changes.internalYoS_periods.split(" ").forEach(p => {
+					const from = parseInt(p.split("-")[0], 10);
+					const till = parseInt(p.split("-")[1], 10);
+					containerInternal.innerHTML += dateListTemplate(from, till);
+				});
+			}
+		} else {
+			if (this.properties.internalYoS_periods != "") {
+				containerInternal.innerHTML = "";
+				this.properties.internalYoS_periods.split(" ").forEach(p => {
+					const from = parseInt(p.split("-")[0], 10);
+					const till = parseInt(p.split("-")[1], 10);
+					containerInternal.innerHTML += dateListTemplate(from, till);
+				});
+			}
 		}
-		if (!this.changes.externalYoS_periods) {
-			containerExternal.innerHTML = "";
-			this.properties.externalYoS_total = 0;
-			this.properties.externalYoS_periods.forEach(p => {
-				this.properties.externalYoS_total += p.till - p.from;
-				containerExternal.innerHTML += dateListTemplate(p.from, p.till);
-			});
-		}
-		if (!this.changes.internalYoS_total && !this.changes.externalYoS_total) {
-			this.properties.totalYoS = this.properties.externalYoS_total + this.properties.internalYoS_total;
+		if (typeof this.changes.externalYoS_periods != "undefined") {
+			if (this.changes.externalYoS_periods != "") {
+				containerExternal.innerHTML = "";
+				this.changes.externalYoS_periods.split(" ").forEach(p => {
+					const from = parseInt(p.split("-")[0], 10);
+					const till = parseInt(p.split("-")[1], 10);
+					containerExternal.innerHTML += dateListTemplate(from, till);
+				});
+			}
+		} else {
+			if (this.properties.externalYoS_periods != "") {
+				containerExternal.innerHTML = "";
+				this.properties.externalYoS_periods.split(" ").forEach(p => {
+					const from = parseInt(p.split("-")[0], 10);
+					const till = parseInt(p.split("-")[1], 10);
+					containerExternal.innerHTML += dateListTemplate(from, till);
+				});
+			}
 		}
 		const internal = new Date(this.changes.internalYoS_total ? this.changes.internalYoS_total : this.properties.internalYoS_total);
 		internalYoS_total.innerHTML = dateTemplate(internal);
@@ -179,45 +196,35 @@ export class Employee {
 	}
 
 	public addInternalYoS(from: number, till: number) {
-		const containerInternal: HTMLElement = document.querySelector("#containerInternal");
-		containerInternal.innerHTML = "";
-		this.changes.internalYoS_periods = new Array(...this.properties.internalYoS_periods);
-		this.changes.internalYoS_periods.push({
-			from,
-			till
-		});
-		console.log(this.changes.internalYoS_periods);
-		this.changes.internalYoS_total = 0;
-		this.changes.internalYoS_periods.forEach(p => {
-			this.changes.internalYoS_total += p.till - p.from;
-			containerInternal.innerHTML += dateListTemplate(p.from, p.till);
-		});
-		this.changes.totalYoS =
-			(this.changes.externalYoS_total ? this.changes.externalYoS_total : this.properties.externalYoS_total) + (this.changes.internalYoS_total ? this.changes.internalYoS_total : this.properties.internalYoS_total);
-		// this.populateDate();
+		if (typeof this.changes.internalYoS_periods == "undefined") {
+			this.changes.internalYoS_periods = this.properties.internalYoS_periods;
+		}
+		this.changes.internalYoS_periods += ` ${from}-${till}`;
+
+		if (typeof this.changes.internalYoS_total == "undefined") {
+			this.changes.internalYoS_total = this.properties.internalYoS_total;
+		}
+		this.changes.internalYoS_total += till - from;
+		if (typeof this.changes.totalYoS == "undefined") {
+			this.changes.totalYoS = this.properties.totalYoS;
+		}
+		this.changes.totalYoS += till - from;
 		return this;
 	}
 
 	public addExternalYoS(from: number, till: number) {
-		const containerExternal: HTMLElement = document.querySelector("#containerExternal");
-		containerExternal.innerHTML = "";
-		this.changes.externalYoS_periods = new Array(...this.properties.externalYoS_periods);
-		this.changes.externalYoS_periods.push({
-			from,
-			till
-		});
-		this.changes.externalYoS_total = 0;
-		this.changes.externalYoS_periods.forEach(p => {
-			this.changes.externalYoS_total += p.till - p.from;
-			containerExternal.innerHTML += dateListTemplate(p.from, p.till);
-		});
-		this.changes.totalYoS =
-			(this.changes.externalYoS_total ? this.changes.externalYoS_total : this.properties.externalYoS_total) + (this.changes.internalYoS_total ? this.changes.internalYoS_total : this.properties.internalYoS_total);
-		// try {
-		// 	this.populateDate();
-		// } catch (err) {
-		// 	console.error(err);
-		// }
+		if (typeof this.changes.externalYoS_periods == "undefined") {
+			this.changes.externalYoS_periods = this.properties.externalYoS_periods;
+		}
+		this.changes.externalYoS_periods += ` ${from}-${till}`;
+		if (typeof this.changes.externalYoS_total == "undefined") {
+			this.changes.externalYoS_total = this.properties.externalYoS_total;
+		}
+		this.changes.externalYoS_total += till - from;
+		if (typeof this.changes.totalYoS == "undefined") {
+			this.changes.totalYoS = this.properties.totalYoS;
+		}
+		this.changes.totalYoS += till - from;
 		return this;
 	}
 }

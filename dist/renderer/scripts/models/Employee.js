@@ -9,26 +9,6 @@ var __values = (this && this.__values) || function (o) {
         }
     };
 };
-var __read = (this && this.__read) || function (o, n) {
-    var m = typeof Symbol === "function" && o[Symbol.iterator];
-    if (!m) return o;
-    var i = m.call(o), r, ar = [], e;
-    try {
-        while ((n === void 0 || n-- > 0) && !(r = i.next()).done) ar.push(r.value);
-    }
-    catch (error) { e = { error: error }; }
-    finally {
-        try {
-            if (r && !r.done && (m = i["return"])) m.call(i);
-        }
-        finally { if (e) throw e.error; }
-    }
-    return ar;
-};
-var __spread = (this && this.__spread) || function () {
-    for (var ar = [], i = 0; i < arguments.length; i++) ar = ar.concat(__read(arguments[i]));
-    return ar;
-};
 var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
@@ -115,12 +95,8 @@ var Employee = /** @class */ (function () {
                     var key = employeeKeys_1_1.value;
                     if (key == "_id")
                         continue;
-                    else if (key == "externalYoS_periods")
-                        this.properties.externalYoS_periods = [];
                     else if (key == "externalYoS_total")
                         this.properties.externalYoS_total = 0;
-                    else if (key == "internalYoS_periods")
-                        this.properties.internalYoS_periods = [];
                     else if (key == "internalYoS_total")
                         this.properties.internalYoS_total = 0;
                     else if (key == "totalYoS")
@@ -161,63 +137,81 @@ var Employee = /** @class */ (function () {
             this.properties[key] = this.changes[key];
         }
         this.changes = {};
+        // this.populate();
         return this;
     };
     Employee.prototype.populate = function () {
         for (var key in this.properties) {
-            var input = void 0;
-            var div = void 0;
-            if (document.querySelector("#" + key)) {
-                if (document.querySelector("#" + key).nodeName == "DIV")
-                    div = document.querySelector("#" + key);
-                else
-                    input = document.querySelector("#" + key);
-                if (div) {
-                    div.innerHTML = this.properties[key].toString();
-                    div.classList.remove("bg-warning");
+            var element = document.querySelector("#" + key);
+            if (element) {
+                element.classList.remove("bg-warning");
+                if (key == "internalYoS_total" || key == "externalYoS_total" || key == "totalYoS")
+                    continue;
+                if (element.nodeName == "DIV") {
+                    element.innerHTML = this.properties[key].toString();
                 }
                 else {
-                    input.value = this.properties[key].toString();
-                    input.classList.remove("bg-warning");
+                    element.value = this.properties[key].toString();
                 }
             }
         }
         for (var key in this.changes) {
             var element = document.querySelector("#" + key);
             if (element) {
-                element.value = this.changes[key];
                 element.classList.add("bg-warning");
+                if (key == "internalYoS_total" || key == "externalYoS_total" || key == "totalYoS")
+                    continue;
+                element.value = this.changes[key];
             }
         }
-        // this.populateDate();
+        this.populateDate();
         return this;
     };
     Employee.prototype.populateDate = function () {
-        var _this = this;
         var containerInternal = document.querySelector("#containerInternal");
         var containerExternal = document.querySelector("#containerExternal");
         var internalYoS_total = document.querySelector("#internalYoS_total");
         var externalYoS_total = document.querySelector("#externalYoS_total");
         var totalYoS = document.querySelector("#totalYoS");
-        this.properties.totalYoS = 0;
-        if (!this.changes.internalYoS_periods) {
-            containerInternal.innerHTML = "";
-            this.properties.internalYoS_total = 0;
-            this.properties.internalYoS_periods.forEach(function (p) {
-                _this.properties.internalYoS_total += p.till - p.from;
-                containerInternal.innerHTML += templates_1.dateListTemplate(p.from, p.till);
-            });
+        if (typeof this.changes.internalYoS_periods != "undefined") {
+            if (this.changes.internalYoS_periods != "") {
+                containerInternal.innerHTML = "";
+                this.changes.internalYoS_periods.split(" ").forEach(function (p) {
+                    var from = parseInt(p.split("-")[0], 10);
+                    var till = parseInt(p.split("-")[1], 10);
+                    containerInternal.innerHTML += templates_1.dateListTemplate(from, till);
+                });
+            }
         }
-        if (!this.changes.externalYoS_periods) {
-            containerExternal.innerHTML = "";
-            this.properties.externalYoS_total = 0;
-            this.properties.externalYoS_periods.forEach(function (p) {
-                _this.properties.externalYoS_total += p.till - p.from;
-                containerExternal.innerHTML += templates_1.dateListTemplate(p.from, p.till);
-            });
+        else {
+            if (this.properties.internalYoS_periods != "") {
+                containerInternal.innerHTML = "";
+                this.properties.internalYoS_periods.split(" ").forEach(function (p) {
+                    var from = parseInt(p.split("-")[0], 10);
+                    var till = parseInt(p.split("-")[1], 10);
+                    containerInternal.innerHTML += templates_1.dateListTemplate(from, till);
+                });
+            }
         }
-        if (!this.changes.internalYoS_total && !this.changes.externalYoS_total) {
-            this.properties.totalYoS = this.properties.externalYoS_total + this.properties.internalYoS_total;
+        if (typeof this.changes.externalYoS_periods != "undefined") {
+            if (this.changes.externalYoS_periods != "") {
+                containerExternal.innerHTML = "";
+                this.changes.externalYoS_periods.split(" ").forEach(function (p) {
+                    var from = parseInt(p.split("-")[0], 10);
+                    var till = parseInt(p.split("-")[1], 10);
+                    containerExternal.innerHTML += templates_1.dateListTemplate(from, till);
+                });
+            }
+        }
+        else {
+            if (this.properties.externalYoS_periods != "") {
+                containerExternal.innerHTML = "";
+                this.properties.externalYoS_periods.split(" ").forEach(function (p) {
+                    var from = parseInt(p.split("-")[0], 10);
+                    var till = parseInt(p.split("-")[1], 10);
+                    containerExternal.innerHTML += templates_1.dateListTemplate(from, till);
+                });
+            }
         }
         var internal = new Date(this.changes.internalYoS_total ? this.changes.internalYoS_total : this.properties.internalYoS_total);
         internalYoS_total.innerHTML = templates_1.dateTemplate(internal);
@@ -228,46 +222,33 @@ var Employee = /** @class */ (function () {
         return this;
     };
     Employee.prototype.addInternalYoS = function (from, till) {
-        var _this = this;
-        var containerInternal = document.querySelector("#containerInternal");
-        containerInternal.innerHTML = "";
-        this.changes.internalYoS_periods = new (Array.bind.apply(Array, __spread([void 0], this.properties.internalYoS_periods)))();
-        this.changes.internalYoS_periods.push({
-            from: from,
-            till: till
-        });
-        console.log(this.changes.internalYoS_periods);
-        this.changes.internalYoS_total = 0;
-        this.changes.internalYoS_periods.forEach(function (p) {
-            _this.changes.internalYoS_total += p.till - p.from;
-            containerInternal.innerHTML += templates_1.dateListTemplate(p.from, p.till);
-        });
-        this.changes.totalYoS =
-            (this.changes.externalYoS_total ? this.changes.externalYoS_total : this.properties.externalYoS_total) + (this.changes.internalYoS_total ? this.changes.internalYoS_total : this.properties.internalYoS_total);
-        // this.populateDate();
+        if (typeof this.changes.internalYoS_periods == "undefined") {
+            this.changes.internalYoS_periods = this.properties.internalYoS_periods;
+        }
+        this.changes.internalYoS_periods += " " + from + "-" + till;
+        if (typeof this.changes.internalYoS_total == "undefined") {
+            this.changes.internalYoS_total = this.properties.internalYoS_total;
+        }
+        this.changes.internalYoS_total += till - from;
+        if (typeof this.changes.totalYoS == "undefined") {
+            this.changes.totalYoS = this.properties.totalYoS;
+        }
+        this.changes.totalYoS += till - from;
         return this;
     };
     Employee.prototype.addExternalYoS = function (from, till) {
-        var _this = this;
-        var containerExternal = document.querySelector("#containerExternal");
-        containerExternal.innerHTML = "";
-        this.changes.externalYoS_periods = new (Array.bind.apply(Array, __spread([void 0], this.properties.externalYoS_periods)))();
-        this.changes.externalYoS_periods.push({
-            from: from,
-            till: till
-        });
-        this.changes.externalYoS_total = 0;
-        this.changes.externalYoS_periods.forEach(function (p) {
-            _this.changes.externalYoS_total += p.till - p.from;
-            containerExternal.innerHTML += templates_1.dateListTemplate(p.from, p.till);
-        });
-        this.changes.totalYoS =
-            (this.changes.externalYoS_total ? this.changes.externalYoS_total : this.properties.externalYoS_total) + (this.changes.internalYoS_total ? this.changes.internalYoS_total : this.properties.internalYoS_total);
-        // try {
-        // 	this.populateDate();
-        // } catch (err) {
-        // 	console.error(err);
-        // }
+        if (typeof this.changes.externalYoS_periods == "undefined") {
+            this.changes.externalYoS_periods = this.properties.externalYoS_periods;
+        }
+        this.changes.externalYoS_periods += " " + from + "-" + till;
+        if (typeof this.changes.externalYoS_total == "undefined") {
+            this.changes.externalYoS_total = this.properties.externalYoS_total;
+        }
+        this.changes.externalYoS_total += till - from;
+        if (typeof this.changes.totalYoS == "undefined") {
+            this.changes.totalYoS = this.properties.totalYoS;
+        }
+        this.changes.totalYoS += till - from;
         return this;
     };
     return Employee;
