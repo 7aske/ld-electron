@@ -3,7 +3,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 function dateListTemplate(f, t) {
     var from = new Date(f);
     var till = new Date(t);
-    return "<div class=\"list-group-item\">" + from.getDate() + "/" + (from.getMonth() + 1) + "/" + from.getFullYear() + " - " + till.getDate() + "/" + (till.getMonth() + 1) + "/" + till.getFullYear() + "</div>";
+    return "<div class=\"list-group-item p-2 text-left\">" + from.getDate() + "/" + (from.getMonth() + 1) + "/" + from.getFullYear() + " - " + till.getDate() + "/" + (till.getMonth() + 1) + "/" + till.getFullYear() + "</div>";
 }
 exports.dateListTemplate = dateListTemplate;
 function dateTemplate(date) {

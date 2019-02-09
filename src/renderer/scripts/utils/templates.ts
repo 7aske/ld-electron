@@ -5,7 +5,7 @@ import { Employee } from "../models/Employee";
 export function dateListTemplate(f: number, t: number): string {
 	const from = new Date(f);
 	const till = new Date(t);
-	return `<div class="list-group-item">${from.getDate()}/${from.getMonth() + 1}/${from.getFullYear()} - ${till.getDate()}/${till.getMonth() + 1}/${till.getFullYear()}</div>`;
+	return `<div class="list-group-item p-2 text-left">${from.getDate()}/${from.getMonth() + 1}/${from.getFullYear()} - ${till.getDate()}/${till.getMonth() + 1}/${till.getFullYear()}</div>`;
 }
 
 export function dateTemplate(date: Date) {
