@@ -5,7 +5,7 @@
 	"main": "./dist/main/app.js",
 	"scripts": {
 		"start": "electron ./dist/main/app.js",
-		"webpack": "npx webpack --config webpack.config.js",
+		"rebuild": "./node_modules/.bin/electron-rebuild -w sqlite3 -p",
 		"package-linux": "electron-packager . ld-electron --overwrite --prune=true --platform=linux --arch=x64 --out=build/linux --ignore=\"./src\"",
 		"package-win": "electron-packager . ld-electron --overwrite --prune=true --platform=win32 --arch=x64 --out=build/windows --ignore=\"./src\"",
 		"package-win32": "electron-packager . ld-electron --overwrite --prune=true --platform=win32 --arch=ia32 --out=build/windows --ignore=\"./src\"",
